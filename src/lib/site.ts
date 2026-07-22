@@ -212,6 +212,63 @@ export const footerNavigate = [
 ];
 
 /* ------------------------------------------------------------------ */
+/*  Hero banner carousel                                                */
+/* ------------------------------------------------------------------ */
+/*  To use a real photo for a slide, set `image` to its path (e.g.      */
+/*  "/banners/campus.jpg" placed in /public). The gradient shows when   */
+/*  no image is set.                                                    */
+
+export type HeroSlide = {
+  eyebrow: string;
+  title: string;
+  highlight?: string;
+  text: string;
+  cta: { label: string; href: string };
+  secondary?: { label: string; href: string };
+  gradient: string;
+  image?: string;
+};
+
+export const heroSlides: HeroSlide[] = [
+  {
+    eyebrow: "Welcome to our school",
+    title: "Where young minds move from darkness to",
+    highlight: "light",
+    text: "A co-educational institution in Shyamnagar nurturing students from pre-primary through Class 12 with academic excellence, strong values and a genuine love of learning.",
+    cta: { label: "Apply for Admission", href: "/admissions" },
+    secondary: { label: "Discover the School", href: "/#about" },
+    gradient: "from-[oklch(0.32_0.09_264)] via-[oklch(0.36_0.1_262)] to-[oklch(0.28_0.08_266)]",
+  },
+  {
+    eyebrow: "Admissions open · 2026–27",
+    title: "Begin your child's journey with",
+    highlight: "us",
+    text: "Applications are now open for Nursery through Class XI. Seats are limited — take the first step towards a brighter future today.",
+    cta: { label: "Admission Enquiry", href: "/admission-enquiry" },
+    secondary: { label: "View Process & Fees", href: "/admissions" },
+    gradient: "from-[oklch(0.34_0.09_28)] via-[oklch(0.3_0.08_20)] to-[oklch(0.28_0.07_264)]",
+  },
+  {
+    eyebrow: "Higher Secondary",
+    title: "Three streams to shape every",
+    highlight: "ambition",
+    text: "Science, Commerce and Humanities under WBCHSE — guiding students toward university, competitive exams and confident careers.",
+    cta: { label: "Explore Academics", href: "/#academics" },
+    secondary: { label: "School Labs", href: "/labs" },
+    gradient: "from-[oklch(0.33_0.09_200)] via-[oklch(0.3_0.08_220)] to-[oklch(0.27_0.07_264)]",
+  },
+  {
+    eyebrow: "Campus life",
+    title: "A campus that comes alive every",
+    highlight: "day",
+    text: "From science labs to the sports field, from music to cultural fests — there is always room here to explore, create and celebrate.",
+    cta: { label: "View Gallery", href: "/gallery" },
+    secondary: { label: "Notice Board", href: "/notices" },
+    gradient: "from-[oklch(0.33_0.09_150)] via-[oklch(0.3_0.08_165)] to-[oklch(0.27_0.07_264)]",
+  },
+];
+
+/* ------------------------------------------------------------------ */
 /*  Leadership messages                                                 */
 /* ------------------------------------------------------------------ */
 

@@ -1,4 +1,5 @@
-import { Hero } from "@/components/sections/hero";
+import { HeroCarousel, StatsBand } from "@/components/sections/hero-carousel";
+import { UpdatesTicker } from "@/components/sections/updates-ticker";
 import { About } from "@/components/sections/about";
 import { Academics } from "@/components/sections/academics";
 import { WhyUs } from "@/components/sections/why-us";
@@ -11,7 +12,9 @@ import { Contact } from "@/components/sections/contact";
 export default function Home() {
   return (
     <>
-      <Hero />
+      <HeroCarousel />
+      <UpdatesTicker />
+      <StatsBand />
       <About />
       <Academics />
       <WhyUs />

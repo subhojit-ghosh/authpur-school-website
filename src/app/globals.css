@@ -184,6 +184,25 @@
   }
 }
 
+@keyframes anm-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@layer components {
+  .animate-marquee {
+    animation: anm-marquee 38s linear infinite;
+    will-change: transform;
+  }
+  .marquee-group:hover .animate-marquee {
+    animation-play-state: paused;
+  }
+}
+
 @utility bg-grid {
   background-image:
     linear-gradient(to right, color-mix(in oklch, var(--foreground) 6%, transparent) 1px, transparent 1px),
