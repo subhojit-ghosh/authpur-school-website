@@ -32,7 +32,7 @@ export function HeroCarousel() {
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <div className="relative h-[300px] w-full overflow-hidden bg-brand sm:h-[420px] lg:h-[560px] xl:h-[620px]">
+      <div className="relative h-[190px] w-full overflow-hidden bg-brand sm:h-[240px] lg:h-[320px] xl:h-[360px]">
         {heroImages.map((img, i) => (
           // eslint-disable-next-line @next/next/no-img-element
           <img
