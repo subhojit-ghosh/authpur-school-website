@@ -1,23 +1,21 @@
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
 import { ContactForm } from "@/components/sections/contact-form";
+import { getSchoolInfo } from "@/lib/settings";
+import { fullAddress, mapQuery, telHref } from "@/lib/settings-types";
 import { school } from "@/lib/site";
 
-const details = [
-  {
-    icon: MapPin,
-    label: "Visit us",
-    value: `${school.address.line1}, ${school.address.line2}, ${school.address.city} – ${school.address.pin}`,
-  },
-  { icon: Phone, label: "Call us", value: school.phone, href: school.phoneHref },
-  { icon: Mail, label: "Email us", value: school.email, href: `mailto:${school.email}` },
-  { icon: Clock, label: "Office hours", value: "Monday – Saturday · 8:00 AM – 4:00 PM" },
-];
+export async function Contact() {
+  const info = await getSchoolInfo();
 
-const mapSrc = `https://maps.google.com/maps?q=${encodeURIComponent(
-  school.mapQuery,
-)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+  const details = [
+    { icon: MapPin, label: "Visit us", value: fullAddress(info) },
+    { icon: Phone, label: "Call us", value: info.phone, href: telHref(info.phone) },
+    { icon: Mail, label: "Email us", value: info.email, href: `mailto:${info.email}` },
+    { icon: Clock, label: "Office hours", value: info.officeHours },
+  ];
 
-export function Contact() {
+  const mapSrc = `https://maps.google.com/maps?q=${encodeURIComponent(mapQuery(info))}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+
   return (
     <section id="contact" className="scroll-mt-24 bg-secondary py-20 lg:py-28">
       <div className="container-edge">
@@ -75,7 +73,7 @@ export function Contact() {
             <p className="mt-1 mb-6 text-sm text-muted-foreground">
               Fill in the form and we&apos;ll get back to you soon.
             </p>
-            <ContactForm />
+            <ContactForm admissionsPhone={info.admissionsPhone} />
           </div>
         </div>
       </div>

@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { Megaphone } from "lucide-react";
-import { notices } from "@/lib/site";
+import { getNotices } from "@/lib/content";
+import type { Notice } from "@/db/schema";
 
-function TickerItems() {
+function TickerItems({ items }: { items: Pick<Notice, "id" | "tag" | "title">[] }) {
   return (
     <>
-      {notices.map((n, i) => (
+      {items.map((n) => (
         <Link
-          key={i}
+          key={n.id}
           href="/notices"
           className="group flex shrink-0 items-center gap-3 whitespace-nowrap px-6 py-3.5 text-sm"
         >
@@ -24,7 +25,10 @@ function TickerItems() {
   );
 }
 
-export function UpdatesTicker() {
+export async function UpdatesTicker() {
+  const items = await getNotices(6);
+  if (!items.length) return null;
+
   return (
     <section aria-label="Latest updates" className="border-b bg-brand text-brand-foreground">
       <div className="flex items-stretch">
@@ -42,8 +46,8 @@ export function UpdatesTicker() {
         <div className="marquee-group relative flex-1 overflow-hidden">
           <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-linear-to-l from-brand to-transparent" />
           <div className="flex w-max animate-marquee">
-            <TickerItems />
-            <TickerItems />
+            <TickerItems items={items} />
+            <TickerItems items={items} />
           </div>
         </div>
       </div>

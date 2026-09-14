@@ -2,8 +2,9 @@ import Link from "next/link";
 import { Mail, Phone, MapPin, Clock, Globe, MessageCircle, AtSign } from "lucide-react";
 import { Crest } from "@/components/crest";
 import { footerExplore, footerNavigate, school } from "@/lib/site";
+import { defaultSchoolInfo, telHref, type SchoolInfo } from "@/lib/settings-types";
 
-export function SiteFooter() {
+export function SiteFooter({ info = defaultSchoolInfo }: { info?: SchoolInfo }) {
   return (
     <footer className="bg-brand text-brand-foreground">
       <div className="container-edge grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-4">
@@ -74,25 +75,25 @@ export function SiteFooter() {
             <li className="flex gap-3">
               <MapPin className="mt-0.5 size-4 shrink-0 text-gold" />
               <span>
-                {school.address.line1}, {school.address.line2}, {school.address.city} –{" "}
-                {school.address.pin}
+                {info.address.line1}, {info.address.line2}, {info.address.city} –{" "}
+                {info.address.pin}
               </span>
             </li>
             <li className="flex gap-3">
               <Phone className="mt-0.5 size-4 shrink-0 text-gold" />
-              <a href={school.phoneHref} className="hover:text-gold">
-                {school.phone}
+              <a href={telHref(info.phone)} className="hover:text-gold">
+                {info.phone}
               </a>
             </li>
             <li className="flex gap-3">
               <Mail className="mt-0.5 size-4 shrink-0 text-gold" />
-              <a href={`mailto:${school.email}`} className="break-all hover:text-gold">
-                {school.email}
+              <a href={`mailto:${info.email}`} className="break-all hover:text-gold">
+                {info.email}
               </a>
             </li>
             <li className="flex gap-3">
               <Clock className="mt-0.5 size-4 shrink-0 text-gold" />
-              <span>Mon – Sat · 8:00 AM – 4:00 PM</span>
+              <span>{info.officeHours}</span>
             </li>
           </ul>
 

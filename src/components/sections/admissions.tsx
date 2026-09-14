@@ -1,6 +1,7 @@
 import { GraduationCap, Phone, CalendarCheck, FileText, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { school } from "@/lib/site";
+import { getSchoolInfo } from "@/lib/settings";
+import { telHref } from "@/lib/settings-types";
 
 const steps = [
   { icon: FileText, title: "Enquire & collect form", text: "Visit the school office or request a form online." },
@@ -8,7 +9,8 @@ const steps = [
   { icon: CalendarCheck, title: "Confirm admission", text: "Complete the formalities and welcome aboard." },
 ];
 
-export function Admissions() {
+export async function Admissions() {
+  const info = await getSchoolInfo();
   return (
     <section id="admissions" className="scroll-mt-24 py-20 lg:py-28">
       <div className="container-edge">
@@ -44,9 +46,9 @@ export function Admissions() {
                   className="h-12 border-white/25 bg-transparent px-7 text-[15px] text-brand-foreground hover:bg-white/10 hover:text-brand-foreground [&_svg:not([class*='size-'])]:size-[18px]"
                   asChild
                 >
-                  <a href={`tel:${school.admissionsPhone.replace(/\s/g, "")}`}>
+                  <a href={telHref(info.admissionsPhone)}>
                     <Phone />
-                    {school.admissionsPhone}
+                    {info.admissionsPhone}
                   </a>
                 </Button>
               </div>

@@ -2,16 +2,18 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, BadgeCheck, Award } from "lucide-react";
-import { heroImages, stats } from "@/lib/site";
+import { stats } from "@/lib/site";
+
+export type HeroImage = { src: string; alt: string };
 import { cn } from "@/lib/utils";
 
 const AUTOPLAY_MS = 5000;
 
-export function HeroCarousel() {
+export function HeroCarousel({ images }: { images: HeroImage[] }) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
-  const count = heroImages.length;
+  const count = Math.max(images.length, 1);
 
   const go = useCallback((n: number) => setIndex((n + count) % count), [count]);
 
@@ -33,7 +35,7 @@ export function HeroCarousel() {
       onMouseLeave={() => setPaused(false)}
     >
       <div className="relative h-[190px] w-full overflow-hidden bg-brand sm:h-[240px] lg:h-[320px] xl:h-[360px]">
-        {heroImages.map((img, i) => (
+        {images.map((img, i) => (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             key={img.src}
@@ -67,7 +69,7 @@ export function HeroCarousel() {
 
         {/* Dots */}
         <div className="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 lg:bottom-6">
-          {heroImages.map((_, i) => (
+          {images.map((_, i) => (
             <button
               key={i}
               onClick={() => go(i)}

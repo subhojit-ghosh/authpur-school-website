@@ -14,9 +14,10 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import { mainNav, school } from "@/lib/site";
+import { defaultSchoolInfo, telHref, type SchoolInfo } from "@/lib/settings-types";
 import { cn } from "@/lib/utils";
 
-export function SiteHeader() {
+export function SiteHeader({ info = defaultSchoolInfo }: { info?: SchoolInfo }) {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -34,15 +35,15 @@ export function SiteHeader() {
           <p className="flex items-center gap-2 truncate">
             <MapPin className="hidden size-3.5 shrink-0 text-gold sm:block" />
             <span className="truncate">
-              {school.address.line1}, {school.address.line2} — {school.address.pin}
+              {info.address.line1}, {info.address.line2} — {info.address.pin}
             </span>
           </p>
           <a
-            href={school.phoneHref}
+            href={telHref(info.phone)}
             className="flex shrink-0 items-center gap-1.5 font-medium transition-colors hover:text-gold"
           >
             <Phone className="size-3.5" />
-            <span className="hidden sm:inline">{school.phone}</span>
+            <span className="hidden sm:inline">{info.phone}</span>
             <span className="sm:hidden">Call</span>
           </a>
         </div>
