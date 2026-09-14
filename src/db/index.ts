@@ -1,37 +1,41 @@
-import { createClient, type Client } from "@libsql/client";
-import { drizzle } from "drizzle-orm/libsql";
-import { mkdirSync } from "node:fs";
-import { dirname, resolve } from "node:path";
+import type { PgDatabase, PgQueryResultHKT } from "drizzle-orm/pg-core";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
 import * as schema from "./schema";
 
 /**
- * Database connection.
+ * Database connection (PostgreSQL, via the `pg` driver in every environment).
  *
- * Locally this is a SQLite file (DATABASE_URL=file:./data/school.db).
- * In the cloud the same code talks to a hosted libSQL/Turso database
- * (DATABASE_URL=libsql://... plus DATABASE_AUTH_TOKEN) with no code change.
+ * Production: DATABASE_URL=postgres://… (Neon).
+ * Local development: `npm run dev` wraps Next.js in a small local Postgres
+ * server (PGlite, files in ./data/pg) and injects DATABASE_URL automatically.
+ * If DATABASE_URL is missing we fall back to that local server's address so
+ * `next build` / `next start` also work locally while it is running.
  */
 
-export const DEFAULT_DATABASE_URL = "file:./data/school.db";
+export type Db = PgDatabase<PgQueryResultHKT, typeof schema>;
 
-function makeClient(): Client {
-  const url = process.env.DATABASE_URL?.trim() || DEFAULT_DATABASE_URL;
-  const authToken = process.env.DATABASE_AUTH_TOKEN?.trim() || undefined;
+export const LOCAL_DB_PORT = 54329;
+export const LOCAL_DATABASE_URL = `postgres://postgres:postgres@127.0.0.1:${LOCAL_DB_PORT}/postgres`;
 
-  if (url.startsWith("file:")) {
-    // Make sure the folder for the SQLite file exists before opening it.
-    const filePath = resolve(process.cwd(), url.slice("file:".length));
-    mkdirSync(dirname(filePath), { recursive: true });
-    return createClient({ url: `file:${filePath}` });
-  }
-
-  return createClient({ url, authToken });
+export function databaseUrl() {
+  return process.env.DATABASE_URL?.trim() || LOCAL_DATABASE_URL;
 }
 
-const globalForDb = globalThis as unknown as { __anmDbClient?: Client };
+export function isLocalDatabase(url = databaseUrl()) {
+  return url.includes(`127.0.0.1:${LOCAL_DB_PORT}`) || url.includes(`localhost:${LOCAL_DB_PORT}`);
+}
 
-const client = globalForDb.__anmDbClient ?? makeClient();
-if (process.env.NODE_ENV !== "production") globalForDb.__anmDbClient = client;
+function makeDb(): Db {
+  const url = databaseUrl();
+  const pool = new Pool({ connectionString: url, max: isLocalDatabase(url) ? 4 : 5, idleTimeoutMillis: 30_000 });
+  pool.on("error", (err) => console.error("[db] pool error", err.message));
+  return drizzle(pool, { schema }) as unknown as Db;
+}
 
-export const db = drizzle(client, { schema });
+const globalForDb = globalThis as unknown as { __anmDb?: Db };
+
+export const db: Db = globalForDb.__anmDb ?? makeDb();
+if (process.env.NODE_ENV !== "production") globalForDb.__anmDb = db;
+
 export { schema };

@@ -19,11 +19,12 @@ npm run start    # serve the production build
 ## Admin panel (local setup)
 
 The staff admin panel lives at `/admin`. It needs a database and one staff
-account before first use:
+account before first use. Locally an embedded PostgreSQL (PGlite) is used
+automatically — nothing to install:
 
 ```bash
-cp .env.example .env.local   # DATABASE_URL defaults to a local SQLite file
-npm run db:setup             # creates tables + the "admin" account (prints a temporary password)
+cp .env.example .env.local   # optional; defaults work as-is
+npm run db:setup             # creates tables + the "admin" account (prints a temporary password) + starter content
 npm run dev                  # then open http://localhost:3000/admin
 ```
 
@@ -34,15 +35,23 @@ Useful scripts:
 | `npm run db:migrate` | Apply pending SQL migrations from `drizzle/` |
 | `npm run db:generate` | Generate a new migration after editing `src/db/schema.ts` |
 | `npm run db:seed` | Create or reset the admin login (`ADMIN_USERNAME`, `ADMIN_PASSWORD` env vars optional) |
-| `npm run db:studio` | Browse the database in Drizzle Studio |
+| `npm run db:seed-content` | Import the starter notices, events and banners if the tables are empty |
+| `npm run db:copy-from-sqlite` | One-off: copy data from the old `data/school.db` SQLite file |
+| `npm run db:local` | Run the local database server alone (for scripts when the dev server is stopped) |
+| `npm run build:local` / `start:local` | Production build / serve on port 3001 with the local database server |
 
-For a hosted database (Turso / libSQL) set `DATABASE_URL=libsql://…` and
-`DATABASE_AUTH_TOKEN` in the deployment environment; no code changes needed.
+`npm run dev` also starts the local database server (PGlite on
+`127.0.0.1:54329`) and the `db:*` scripts connect through it, so they can run
+while the dev server is up. When the dev server is **not** running, use
+`npm run build:local` / `npm run start:local` (they start the database server
+for you), or `npm run db:local` to run it on its own.
+
+In production set `DATABASE_URL` to a Neon PostgreSQL connection string; the
+same code and migrations run unchanged. See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 Uploaded banner and gallery photos are optimised with `sharp` (resized, WebP,
-thumbnail) and stored under `data/uploads` (override with `UPLOADS_DIR`), served
-at `/uploads/…` by `src/app/uploads/[...path]/route.ts`. `src/lib/storage.ts`
-is the single place to swap in cloud storage.
+thumbnail) and stored under `data/uploads` locally or in Vercel Blob in
+production (`src/lib/storage.ts` picks the driver from `BLOB_READ_WRITE_TOKEN`).
 
 Editable text content (contact details, timings, admission dates / fees /
 eligibility) lives in the `site_settings` table and falls back to the values
@@ -52,7 +61,7 @@ in `src/lib/site.ts` until staff edit it.
 
 | Document | Purpose |
 | --- | --- |
-| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Step-by-step go-live on Vercel + Turso + Vercel Blob |
+| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Step-by-step go-live on Vercel + Neon Postgres + Vercel Blob |
 | [docs/USER-GUIDE.md](docs/USER-GUIDE.md) / `docs/Admin-Panel-User-Guide.docx` | Staff user guide for the admin panel |
 | [docs/testing/](docs/testing/) | Acceptance checklists for each delivery phase |
 
@@ -69,7 +78,7 @@ src/
 │   ├── robots.ts           # Disallows /admin for search engines
 │   └── globals.css         # Design tokens (navy + gold palette), utilities
 ├── proxy.ts                # Redirects signed-out visitors away from /admin
-├── db/                     # Drizzle schema + libSQL client
+├── db/                     # Drizzle schema + Postgres client (Neon / PGlite)
 ├── components/
 │   ├── crest.tsx           # SVG school crest
 │   ├── site-header.tsx     # Sticky nav + announcement bar + mobile menu

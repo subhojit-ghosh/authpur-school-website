@@ -8,8 +8,8 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  // libSQL ships a native binding; keep it out of the server bundle.
-  serverExternalPackages: ["@libsql/client"],
+  // Native / WASM database drivers stay out of the server bundle.
+  serverExternalPackages: ["pg"],
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }];
   },

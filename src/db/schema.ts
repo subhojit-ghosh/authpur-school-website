@@ -1,43 +1,40 @@
 import { sql } from "drizzle-orm";
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { bigint, integer, pgTable, serial, text } from "drizzle-orm/pg-core";
 
 /**
- * Admin panel data model.
+ * Admin panel data model (PostgreSQL — Neon in production, embedded PGlite locally).
  * Phase 1: users, sessions.
  * Phase 2: notices, events, enquiries.
- * Phase 3 will add banners, gallery, admissions content and school-info settings.
+ * Phase 3: site_settings, banners, gallery_photos.
  */
 
-export const users = sqliteTable("users", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+/** Timestamps are stored as text (ISO-like) to keep the schema simple and portable. */
+const nowText = () => sql`now()::text`;
+
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   displayName: text("display_name").notNull(),
   passwordHash: text("password_hash").notNull(),
-  createdAt: text("created_at")
-    .notNull()
-    .default(sql`(current_timestamp)`),
-  updatedAt: text("updated_at")
-    .notNull()
-    .default(sql`(current_timestamp)`),
+  createdAt: text("created_at").notNull().default(nowText()),
+  updatedAt: text("updated_at").notNull().default(nowText()),
 });
 
-export const sessions = sqliteTable("sessions", {
+export const sessions = pgTable("sessions", {
   /** SHA-256 hash of the random token stored in the browser cookie. */
   id: text("id").primaryKey(),
   userId: integer("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   /** Unix epoch milliseconds. */
-  expiresAt: integer("expires_at").notNull(),
-  createdAt: text("created_at")
-    .notNull()
-    .default(sql`(current_timestamp)`),
+  expiresAt: bigint("expires_at", { mode: "number" }).notNull(),
+  createdAt: text("created_at").notNull().default(nowText()),
   userAgent: text("user_agent"),
 });
 
 /** Notice board entries shown on the home page, the ticker and /notices. */
-export const notices = sqliteTable("notices", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const notices = pgTable("notices", {
+  id: serial("id").primaryKey(),
   title: text("title").notNull(),
   /** Calendar date as YYYY-MM-DD. */
   date: text("date").notNull(),
@@ -45,32 +42,24 @@ export const notices = sqliteTable("notices", {
   tag: text("tag").notNull(),
   /** Display order; lower numbers appear first. */
   sortOrder: integer("sort_order").notNull().default(0),
-  createdAt: text("created_at")
-    .notNull()
-    .default(sql`(current_timestamp)`),
-  updatedAt: text("updated_at")
-    .notNull()
-    .default(sql`(current_timestamp)`),
+  createdAt: text("created_at").notNull().default(nowText()),
+  updatedAt: text("updated_at").notNull().default(nowText()),
 });
 
 /** Upcoming events shown next to the notice board. */
-export const events = sqliteTable("events", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const events = pgTable("events", {
+  id: serial("id").primaryKey(),
   title: text("title").notNull(),
   /** Calendar date as YYYY-MM-DD. */
   date: text("date").notNull(),
   venue: text("venue").notNull(),
-  createdAt: text("created_at")
-    .notNull()
-    .default(sql`(current_timestamp)`),
-  updatedAt: text("updated_at")
-    .notNull()
-    .default(sql`(current_timestamp)`),
+  createdAt: text("created_at").notNull().default(nowText()),
+  updatedAt: text("updated_at").notNull().default(nowText()),
 });
 
 /** Admission-enquiry form submissions from the public website. */
-export const enquiries = sqliteTable("enquiries", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const enquiries = pgTable("enquiries", {
+  id: serial("id").primaryKey(),
   name: text("name").notNull(),
   phone: text("phone").notNull(),
   email: text("email"),
@@ -82,22 +71,16 @@ export const enquiries = sqliteTable("enquiries", {
   readAt: text("read_at"),
 });
 
-export type User = typeof users.$inferSelect;
-export type Session = typeof sessions.$inferSelect;
-export type Notice = typeof notices.$inferSelect;
-export type Event = typeof events.$inferSelect;
-export type Enquiry = typeof enquiries.$inferSelect;
-
 /** Key/value store for editable site content (school info, timings, admissions). Values are JSON. */
-export const siteSettings = sqliteTable("site_settings", {
+export const siteSettings = pgTable("site_settings", {
   key: text("key").primaryKey(),
   value: text("value").notNull(),
   updatedAt: text("updated_at").notNull(),
 });
 
 /** Home-page hero carousel images. */
-export const banners = sqliteTable("banners", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const banners = pgTable("banners", {
+  id: serial("id").primaryKey(),
   url: text("url").notNull(),
   thumbUrl: text("thumb_url").notNull(),
   /** Storage keys; null for the original static banners shipped with the site. */
@@ -107,14 +90,12 @@ export const banners = sqliteTable("banners", {
   width: integer("width"),
   height: integer("height"),
   sortOrder: integer("sort_order").notNull().default(0),
-  createdAt: text("created_at")
-    .notNull()
-    .default(sql`(current_timestamp)`),
+  createdAt: text("created_at").notNull().default(nowText()),
 });
 
 /** Photo gallery. */
-export const galleryPhotos = sqliteTable("gallery_photos", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const galleryPhotos = pgTable("gallery_photos", {
+  id: serial("id").primaryKey(),
   url: text("url").notNull(),
   thumbUrl: text("thumb_url").notNull(),
   storageKey: text("storage_key"),
@@ -124,11 +105,14 @@ export const galleryPhotos = sqliteTable("gallery_photos", {
   category: text("category").notNull(),
   width: integer("width"),
   height: integer("height"),
-  createdAt: text("created_at")
-    .notNull()
-    .default(sql`(current_timestamp)`),
+  createdAt: text("created_at").notNull().default(nowText()),
 });
 
+export type User = typeof users.$inferSelect;
+export type Session = typeof sessions.$inferSelect;
+export type Notice = typeof notices.$inferSelect;
+export type Event = typeof events.$inferSelect;
+export type Enquiry = typeof enquiries.$inferSelect;
 export type SiteSetting = typeof siteSettings.$inferSelect;
 export type Banner = typeof banners.$inferSelect;
 export type GalleryPhoto = typeof galleryPhotos.$inferSelect;

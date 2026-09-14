@@ -49,11 +49,12 @@ export async function updateEvent(id: number, _prev: EventFormState, formData: F
   const { values, fieldErrors } = parseEvent(formData);
   if (fieldErrors && Object.keys(fieldErrors).length) return { error: "Please correct the highlighted fields.", fieldErrors, values };
 
-  const result = await db
+  const updated = await db
     .update(events)
     .set({ ...values, updatedAt: new Date().toISOString() })
-    .where(eq(events.id, id));
-  if (result.rowsAffected === 0) return { error: "This event no longer exists.", values };
+    .where(eq(events.id, id))
+    .returning({ id: events.id });
+  if (updated.length === 0) return { error: "This event no longer exists.", values };
 
   refreshAll();
   redirect("/admin/events?saved=updated");

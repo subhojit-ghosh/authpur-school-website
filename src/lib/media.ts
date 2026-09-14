@@ -11,11 +11,13 @@ export async function getBanners() {
 }
 
 export async function getBanner(id: number) {
-  return db.select().from(banners).where(eq(banners.id, id)).get();
+  const [row] = await db.select().from(banners).where(eq(banners.id, id)).limit(1);
+  return row;
 }
 
 export async function countBanners() {
-  return (await db.select({ n: count() }).from(banners).get())?.n ?? 0;
+  const [row] = await db.select({ n: count() }).from(banners);
+  return row?.n ?? 0;
 }
 
 export async function getGalleryPhotos(category?: string) {
@@ -24,9 +26,11 @@ export async function getGalleryPhotos(category?: string) {
 }
 
 export async function getGalleryPhoto(id: number) {
-  return db.select().from(galleryPhotos).where(eq(galleryPhotos.id, id)).get();
+  const [row] = await db.select().from(galleryPhotos).where(eq(galleryPhotos.id, id)).limit(1);
+  return row;
 }
 
 export async function countGalleryPhotos() {
-  return (await db.select({ n: count() }).from(galleryPhotos).get())?.n ?? 0;
+  const [row] = await db.select({ n: count() }).from(galleryPhotos);
+  return row?.n ?? 0;
 }

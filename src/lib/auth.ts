@@ -46,12 +46,12 @@ export const getSession = cache(async (): Promise<CurrentSession | null> => {
   if (!token) return null;
 
   const id = hashToken(token);
-  const row = await db
+  const [row] = await db
     .select({ session: sessions, user: users })
     .from(sessions)
     .innerJoin(users, eq(users.id, sessions.userId))
     .where(eq(sessions.id, id))
-    .get();
+    .limit(1);
 
   if (!row) return null;
   if (row.session.expiresAt <= Date.now()) {
@@ -131,7 +131,7 @@ export async function attemptLogin(username: string, password: string): Promise<
     return { ok: false, error: "Too many failed attempts. Please wait 15 minutes and try again." };
   }
 
-  const user = await db.select().from(users).where(eq(users.username, username.trim().toLowerCase())).get();
+  const [user] = await db.select().from(users).where(eq(users.username, username.trim().toLowerCase())).limit(1);
   const valid = user ? await verifyPassword(password, user.passwordHash) : false;
 
   if (!user || !valid) {

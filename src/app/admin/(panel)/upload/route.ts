@@ -57,7 +57,7 @@ export async function POST(request: Request) {
   ]);
 
   if (kind === "banner") {
-    const last = await db.select({ m: max(banners.sortOrder) }).from(banners).get();
+    const [last] = await db.select({ m: max(banners.sortOrder) }).from(banners);
     const inserted = await db
       .insert(banners)
       .values({ url, thumbUrl, storageKey: key, thumbKey, alt: text, width: processed.width, height: processed.height, sortOrder: (last?.m ?? -1) + 1 })

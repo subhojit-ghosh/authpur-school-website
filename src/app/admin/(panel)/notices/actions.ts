@@ -40,7 +40,7 @@ export async function createNotice(_prev: NoticeFormState, formData: FormData): 
   if (fieldErrors && Object.keys(fieldErrors).length) return { error: "Please correct the highlighted fields.", fieldErrors, values };
 
   // New notices go to the top of the board.
-  const top = await db.select({ m: min(notices.sortOrder) }).from(notices).get();
+  const [top] = await db.select({ m: min(notices.sortOrder) }).from(notices);
   await db.insert(notices).values({ ...values, sortOrder: (top?.m ?? 0) - 1 });
 
   refreshAll();
@@ -52,11 +52,12 @@ export async function updateNotice(id: number, _prev: NoticeFormState, formData:
   const { values, fieldErrors } = parseNotice(formData);
   if (fieldErrors && Object.keys(fieldErrors).length) return { error: "Please correct the highlighted fields.", fieldErrors, values };
 
-  const result = await db
+  const updated = await db
     .update(notices)
     .set({ ...values, updatedAt: new Date().toISOString() })
-    .where(eq(notices.id, id));
-  if (result.rowsAffected === 0) return { error: "This notice no longer exists.", values };
+    .where(eq(notices.id, id))
+    .returning({ id: notices.id });
+  if (updated.length === 0) return { error: "This notice no longer exists.", values };
 
   refreshAll();
   redirect("/admin/notices?saved=updated");

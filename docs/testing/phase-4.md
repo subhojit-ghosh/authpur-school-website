@@ -20,7 +20,7 @@ user guide.
 | 4A.1 | Go through the list of anything you reported during Phase 1–3 testing. | Each item is marked fixed, or has an agreed explanation. | ☐ |
 | 4A.2 | Re-run the specific rows that failed earlier. | They now pass. | ☐ |
 
-## B. Deployment (needs the school's GitHub, Vercel and Turso accounts)
+## B. Deployment (needs the school's GitHub, Vercel and Neon accounts)
 
 Follow `docs/DEPLOYMENT.md`, then:
 
@@ -39,7 +39,7 @@ Follow `docs/DEPLOYMENT.md`, then:
 
 | # | What to do | What you should see | Pass? |
 | --- | --- | --- | --- |
-| 4C.1 | `npm run build` then `npm run start`. | Build completes; migrations run first; site serves on port 3000. | ☐ |
+| 4C.1 | `npm run build:local` then `npm run start:local` (or `npm run build` + `npx next start -p 3001` while `npm run dev` is running). | Build completes; migrations run first; site serves on port 3001. | ☐ |
 | 4C.2 | Visit every public page and admin page on the production server. | All return 200 (admin pages redirect to login when signed out). | ☐ |
 | 4C.3 | Check `robots.txt`, a missing upload URL, and the response headers. | `Disallow: /admin`; 404 for a missing upload; security headers present. | ☐ |
 

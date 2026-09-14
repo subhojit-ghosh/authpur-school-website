@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, asc, count, desc, eq, gte, isNull, like, or } from "drizzle-orm";
+import { and, asc, count, desc, eq, gte, ilike, isNull, or } from "drizzle-orm";
 import { db } from "@/db";
 import { enquiries, events, notices } from "@/db/schema";
 import { todayISO } from "@/lib/format";
@@ -15,11 +15,13 @@ export async function getNotices(limit?: number) {
 }
 
 export async function getNotice(id: number) {
-  return db.select().from(notices).where(eq(notices.id, id)).get();
+  const [row] = await db.select().from(notices).where(eq(notices.id, id)).limit(1);
+  return row;
 }
 
 export async function countNotices() {
-  return (await db.select({ n: count() }).from(notices).get())?.n ?? 0;
+  const [row] = await db.select({ n: count() }).from(notices);
+  return row?.n ?? 0;
 }
 
 // ---------- Events ----------
@@ -36,11 +38,13 @@ export async function getAllEvents() {
 }
 
 export async function getEvent(id: number) {
-  return db.select().from(events).where(eq(events.id, id)).get();
+  const [row] = await db.select().from(events).where(eq(events.id, id)).limit(1);
+  return row;
 }
 
 export async function countUpcomingEvents() {
-  return (await db.select({ n: count() }).from(events).where(gte(events.date, todayISO())).get())?.n ?? 0;
+  const [row] = await db.select({ n: count() }).from(events).where(gte(events.date, todayISO()));
+  return row?.n ?? 0;
 }
 
 // ---------- Enquiries ----------
@@ -49,11 +53,11 @@ export async function getEnquiries(opts: { q?: string; limit?: number } = {}) {
   const term = opts.q?.trim();
   const where = term
     ? or(
-        like(enquiries.name, `%${term}%`),
-        like(enquiries.phone, `%${term}%`),
-        like(enquiries.email, `%${term}%`),
-        like(enquiries.grade, `%${term}%`),
-        like(enquiries.message, `%${term}%`),
+        ilike(enquiries.name, `%${term}%`),
+        ilike(enquiries.phone, `%${term}%`),
+        ilike(enquiries.email, `%${term}%`),
+        ilike(enquiries.grade, `%${term}%`),
+        ilike(enquiries.message, `%${term}%`),
       )
     : undefined;
   const q = db.select().from(enquiries).where(where).orderBy(desc(enquiries.createdAt), desc(enquiries.id));
@@ -62,5 +66,6 @@ export async function getEnquiries(opts: { q?: string; limit?: number } = {}) {
 
 export async function countEnquiries(onlyUnread = false) {
   const where = onlyUnread ? and(isNull(enquiries.readAt)) : undefined;
-  return (await db.select({ n: count() }).from(enquiries).where(where).get())?.n ?? 0;
+  const [row] = await db.select({ n: count() }).from(enquiries).where(where);
+  return row?.n ?? 0;
 }

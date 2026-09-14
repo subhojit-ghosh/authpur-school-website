@@ -15,7 +15,7 @@ import {
 } from "@/lib/settings-types";
 
 async function readSetting<T extends object>(key: string, defaults: T): Promise<T> {
-  const row = await db.select().from(siteSettings).where(eq(siteSettings.key, key)).get();
+  const [row] = await db.select().from(siteSettings).where(eq(siteSettings.key, key)).limit(1);
   if (!row) return defaults;
   try {
     const parsed = JSON.parse(row.value) as Partial<T>;
