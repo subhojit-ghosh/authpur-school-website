@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { Crest } from "@/components/crest";
 import { getSession } from "@/lib/auth";
+import { needsSetup } from "@/lib/setup";
 import { school } from "@/lib/site";
 import { LoginForm } from "./login-form";
 
@@ -14,6 +15,7 @@ export default async function AdminLoginPage({
 }: {
   searchParams: Promise<{ next?: string }>;
 }) {
+  if (await needsSetup()) redirect("/admin/setup");
   const session = await getSession();
   if (session) redirect("/admin");
 

@@ -27,7 +27,8 @@ Follow `docs/DEPLOYMENT.md`, then:
 | # | What to do | What you should see | Pass? |
 | --- | --- | --- | --- |
 | 4B.1 | Open the live address in a browser. | The public website loads over **https://** with a padlock. | ☐ |
-| 4B.2 | Open the live address followed by `/admin` and sign in. | The login page and Dashboard work exactly as on localhost. | ☐ |
+| 4B.2 | Open the live address followed by `/admin`. First time only: enter the setup code from the build log and create the staff account. | The setup page accepts the code, creates the account and signs you in. Entering a wrong code is refused. | ☐ |
+| 4B.2a | Open `/admin/setup` again after the account exists. | It redirects to the normal login page; the code no longer works. | ☐ |
 | 4B.3 | Add a notice, then check the live home page and Notices page. Delete it. | The notice appears and disappears on the live site. | ☐ |
 | 4B.4 | Upload a banner photo, check the live home page, then remove it. | The slide appears, is served from the cloud storage address, and disappears when removed. | ☐ |
 | 4B.5 | Submit the enquiry form on the live site, then open the Enquiry Inbox. | The enquiry is there. Delete it. | ☐ |

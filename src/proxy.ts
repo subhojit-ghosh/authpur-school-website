@@ -10,9 +10,9 @@ const SESSION_COOKIE = "anm_admin_session";
 export default function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
   const hasCookie = Boolean(request.cookies.get(SESSION_COOKIE)?.value);
-  const isLogin = pathname === "/admin/login";
+  const isPublic = pathname === "/admin/login" || pathname === "/admin/setup";
 
-  if (!isLogin && !hasCookie) {
+  if (!isPublic && !hasCookie) {
     const url = request.nextUrl.clone();
     url.pathname = "/admin/login";
     url.search = pathname !== "/admin" ? `?next=${encodeURIComponent(pathname + search)}` : "";

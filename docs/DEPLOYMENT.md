@@ -63,30 +63,38 @@ Uploaded banners and gallery photos need permanent cloud storage.
    switches uploads to Blob storage.
 3. **Deployments → ⋯ → Redeploy** once so the new variable is picked up.
 
-## 5. Create the staff login on the live database
+## 5. Create the staff login (no terminal needed)
 
-Run once from the project folder on your computer, pasting the Neon
-connection string and a strong password of the school's choice:
+The first deployment prints a **one-time setup code** in its build log and the
+live site opens a one-time setup page for it.
+
+1. In Vercel open **Deployments → the latest build → Build Logs** and look for
+   the box headed `FIRST-TIME SETUP`. Copy the code, e.g. `KT4T-79L5-RCFM`.
+2. Open `https://<your-address>/admin`. While no staff account exists you are
+   taken to **/admin/setup**.
+3. Enter the code, choose the username, the name shown in the panel and a
+   password (8+ characters, letters and numbers), then create the account.
+   You are signed in immediately.
+
+The code stops working the moment the account is created, and the setup page
+then redirects to the normal login screen.
+
+The starting notices, events and hero banners are imported automatically
+during the build, so the site is never empty.
+
+**Alternative, from a terminal.** If you prefer, you can create the account
+yourself with the Neon connection string:
 
 ```bash
 DATABASE_URL="postgres://…" ADMIN_PASSWORD="ChooseAStrongPassword1" npm run db:seed
 ```
 
-Then load the starting notices, events and banners:
-
-```bash
-DATABASE_URL="postgres://…" npm run db:seed-content
-```
-
-If you were already using the panel locally and want that content (and your
-current password) on the live site instead, copy it across:
+If you were already using the panel locally and want that content on the live
+site, copy it across (the old SQLite file must still be present):
 
 ```bash
 DATABASE_URL="postgres://…" npm run db:copy-from-sqlite
 ```
-
-Open `https://<your-address>/admin`, sign in as `admin`, and change the
-password from **Account & Password** so only the school knows it.
 
 ## 6. Custom domain (optional, billed separately per the proposal)
 
@@ -110,7 +118,7 @@ changes made in the admin panel never need a deployment.
 | Website + admin panel | Vercel project |
 | Notices, events, enquiries, settings, users | Neon PostgreSQL |
 | Uploaded images | Vercel Blob store |
-| Staff login | `users` table; reset with `npm run db:seed` as in step 5 |
+| Staff login | `users` table; created via /admin/setup, or reset with `npm run db:seed` |
 
 ## Environment variables reference
 

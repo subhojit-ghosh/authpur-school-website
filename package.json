@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "pglite-server --db ./data/pg --port 54329 -m 20 --include-database-url --run \"next dev\"",
-    "build": "npm run db:migrate && next build",
+    "build": "npm run db:migrate && npm run db:seed-content && next build",
     "start": "next start",
     "lint": "eslint",
     "db:seed": "node --env-file-if-exists=.env.local scripts/seed-admin.mjs",
