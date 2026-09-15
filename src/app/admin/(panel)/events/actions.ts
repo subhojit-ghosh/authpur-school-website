@@ -6,6 +6,8 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { events } from "@/db/schema";
 import { requireUser } from "@/lib/auth";
+import { diff, recordAudit } from "@/lib/audit";
+import { getEvent } from "@/lib/content";
 import { LIMITS } from "@/lib/content-types";
 import { isValidISODate } from "@/lib/format";
 import { revalidateNoticesAndEvents } from "@/lib/revalidate";
@@ -40,6 +42,7 @@ export async function createEvent(_prev: EventFormState, formData: FormData): Pr
   if (fieldErrors && Object.keys(fieldErrors).length) return { error: "Please correct the highlighted fields.", fieldErrors, values };
 
   await db.insert(events).values(values);
+  await recordAudit("Events", "created", `Added the event “${values.title}” on ${values.date}`, { details: values });
   refreshAll();
   redirect("/admin/events?saved=created");
 }
@@ -49,12 +52,16 @@ export async function updateEvent(id: number, _prev: EventFormState, formData: F
   const { values, fieldErrors } = parseEvent(formData);
   if (fieldErrors && Object.keys(fieldErrors).length) return { error: "Please correct the highlighted fields.", fieldErrors, values };
 
+  const before = await getEvent(id);
   const updated = await db
     .update(events)
     .set({ ...values, updatedAt: new Date().toISOString() })
     .where(eq(events.id, id))
     .returning({ id: events.id });
   if (updated.length === 0) return { error: "This event no longer exists.", values };
+  await recordAudit("Events", "updated", `Edited the event “${values.title}”`, {
+    details: before ? diff({ title: before.title, date: before.date, venue: before.venue }, values) : undefined,
+  });
 
   refreshAll();
   redirect("/admin/events?saved=updated");
@@ -63,7 +70,11 @@ export async function updateEvent(id: number, _prev: EventFormState, formData: F
 export async function deleteEvent(formData: FormData) {
   await requireUser();
   const id = Number(formData.get("id"));
-  if (Number.isInteger(id)) await db.delete(events).where(eq(events.id, id));
+  if (Number.isInteger(id)) {
+    const event = await getEvent(id);
+    await db.delete(events).where(eq(events.id, id));
+    if (event) await recordAudit("Events", "deleted", `Deleted the event “${event.title}”`);
+  }
   refreshAll();
   redirect("/admin/events?saved=deleted");
 }

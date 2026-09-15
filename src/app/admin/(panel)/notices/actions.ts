@@ -6,7 +6,8 @@ import { eq, min } from "drizzle-orm";
 import { db } from "@/db";
 import { notices } from "@/db/schema";
 import { requireUser } from "@/lib/auth";
-import { getNotices } from "@/lib/content";
+import { diff, recordAudit } from "@/lib/audit";
+import { getNotice, getNotices } from "@/lib/content";
 import { isNoticeTag, LIMITS, NOTICE_TAGS } from "@/lib/content-types";
 import { isValidISODate } from "@/lib/format";
 import { revalidateNoticesAndEvents } from "@/lib/revalidate";
@@ -42,6 +43,7 @@ export async function createNotice(_prev: NoticeFormState, formData: FormData): 
   // New notices go to the top of the board.
   const [top] = await db.select({ m: min(notices.sortOrder) }).from(notices);
   await db.insert(notices).values({ ...values, sortOrder: (top?.m ?? 0) - 1 });
+  await recordAudit("Notice Board", "created", `Added the notice “${values.title}”`, { details: values });
 
   refreshAll();
   redirect("/admin/notices?saved=created");
@@ -52,12 +54,16 @@ export async function updateNotice(id: number, _prev: NoticeFormState, formData:
   const { values, fieldErrors } = parseNotice(formData);
   if (fieldErrors && Object.keys(fieldErrors).length) return { error: "Please correct the highlighted fields.", fieldErrors, values };
 
+  const before = await getNotice(id);
   const updated = await db
     .update(notices)
     .set({ ...values, updatedAt: new Date().toISOString() })
     .where(eq(notices.id, id))
     .returning({ id: notices.id });
   if (updated.length === 0) return { error: "This notice no longer exists.", values };
+  await recordAudit("Notice Board", "updated", `Edited the notice “${values.title}”`, {
+    details: before ? diff({ title: before.title, date: before.date, tag: before.tag }, values) : undefined,
+  });
 
   refreshAll();
   redirect("/admin/notices?saved=updated");
@@ -66,7 +72,11 @@ export async function updateNotice(id: number, _prev: NoticeFormState, formData:
 export async function deleteNotice(formData: FormData) {
   await requireUser();
   const id = Number(formData.get("id"));
-  if (Number.isInteger(id)) await db.delete(notices).where(eq(notices.id, id));
+  if (Number.isInteger(id)) {
+    const notice = await getNotice(id);
+    await db.delete(notices).where(eq(notices.id, id));
+    if (notice) await recordAudit("Notice Board", "deleted", `Deleted the notice “${notice.title}”`);
+  }
   refreshAll();
   redirect("/admin/notices?saved=deleted");
 }
@@ -90,6 +100,7 @@ export async function moveNotice(formData: FormData) {
       await tx.update(notices).set({ sortOrder: position }).where(eq(notices.id, noticeId));
     }
   });
+  await recordAudit("Notice Board", "re-ordered", `Moved the notice “${ordered[index].title}” ${direction < 0 ? "up" : "down"}`);
 
   refreshAll();
 }

@@ -132,22 +132,40 @@ who changed what and remove access when someone leaves.
 All accounts have the same access. You cannot remove your own account, and the
 last remaining account cannot be removed, so the school is never locked out.
 
-## 11. Account & Password
+## 11. Activity log
+
+A permanent record of everything done in this panel, newest first.
+
+- Each line shows **when** it happened, **who** did it, which **section** it was
+  in, and **what happened** — for example *Added the notice "Sports Day"*.
+- Where something was edited, **What changed** opens to show the old and new
+  values side by side.
+- Filter by section or by person, or search for a word. The search also looks
+  inside the changed values, so searching "phone" finds the day someone changed
+  the phone number.
+- **Export (CSV)** downloads the list, respecting whatever filters you set.
+- Sign-ins and sign-outs are recorded too.
+
+Entries cannot be edited or deleted from the panel, so the record stays
+trustworthy.
+
+## 12. Account & Password
 
 Change the staff password here: enter the current password, then the new one
 twice. Use at least 8 characters with both letters and numbers. After a
 change, any other device that was signed in must sign in again.
 
-## 12. Good habits
+## 13. Good habits
 
 - **Check the website** after saving: each section has a *View on website*
   button that opens the public page in a new tab.
 - **Keep it tidy:** delete old notices and past events now and then.
+- **Check the activity log** if you are unsure who changed something.
 - **Photos:** use clear, well-lit landscape photos; avoid screenshots of
   documents as banners.
 - **Password:** never share it by message; change it if in doubt.
 
-## 13. If something goes wrong
+## 14. If something goes wrong
 
 | Problem | What to do |
 | --- | --- |

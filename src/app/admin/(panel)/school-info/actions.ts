@@ -2,9 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth";
+import { diff, recordAudit } from "@/lib/audit";
 import { parseRows } from "@/lib/form-rows";
 import { revalidateWholeSite } from "@/lib/revalidate";
-import { saveSetting } from "@/lib/settings";
+import { getSchoolInfo, getTimings, saveSetting } from "@/lib/settings";
 import { SETTING_KEYS, type SchoolInfo, type Timings } from "@/lib/settings-types";
 
 export type SaveState = { error?: string; success?: string; fieldErrors?: Record<string, string> };
@@ -38,7 +39,11 @@ export async function saveSchoolInfo(_prev: SaveState, formData: FormData): Prom
   if (!value.officeHours) fieldErrors.officeHours = "Office hours are required.";
   if (Object.keys(fieldErrors).length) return { error: "Please correct the highlighted fields.", fieldErrors };
 
+  const before = await getSchoolInfo();
   await saveSetting(SETTING_KEYS.schoolInfo, value);
+  await recordAudit("School Info", "updated", "Updated the contact details and address", {
+    details: diff(before as unknown as Record<string, unknown>, value as unknown as Record<string, unknown>),
+  });
   revalidateWholeSite();
   revalidatePath("/admin/school-info");
   return { success: "Saved. Contact details have been updated across the website." };
@@ -58,7 +63,11 @@ export async function saveTimings(_prev: SaveState, formData: FormData): Promise
     value.sectionTimings.some((r) => !r.section || !r.days || !r.time);
   if (incomplete) return { error: "Every row needs all its fields filled in. Remove rows you do not need." };
 
+  const before = await getTimings();
   await saveSetting(SETTING_KEYS.timings, value);
+  await recordAudit("School Info", "updated", "Updated the school timings", {
+    details: diff(before as unknown as Record<string, unknown>, value as unknown as Record<string, unknown>),
+  });
   revalidatePath("/school-timings");
   revalidatePath("/admin/school-info");
   return { success: "Saved. The School Timings page has been updated." };

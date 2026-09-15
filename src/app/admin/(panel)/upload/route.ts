@@ -2,6 +2,7 @@ import { max } from "drizzle-orm";
 import { db } from "@/db";
 import { banners, galleryPhotos } from "@/db/schema";
 import { getSession } from "@/lib/auth";
+import { recordAudit } from "@/lib/audit";
 import { ImageError, makeStorageKeys, processImage, type ImageKind } from "@/lib/images";
 import { revalidateGallery, revalidateHome } from "@/lib/revalidate";
 import { isGalleryCategory } from "@/lib/settings-types";
@@ -62,6 +63,9 @@ export async function POST(request: Request) {
       .insert(banners)
       .values({ url, thumbUrl, storageKey: key, thumbKey, alt: text, width: processed.width, height: processed.height, sortOrder: (last?.m ?? -1) + 1 })
       .returning({ id: banners.id });
+    await recordAudit("Hero Banner", "uploaded", `Uploaded the banner image “${text}”`, {
+      details: { width: processed.width, height: processed.height, originalName: file.name },
+    });
     revalidateHome();
     return json({ ok: true, id: inserted[0]?.id, url, thumbUrl });
   }
@@ -70,6 +74,9 @@ export async function POST(request: Request) {
     .insert(galleryPhotos)
     .values({ url, thumbUrl, storageKey: key, thumbKey, caption: text, category, width: processed.width, height: processed.height, createdAt: new Date().toISOString() })
     .returning({ id: galleryPhotos.id });
+  await recordAudit("Photo Gallery", "uploaded", `Uploaded a ${category} photo${text ? ` (“${text}”)` : ""}`, {
+    details: { width: processed.width, height: processed.height, originalName: file.name },
+  });
   revalidateGallery();
   return json({ ok: true, id: inserted[0]?.id, url, thumbUrl });
 }

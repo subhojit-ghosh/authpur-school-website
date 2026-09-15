@@ -15,6 +15,13 @@
       "when": 1789452700969,
       "tag": "0001_complex_lord_hawal",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1789454068136,
+      "tag": "0002_nostalgic_the_phantom",
+      "breakpoints": true
     }
   ]
 }

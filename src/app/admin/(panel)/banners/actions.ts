@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { banners } from "@/db/schema";
 import { requireUser } from "@/lib/auth";
+import { recordAudit } from "@/lib/audit";
 import { getBanner, getBanners } from "@/lib/media";
 import { revalidateHome } from "@/lib/revalidate";
 import { storage } from "@/lib/storage";
@@ -19,7 +20,10 @@ export async function updateBannerAlt(formData: FormData) {
   await requireUser();
   const id = Number(formData.get("id"));
   const alt = String(formData.get("alt") ?? "").trim().slice(0, 160);
-  if (Number.isInteger(id)) await db.update(banners).set({ alt }).where(eq(banners.id, id));
+  if (Number.isInteger(id)) {
+    await db.update(banners).set({ alt }).where(eq(banners.id, id));
+    await recordAudit("Hero Banner", "updated", `Changed a banner description to “${alt}”`);
+  }
   refresh();
 }
 
@@ -40,6 +44,7 @@ export async function moveBanner(formData: FormData) {
       await tx.update(banners).set({ sortOrder: position }).where(eq(banners.id, bannerId));
     }
   });
+  await recordAudit("Hero Banner", "re-ordered", `Moved banner ${index + 1} ${direction < 0 ? "earlier" : "later"} in the carousel`);
   refresh();
 }
 
@@ -54,5 +59,6 @@ export async function deleteBanner(formData: FormData) {
   await db.delete(banners).where(eq(banners.id, id));
   if (banner.storageKey) await storage.remove(banner.storageKey);
   if (banner.thumbKey) await storage.remove(banner.thumbKey);
+  await recordAudit("Hero Banner", "deleted", `Removed the banner${banner.alt ? ` “${banner.alt}”` : ""} from the home page`);
   refresh();
 }

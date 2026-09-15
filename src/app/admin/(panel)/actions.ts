@@ -5,9 +5,11 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { destroySession, getSession, revokeOtherSessions } from "@/lib/auth";
+import { recordAudit } from "@/lib/audit";
 import { hashPassword, passwordProblem, verifyPassword } from "@/lib/password";
 
 export async function signOut() {
+  await recordAudit("Sign in", "signed out", "Signed out");
   await destroySession();
   redirect("/admin/login");
 }
@@ -41,6 +43,7 @@ export async function changePassword(
 
   // Any other browser or device that was signed in must log in again.
   await revokeOtherSessions(session.user.id, session.sessionId);
+  await recordAudit("Staff Accounts", "updated", "Changed their own password");
 
   return { success: "Password changed. Other devices have been signed out." };
 }

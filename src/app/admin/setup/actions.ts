@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { createSession } from "@/lib/auth";
+import { recordAudit } from "@/lib/audit";
 import { hashPassword, passwordProblem, verifyPassword } from "@/lib/password";
 import { clearSetupCode, getSetupCodeHash, needsSetup } from "@/lib/setup";
 
@@ -52,6 +53,9 @@ export async function completeSetup(_prev: SetupState, formData: FormData): Prom
     .returning({ id: users.id });
 
   await clearSetupCode();
+  await recordAudit("Staff Accounts", "created", `Created the first staff account ${displayName} (@${username}) during setup`, {
+    actor: { id: created.id, name: displayName },
+  });
   failures.delete(ip);
   await createSession(created.id);
   redirect("/admin?welcome=1");

@@ -2,9 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth";
+import { diff, recordAudit } from "@/lib/audit";
 import { parseRows } from "@/lib/form-rows";
 import { revalidateAdmissions } from "@/lib/revalidate";
-import { saveSetting } from "@/lib/settings";
+import { getAdmissionsContent, saveSetting } from "@/lib/settings";
 import { SETTING_KEYS, type AdmissionsContent } from "@/lib/settings-types";
 
 export type SaveState = { error?: string; success?: string };
@@ -25,7 +26,11 @@ export async function saveAdmissions(_prev: SaveState, formData: FormData): Prom
     value.fees.some((r) => !r.head || !r.amount);
   if (incomplete) return { error: "Every row needs both fields filled in. Remove rows you do not need." };
 
+  const before = await getAdmissionsContent();
   await saveSetting(SETTING_KEYS.admissions, value);
+  await recordAudit("Admissions Content", "updated", "Updated the admission dates, eligibility and fees", {
+    details: diff(before as unknown as Record<string, unknown>, value as unknown as Record<string, unknown>),
+  });
   revalidateAdmissions();
   revalidatePath("/admin/admissions");
   return { success: "Saved. The Admissions page has been updated." };

@@ -7,6 +7,7 @@ import { db } from "@/db";
 import { sessions, users } from "@/db/schema";
 import { getSession, requireUser } from "@/lib/auth";
 import { hashPassword, passwordProblem } from "@/lib/password";
+import { diff, recordAudit } from "@/lib/audit";
 import { USERNAME_HINT, USERNAME_RULE } from "@/lib/user-rules";
 import { countStaffUsers, getStaffUser, usernameTaken } from "@/lib/users";
 
@@ -60,6 +61,7 @@ export async function createStaffUser(_prev: UserFormState, formData: FormData):
 
   try {
     await db.insert(users).values({ ...values, passwordHash: await hashPassword(password) });
+    await recordAudit("Staff Accounts", "created", `Created the staff account ${values.displayName} (@${values.username})`);
   } catch (err) {
     if (isDuplicate(err)) {
       return { error: "That username is already taken.", fieldErrors: { username: "Choose a different username." }, values };
@@ -80,9 +82,13 @@ export async function updateStaffUser(id: number, _prev: UserFormState, formData
     return { error: "That username is already taken.", fieldErrors: { username: "Choose a different username." }, values };
   }
 
+  const before = await getStaffUser(id);
   try {
     const updated = await db.update(users).set({ ...values, updatedAt: new Date().toISOString() }).where(eq(users.id, id)).returning({ id: users.id });
     if (updated.length === 0) return { error: "That account no longer exists.", values };
+    await recordAudit("Staff Accounts", "updated", `Updated the staff account ${values.displayName} (@${values.username})`, {
+      details: before ? diff({ displayName: before.displayName, username: before.username }, values) : undefined,
+    });
   } catch (err) {
     if (isDuplicate(err)) {
       return { error: "That username is already taken.", fieldErrors: { username: "Choose a different username." }, values };
@@ -117,6 +123,7 @@ export async function resetStaffPassword(id: number, _prev: ResetState, formData
     if (current) await db.delete(sessions).where(ne(sessions.id, current.sessionId));
   }
 
+  await recordAudit("Staff Accounts", "updated", id === me.id ? "Changed their own password" : `Reset the password for ${target.displayName} (@${target.username})`);
   refresh();
   return { success: `Password changed for ${target.displayName}. They will need to sign in again.` };
 }
@@ -129,7 +136,9 @@ export async function deleteStaffUser(formData: FormData) {
   if (id === me.id) redirect("/admin/users?error=self");
   if ((await countStaffUsers()) <= 1) redirect("/admin/users?error=last");
 
+  const target = await getStaffUser(id);
   await db.delete(users).where(eq(users.id, id));
+  if (target) await recordAudit("Staff Accounts", "deleted", `Removed the staff account ${target.displayName} (@${target.username})`);
   refresh();
   redirect("/admin/users?saved=deleted");
 }

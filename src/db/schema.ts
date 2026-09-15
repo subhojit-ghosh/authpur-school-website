@@ -118,3 +118,26 @@ export type Enquiry = typeof enquiries.$inferSelect;
 export type SiteSetting = typeof siteSettings.$inferSelect;
 export type Banner = typeof banners.$inferSelect;
 export type GalleryPhoto = typeof galleryPhotos.$inferSelect;
+
+/**
+ * Activity log: who created, changed or deleted what, and when.
+ * `userName` is stored alongside the id so entries stay readable after an
+ * account is removed.
+ */
+export const auditLog = pgTable("audit_log", {
+  id: serial("id").primaryKey(),
+  /** ISO 8601 timestamp (UTC). */
+  at: text("at").notNull(),
+  userId: integer("user_id").references(() => users.id, { onDelete: "set null" }),
+  userName: text("user_name").notNull(),
+  /** created | updated | deleted | reordered | uploaded | signed in | signed out … */
+  action: text("action").notNull(),
+  /** Which part of the panel: Notice Board, Events, Hero Banner … */
+  section: text("section").notNull(),
+  /** One human-readable sentence, e.g. 'Added the notice "Sports Day"'. */
+  summary: text("summary").notNull(),
+  /** Optional JSON with the fields that changed. */
+  details: text("details"),
+});
+
+export type AuditEntry = typeof auditLog.$inferSelect;

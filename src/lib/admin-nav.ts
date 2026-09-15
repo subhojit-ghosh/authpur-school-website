@@ -11,6 +11,7 @@ export type AdminIcon =
   | "graduation"
   | "building"
   | "users"
+  | "history"
   | "key";
 
 export type AdminNavItem = {
@@ -94,6 +95,14 @@ export const adminNav: AdminNavItem[] = [
     short: "Staff",
     description: "Add or remove the people who can sign in to this panel.",
     icon: "users",
+    phase: 1,
+  },
+  {
+    href: "/admin/activity",
+    label: "Activity Log",
+    short: "Activity",
+    description: "See who created, changed or deleted anything, and when.",
+    icon: "history",
     phase: 1,
   },
   {

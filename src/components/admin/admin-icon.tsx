@@ -3,6 +3,7 @@ import {
   Building2,
   CalendarDays,
   GraduationCap,
+  History,
   Images,
   Inbox,
   KeyRound,
@@ -23,6 +24,7 @@ const icons = {
   graduation: GraduationCap,
   building: Building2,
   users: UsersRound,
+  history: History,
   key: KeyRound,
 } satisfies Record<AdminIconName, React.ComponentType<LucideProps>>;
 
