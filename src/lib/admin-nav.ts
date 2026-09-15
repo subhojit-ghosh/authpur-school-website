@@ -10,6 +10,7 @@ export type AdminIcon =
   | "images"
   | "graduation"
   | "building"
+  | "users"
   | "key";
 
 export type AdminNavItem = {
@@ -86,6 +87,14 @@ export const adminNav: AdminNavItem[] = [
     description: "Update contact details, address, phone, email and timings.",
     icon: "building",
     phase: 3,
+  },
+  {
+    href: "/admin/users",
+    label: "Staff Accounts",
+    short: "Staff",
+    description: "Add or remove the people who can sign in to this panel.",
+    icon: "users",
+    phase: 1,
   },
   {
     href: "/admin/account",

@@ -16,7 +16,7 @@ website straight away.
 3. When you finish, click **Sign out** at the top right.
 
 If you type a wrong password five times, sign-in is paused for 15 minutes.
-If the password is forgotten, contact the developer to reset it.
+If the password is forgotten, another staff member can reset it from **Staff accounts** (section 10).
 
 **Tip:** bookmark the `/admin` address in your browser.
 
@@ -114,13 +114,31 @@ One place for details that appear across the whole website.
   hours table and the note shown on the School Timings page.
 - Click the **Save** button under each form.
 
-## 10. Account & Password
+## 10. Staff accounts
+
+Anyone who needs to update the website gets their own account, so you can see
+who changed what and remove access when someone leaves.
+
+- **See who can sign in:** the list shows each person's name, username and
+  when they last signed in. Your own row is marked **You**.
+- **Add someone:** click **Add account**, enter their name, a username (lower-case
+  letters, numbers, dot, dash or underscore) and a first password. Tell them
+  the password and ask them to change it after signing in.
+- **Edit:** the pencil icon changes a person's name or username.
+- **Forgotten password:** open that person from the list and use **Set new
+  password**. They are signed out everywhere and must use the new one.
+- **Remove someone:** the red bin icon. They can no longer sign in.
+
+All accounts have the same access. You cannot remove your own account, and the
+last remaining account cannot be removed, so the school is never locked out.
+
+## 11. Account & Password
 
 Change the staff password here: enter the current password, then the new one
 twice. Use at least 8 characters with both letters and numbers. After a
 change, any other device that was signed in must sign in again.
 
-## 11. Good habits
+## 12. Good habits
 
 - **Check the website** after saving: each section has a *View on website*
   button that opens the public page in a new tab.
@@ -129,7 +147,7 @@ change, any other device that was signed in must sign in again.
   documents as banners.
 - **Password:** never share it by message; change it if in doubt.
 
-## 12. If something goes wrong
+## 13. If something goes wrong
 
 | Problem | What to do |
 | --- | --- |
@@ -137,5 +155,6 @@ change, any other device that was signed in must sign in again.
 | A change does not show on the website | Refresh the page (Ctrl+R / Cmd+R). If it still does not show after a minute, contact the developer. |
 | A photo will not upload | Make sure it is a JPG, PNG, WebP or HEIC file under 15 MB. |
 | Signed out unexpectedly | Sessions last 7 days; simply sign in again. |
+| Someone forgot their password | Another staff member can reset it from **Staff accounts**. |
 
 **Support:** [developer name] · [phone] · [email]

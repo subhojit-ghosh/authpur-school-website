@@ -140,6 +140,7 @@ export async function attemptLogin(username: string, password: string): Promise<
   }
 
   failures.delete(key);
+  await db.update(users).set({ lastLoginAt: new Date().toISOString() }).where(eq(users.id, user.id));
   await createSession(user.id);
   return { ok: true, user };
 }

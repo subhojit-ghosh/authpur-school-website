@@ -16,6 +16,8 @@ export const users = pgTable("users", {
   username: text("username").notNull().unique(),
   displayName: text("display_name").notNull(),
   passwordHash: text("password_hash").notNull(),
+  /** ISO 8601 timestamp of the most recent successful sign-in; null = never. */
+  lastLoginAt: text("last_login_at"),
   createdAt: text("created_at").notNull().default(nowText()),
   updatedAt: text("updated_at").notNull().default(nowText()),
 });

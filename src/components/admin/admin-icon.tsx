@@ -8,6 +8,7 @@ import {
   KeyRound,
   LayoutDashboard,
   PanelTop,
+  UsersRound,
   type LucideProps,
 } from "lucide-react";
 import type { AdminIcon as AdminIconName } from "@/lib/admin-nav";
@@ -21,6 +22,7 @@ const icons = {
   images: Images,
   graduation: GraduationCap,
   building: Building2,
+  users: UsersRound,
   key: KeyRound,
 } satisfies Record<AdminIconName, React.ComponentType<LucideProps>>;
 

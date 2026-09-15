@@ -35,7 +35,7 @@ export default async function AccountPage() {
           </dl>
           <p className="mt-5 flex items-start gap-2 rounded-lg bg-muted px-3 py-2.5 text-xs text-muted-foreground">
             <ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-gold" />
-            Keep the password private. If it is ever shared or forgotten, change it here or ask the developer to reset it.
+            Keep the password private. If it is ever shared or forgotten, change it here — or ask another staff member to reset it from Staff Accounts.
           </p>
         </section>
 
