@@ -5,7 +5,7 @@ import { noticeTagClass } from "@/lib/content-types";
 import { dayMonth, formatDate } from "@/lib/format";
 
 export async function Notices() {
-  const [noticeList, eventList] = await Promise.all([getNotices(4), getUpcomingEvents(3)]);
+  const [noticeList, eventList] = await Promise.all([getNotices({ limit: 4 }), getUpcomingEvents({ limit: 3 })]);
 
   return (
     <section id="notices" className="scroll-mt-24 py-20 lg:py-28">

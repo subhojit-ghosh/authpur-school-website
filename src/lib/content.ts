@@ -5,12 +5,23 @@ import { db } from "@/db";
 import { enquiries, events, notices } from "@/db/schema";
 import { todayISO } from "@/lib/format";
 
-/** Read-side data access for notices, events and enquiries. */
+/**
+ * Read-side data access for notices, events and enquiries.
+ *
+ * Public pages pass nothing and get only **active** items; the admin panel
+ * passes `{ includeInactive: true }` to see everything.
+ */
+
+type ListOptions = { limit?: number; includeInactive?: boolean };
 
 // ---------- Notices ----------
 
-export async function getNotices(limit?: number) {
-  const q = db.select().from(notices).orderBy(asc(notices.sortOrder), desc(notices.date), desc(notices.id));
+export async function getNotices({ limit, includeInactive = false }: ListOptions = {}) {
+  const q = db
+    .select()
+    .from(notices)
+    .where(includeInactive ? undefined : eq(notices.active, true))
+    .orderBy(asc(notices.sortOrder), desc(notices.date), desc(notices.id));
   return limit ? q.limit(limit) : q;
 }
 
@@ -19,20 +30,27 @@ export async function getNotice(id: number) {
   return row;
 }
 
-export async function countNotices() {
-  const [row] = await db.select({ n: count() }).from(notices);
+/** Number of notices shown on the website. */
+export async function countNotices(includeInactive = false) {
+  const [row] = await db
+    .select({ n: count() })
+    .from(notices)
+    .where(includeInactive ? undefined : eq(notices.active, true));
   return row?.n ?? 0;
 }
 
 // ---------- Events ----------
 
-/** Events dated today or later, soonest first. */
-export async function getUpcomingEvents(limit?: number) {
-  const q = db.select().from(events).where(gte(events.date, todayISO())).orderBy(asc(events.date), asc(events.id));
+/** Events dated today or later, soonest first. Inactive events are hidden from the website. */
+export async function getUpcomingEvents({ limit, includeInactive = false }: ListOptions = {}) {
+  const where = includeInactive
+    ? gte(events.date, todayISO())
+    : and(gte(events.date, todayISO()), eq(events.active, true));
+  const q = db.select().from(events).where(where).orderBy(asc(events.date), asc(events.id));
   return limit ? q.limit(limit) : q;
 }
 
-/** Every event, soonest first (past events included, for the admin list). */
+/** Every event, newest first — the admin list, including past and inactive ones. */
 export async function getAllEvents() {
   return db.select().from(events).orderBy(desc(events.date), desc(events.id));
 }
@@ -42,8 +60,11 @@ export async function getEvent(id: number) {
   return row;
 }
 
-export async function countUpcomingEvents() {
-  const [row] = await db.select({ n: count() }).from(events).where(gte(events.date, todayISO()));
+export async function countUpcomingEvents(includeInactive = false) {
+  const where = includeInactive
+    ? gte(events.date, todayISO())
+    : and(gte(events.date, todayISO()), eq(events.active, true));
+  const [row] = await db.select({ n: count() }).from(events).where(where);
   return row?.n ?? 0;
 }
 

@@ -13,7 +13,7 @@ import { isValidISODate } from "@/lib/format";
 import { RICH_TEXT_LIMIT, richTextToPlain, sanitizeRichText } from "@/lib/rich-text";
 import { revalidateNoticesAndEvents } from "@/lib/revalidate";
 
-export type EventValues = { title: string; date: string; venue: string; description: string };
+export type EventValues = { title: string; date: string; venue: string; description: string; active: boolean };
 export type EventFormState = { error?: string; fieldErrors?: Partial<Record<keyof EventValues, string>>; values?: EventValues };
 
 function parseEvent(formData: FormData): { values: EventValues; fieldErrors: EventFormState["fieldErrors"] } {
@@ -22,6 +22,7 @@ function parseEvent(formData: FormData): { values: EventValues; fieldErrors: Eve
     date: String(formData.get("date") ?? "").trim(),
     venue: String(formData.get("venue") ?? "").trim().slice(0, LIMITS.eventVenue + 1),
     description: sanitizeRichText(String(formData.get("description") ?? "")),
+    active: String(formData.get("active") ?? "active") !== "inactive",
   };
   const fieldErrors: EventFormState["fieldErrors"] = {};
   if (values.title.length < 3) fieldErrors.title = "Please enter a title (at least 3 characters).";
@@ -45,11 +46,11 @@ export async function createEvent(_prev: EventFormState, formData: FormData): Pr
   if (fieldErrors && Object.keys(fieldErrors).length) return { error: "Please correct the highlighted fields.", fieldErrors, values };
 
   await db.insert(events).values(values);
-  await recordAudit("Events", "created", `Added the event “${values.title}” on ${values.date}`, {
-    details: { ...values, description: richTextToPlain(values.description) || "(none)" },
+  await recordAudit("Events", "created", `Added the event “${values.title}” on ${values.date}${values.active ? "" : " (inactive)"}`, {
+    details: { ...values, active: values.active ? "Active" : "Inactive", description: richTextToPlain(values.description) || "(none)" },
   });
   refreshAll();
-  redirect("/admin/events?saved=created");
+  redirect(`/admin/events?saved=${values.active ? "created" : "created-inactive"}`);
 }
 
 export async function updateEvent(id: number, _prev: EventFormState, formData: FormData): Promise<EventFormState> {
@@ -67,8 +68,14 @@ export async function updateEvent(id: number, _prev: EventFormState, formData: F
   await recordAudit("Events", "updated", `Edited the event “${values.title}”`, {
     details: before
       ? diff(
-          { title: before.title, date: before.date, venue: before.venue, description: richTextToPlain(before.description) },
-          { ...values, description: richTextToPlain(values.description) },
+          {
+            title: before.title,
+            date: before.date,
+            venue: before.venue,
+            description: richTextToPlain(before.description),
+            active: before.active ? "Active" : "Inactive",
+          },
+          { ...values, description: richTextToPlain(values.description), active: values.active ? "Active" : "Inactive" },
         )
       : undefined,
   });
@@ -87,4 +94,25 @@ export async function deleteEvent(formData: FormData) {
   }
   refreshAll();
   redirect("/admin/events?saved=deleted");
+}
+
+/** Show or hide an event on the website without deleting it. */
+export async function toggleEventActive(formData: FormData) {
+  await requireUser();
+  const id = Number(formData.get("id"));
+  if (!Number.isInteger(id)) return;
+
+  const event = await getEvent(id);
+  if (!event) return;
+
+  const active = !event.active;
+  await db.update(events).set({ active, updatedAt: new Date().toISOString() }).where(eq(events.id, id));
+  await recordAudit(
+    "Events",
+    "updated",
+    `${active ? "Showed" : "Hid"} the event “${event.title}” ${active ? "on" : "from"} the website`,
+  );
+
+  refreshAll();
+  redirect(`/admin/events?saved=${active ? "shown" : "hidden"}`);
 }

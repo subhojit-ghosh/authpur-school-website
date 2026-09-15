@@ -34,7 +34,7 @@ export function NoticeForm({
   submitLabel: string;
 }) {
   const [state, formAction] = useActionState<NoticeFormState, FormData>(action, {});
-  const values = state.values ?? initial ?? { title: "", date: todayISO(), tag: "Notice", description: "" };
+  const values = state.values ?? initial ?? { title: "", date: todayISO(), tag: "Notice", description: "", active: true };
   const fe = state.fieldErrors ?? {};
 
   return (
@@ -71,6 +71,14 @@ export function NoticeForm({
           <FieldError message={fe.tag} />
         </div>
       </div>
+
+        <div className="grid gap-2">
+          <Label htmlFor="active">Status</Label>
+          <NativeSelect id="active" name="active" defaultValue={values.active ? "active" : "inactive"}>
+            <option value="active">Active — shown on the website</option>
+            <option value="inactive">Inactive — hidden from the website</option>
+          </NativeSelect>
+        </div>
 
       <div className="grid gap-2">
         <Label htmlFor="description">Description <span className="font-normal text-muted-foreground">(optional)</span></Label>

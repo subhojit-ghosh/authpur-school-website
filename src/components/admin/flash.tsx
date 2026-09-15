@@ -2,8 +2,11 @@ import { CheckCircle2 } from "lucide-react";
 
 const messages: Record<string, string> = {
   created: "Saved. The new item is now live on the website.",
+  "created-inactive": "Saved as inactive. It is kept here but not shown on the website.",
   updated: "Changes saved and published to the website.",
   deleted: "Deleted. It has been removed from the website.",
+  shown: "Now active — it is showing on the website.",
+  hidden: "Now inactive — it is hidden from the website but kept here.",
 };
 
 /** One-line success banner driven by a `?saved=` search param after a redirect. */

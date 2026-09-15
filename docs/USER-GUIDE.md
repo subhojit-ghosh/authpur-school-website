@@ -42,7 +42,12 @@ the Notices page.
   notice on the website's Notices page. Leave it empty for a one-line notice.
 - **Edit:** click the pencil icon, change what you need, **Save changes**.
 - **Change the order:** use the ↑ ↓ arrows. The website follows this order.
-- **Delete:** click the red bin icon and confirm.
+- **Active or inactive:** the **Status** column shows a green *Active* or grey
+  *Inactive* pill. Click it to switch. Inactive notices stay in your list but
+  are hidden from the website — useful for something written in advance or
+  finished for now. You can also set the status while adding or editing.
+- **Delete:** click the red bin icon and confirm. Deleting is permanent; use
+  *Inactive* if you may want it back.
 
 ## 4. Events
 
@@ -55,6 +60,8 @@ Events appear beside the notice board as *Upcoming Events*.
 - Only events dated **today or later** are shown on the website. Past events
   stay in your list marked *Past*, so you can edit the date and re-use them
   next year.
+- **Active or inactive:** same switch as notices. An event must be both active
+  and dated today or later to appear on the website.
 - **Edit** with the pencil, **delete** with the bin.
 
 ## 5. Enquiry Inbox
@@ -165,7 +172,10 @@ change, any other device that was signed in must sign in again.
 
 - **Check the website** after saving: each section has a *View on website*
   button that opens the public page in a new tab.
-- **Keep it tidy:** delete old notices and past events now and then.
+- **Keep it tidy:** delete old notices and past events now and then, or set
+  them to *Inactive* if you might need them again.
+- **The panel works on a phone, a tablet and any computer.** On smaller screens
+  the menu moves behind the ☰ button and wide tables scroll sideways.
 - **Check the activity log** if you are unsure who changed something.
 - **Photos:** use clear, well-lit landscape photos; avoid screenshots of
   documents as banners.

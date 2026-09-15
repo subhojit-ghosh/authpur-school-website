@@ -18,7 +18,7 @@ export default async function EditNoticePage({ params }: { params: Promise<{ id:
       <div className="max-w-2xl rounded-2xl border bg-card p-6">
         <NoticeForm
           action={updateNotice.bind(null, notice.id)}
-          initial={{ title: notice.title, date: notice.date, tag: notice.tag, description: notice.description }}
+          initial={{ title: notice.title, date: notice.date, tag: notice.tag, description: notice.description, active: notice.active }}
           submitLabel="Save changes"
         />
       </div>

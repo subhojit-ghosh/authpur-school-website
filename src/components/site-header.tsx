@@ -59,7 +59,7 @@ export function SiteHeader({ info = defaultSchoolInfo }: { info?: SchoolInfo }) 
         )}
       >
         <nav className="container-edge flex h-18 items-center justify-between gap-4 py-2">
-          <Link href="/" className="flex items-center gap-3">
+          <Link href="/" className="flex shrink-0 items-center gap-3">
             <Crest className="h-11 w-11 shrink-0" />
             <span className="flex flex-col leading-none">
               <span className="font-heading text-[15px] font-semibold tracking-tight text-brand sm:text-base">
@@ -72,11 +72,11 @@ export function SiteHeader({ info = defaultSchoolInfo }: { info?: SchoolInfo }) 
           </Link>
 
           {/* Desktop nav */}
-          <div className="hidden items-center xl:flex">
+          <div className="hidden items-center lg:flex">
             {mainNav.map((item) =>
               item.children ? (
                 <div key={item.label} className="group relative">
-                  <button className="flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium text-foreground/75 transition-colors group-hover:bg-accent group-hover:text-brand">
+                  <button className="flex items-center gap-1 whitespace-nowrap rounded-md px-2.5 py-2 text-sm font-medium text-foreground/75 transition-colors group-hover:bg-accent group-hover:text-brand xl:px-3">
                     {item.label}
                     <ChevronDown className="size-3.5 transition-transform group-hover:rotate-180" />
                   </button>
@@ -101,7 +101,7 @@ export function SiteHeader({ info = defaultSchoolInfo }: { info?: SchoolInfo }) 
                 <Link
                   key={item.label}
                   href={item.href!}
-                  className="rounded-md px-3 py-2 text-sm font-medium text-foreground/75 transition-colors hover:bg-accent hover:text-brand"
+                  className="whitespace-nowrap rounded-md px-2.5 py-2 text-sm font-medium text-foreground/75 transition-colors hover:bg-accent hover:text-brand xl:px-3"
                 >
                   {item.label}
                 </Link>
@@ -112,7 +112,7 @@ export function SiteHeader({ info = defaultSchoolInfo }: { info?: SchoolInfo }) 
           <div className="flex items-center gap-2">
             <Button
               asChild
-              className="hidden h-10 bg-gold px-5 font-semibold text-gold-foreground shadow-sm hover:bg-gold/90 sm:inline-flex"
+              className="hidden h-10 bg-gold px-5 font-semibold text-gold-foreground shadow-sm hover:bg-gold/90 sm:inline-flex lg:hidden xl:inline-flex"
             >
               <Link href="/admissions">
                 <GraduationCap className="size-4" />
@@ -123,7 +123,7 @@ export function SiteHeader({ info = defaultSchoolInfo }: { info?: SchoolInfo }) 
             {/* Mobile menu */}
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="outline" size="icon" className="xl:hidden" aria-label="Open menu">
+                <Button variant="outline" size="icon" className="lg:hidden" aria-label="Open menu">
                   <Menu className="size-5" />
                 </Button>
               </SheetTrigger>

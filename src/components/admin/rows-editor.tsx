@@ -10,6 +10,9 @@ export type RowsColumn = { key: string; label: string; placeholder?: string; cla
 /**
  * Editable list of rows for a form. Inputs are named `${name}[i][key]` so the
  * server action can rebuild the array with parseRows() from lib/form-rows.
+ *
+ * On a phone each row stacks into a labelled card; from the `sm` breakpoint up
+ * it becomes a table-like grid with one header row.
  */
 export function RowsEditor({
   name,
@@ -30,6 +33,8 @@ export function RowsEditor({
   );
   const [nextId, setNextId] = useState(initial.length + 1);
 
+  const gridVars = { "--rows-cols": `repeat(${columns.length}, minmax(0, 1fr)) 6.5rem` } as React.CSSProperties;
+
   const update = (id: number, key: string, value: string) =>
     setRows((r) => r.map((row) => (row.id === id ? { ...row, values: { ...row.values, [key]: value } } : row)));
   const remove = (id: number) => setRows((r) => r.filter((row) => row.id !== id));
@@ -47,10 +52,11 @@ export function RowsEditor({
   };
 
   return (
-    <div className="grid gap-2">
+    <div className="grid gap-3 sm:gap-2">
+      {/* Column headings — only where there is room for them */}
       <div
-        className="hidden text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground sm:grid sm:gap-2"
-        style={{ gridTemplateColumns: `${columns.map(() => "minmax(0,1fr)").join(" ")} 6.5rem` }}
+        className="hidden gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground sm:grid sm:grid-cols-[var(--rows-cols)]"
+        style={gridVars}
       >
         {columns.map((c) => (
           <span key={c.key}>{c.label}</span>
@@ -61,43 +67,48 @@ export function RowsEditor({
       {rows.map((row, i) => (
         <div
           key={row.id}
-          className="grid gap-2 rounded-xl border bg-background/60 p-2 sm:border-0 sm:p-0"
-          style={{ gridTemplateColumns: undefined }}
+          style={gridVars}
+          className="grid gap-2 rounded-xl border bg-background/60 p-3 sm:grid-cols-[var(--rows-cols)] sm:items-center sm:rounded-none sm:border-0 sm:bg-transparent sm:p-0"
         >
-          <div className="grid gap-2 sm:grid-flow-col" style={{ gridTemplateColumns: undefined }}>
-            <div className="grid gap-2 sm:gap-2" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(0,1fr)) 6.5rem` }}>
-              {columns.map((c) => (
-                <div key={c.key} className="grid gap-1">
-                  <span className="text-[11px] font-medium text-muted-foreground sm:hidden">{c.label}</span>
-                  <Input
-                    name={`${name}[${i}][${c.key}]`}
-                    value={row.values[c.key] ?? ""}
-                    placeholder={c.placeholder}
-                    onChange={(e) => update(row.id, c.key, e.target.value)}
-                    className={c.className}
-                  />
-                </div>
-              ))}
-              <div className="flex items-end justify-end gap-0.5">
-                <Button type="button" size="icon-sm" variant="ghost" onClick={() => move(i, -1)} disabled={i === 0} aria-label="Move up">
-                  <ArrowUp className="size-4" />
-                </Button>
-                <Button type="button" size="icon-sm" variant="ghost" onClick={() => move(i, 1)} disabled={i === rows.length - 1} aria-label="Move down">
-                  <ArrowDown className="size-4" />
-                </Button>
-                <Button
-                  type="button"
-                  size="icon-sm"
-                  variant="ghost"
-                  className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-                  onClick={() => remove(row.id)}
-                  disabled={rows.length <= min}
-                  aria-label="Remove row"
-                >
-                  <Trash2 className="size-4" />
-                </Button>
-              </div>
+          {columns.map((c) => (
+            <div key={c.key} className="grid gap-1">
+              <span className="text-[11px] font-medium text-muted-foreground sm:hidden">{c.label}</span>
+              <Input
+                name={`${name}[${i}][${c.key}]`}
+                value={row.values[c.key] ?? ""}
+                placeholder={c.placeholder}
+                onChange={(e) => update(row.id, c.key, e.target.value)}
+                className={c.className}
+                aria-label={c.label}
+              />
             </div>
+          ))}
+
+          <div className="flex items-center justify-end gap-0.5">
+            <Button type="button" size="icon-sm" variant="ghost" onClick={() => move(i, -1)} disabled={i === 0} aria-label="Move up">
+              <ArrowUp className="size-4" />
+            </Button>
+            <Button
+              type="button"
+              size="icon-sm"
+              variant="ghost"
+              onClick={() => move(i, 1)}
+              disabled={i === rows.length - 1}
+              aria-label="Move down"
+            >
+              <ArrowDown className="size-4" />
+            </Button>
+            <Button
+              type="button"
+              size="icon-sm"
+              variant="ghost"
+              className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+              onClick={() => remove(row.id)}
+              disabled={rows.length <= min}
+              aria-label="Remove row"
+            >
+              <Trash2 className="size-4" />
+            </Button>
           </div>
         </div>
       ))}

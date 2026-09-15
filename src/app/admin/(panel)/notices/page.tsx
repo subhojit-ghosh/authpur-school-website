@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowDown, ArrowUp, Bell, ExternalLink, FileText, Pencil, Plus, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, Bell, Eye, EyeOff, ExternalLink, FileText, Pencil, Plus, Trash2 } from "lucide-react";
 import { ConfirmButton } from "@/components/admin/confirm-button";
 import { EmptyState } from "@/components/admin/empty-state";
 import { Flash } from "@/components/admin/flash";
@@ -10,12 +10,13 @@ import { getNotices } from "@/lib/content";
 import { noticeTagClass } from "@/lib/content-types";
 import { formatDate } from "@/lib/format";
 import { richTextToPlain } from "@/lib/rich-text";
-import { deleteNotice, moveNotice } from "./actions";
+import { cn } from "@/lib/utils";
+import { deleteNotice, moveNotice, toggleNoticeActive } from "./actions";
 
 export const metadata: Metadata = { title: "Notice Board" };
 
 export default async function NoticesAdminPage({ searchParams }: { searchParams: Promise<{ saved?: string }> }) {
-  const [{ saved }, list] = await Promise.all([searchParams, getNotices()]);
+  const [{ saved }, list] = await Promise.all([searchParams, getNotices({ includeInactive: true })]);
 
   return (
     <div className="space-y-6">
@@ -66,12 +67,13 @@ export default async function NoticesAdminPage({ searchParams }: { searchParams:
                 <th className="px-4 py-3">Title</th>
                 <th className="w-32 px-4 py-3">Category</th>
                 <th className="w-36 px-4 py-3">Date</th>
+                <th className="w-32 px-4 py-3">Status</th>
                 <th className="w-32 px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y">
               {list.map((n, i) => (
-                <tr key={n.id} className="align-middle hover:bg-accent/30">
+                <tr key={n.id} className={cn("align-middle hover:bg-accent/30", !n.active && "text-muted-foreground")}>
                   <td className="px-4 py-2.5">
                     <div className="flex items-center gap-1">
                       <form action={moveNotice}>
@@ -110,6 +112,24 @@ export default async function NoticesAdminPage({ searchParams }: { searchParams:
                     <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${noticeTagClass(n.tag)}`}>{n.tag}</span>
                   </td>
                   <td className="px-4 py-2.5 text-muted-foreground">{formatDate(n.date)}</td>
+                  <td className="px-4 py-2.5">
+                    <form action={toggleNoticeActive}>
+                      <input type="hidden" name="id" value={n.id} />
+                      <button
+                        type="submit"
+                        title={n.active ? "Hide from the website" : "Show on the website"}
+                        className={cn(
+                          "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold transition-colors",
+                          n.active
+                            ? "bg-[oklch(0.92_0.05_150)] text-[oklch(0.35_0.1_150)] hover:bg-[oklch(0.88_0.06_150)]"
+                            : "bg-muted text-muted-foreground hover:bg-secondary",
+                        )}
+                      >
+                        {n.active ? <Eye className="size-3.5" /> : <EyeOff className="size-3.5" />}
+                        {n.active ? "Active" : "Inactive"}
+                      </button>
+                    </form>
+                  </td>
                   <td className="px-4 py-2.5">
                     <div className="flex items-center justify-end gap-1">
                       <Button asChild size="icon-sm" variant="ghost" aria-label={`Edit "${n.title}"`}>

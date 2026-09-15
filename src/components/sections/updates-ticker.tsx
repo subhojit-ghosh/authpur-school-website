@@ -26,7 +26,7 @@ function TickerItems({ items }: { items: Pick<Notice, "id" | "tag" | "title">[] 
 }
 
 export async function UpdatesTicker() {
-  const items = await getNotices(6);
+  const items = await getNotices({ limit: 6 });
   if (!items.length) return null;
 
   return (

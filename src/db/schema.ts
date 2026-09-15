@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { bigint, integer, pgTable, serial, text } from "drizzle-orm/pg-core";
+import { bigint, boolean, integer, pgTable, serial, text } from "drizzle-orm/pg-core";
 
 /**
  * Admin panel data model (PostgreSQL — Neon in production, embedded PGlite locally).
@@ -44,6 +44,8 @@ export const notices = pgTable("notices", {
   tag: text("tag").notNull(),
   /** Optional rich-text description, stored as sanitised HTML. */
   description: text("description").notNull().default(""),
+  /** Inactive items stay in the panel but are hidden from the website. */
+  active: boolean("active").notNull().default(true),
   /** Display order; lower numbers appear first. */
   sortOrder: integer("sort_order").notNull().default(0),
   createdAt: text("created_at").notNull().default(nowText()),
@@ -59,6 +61,8 @@ export const events = pgTable("events", {
   venue: text("venue").notNull(),
   /** Optional rich-text description, stored as sanitised HTML. */
   description: text("description").notNull().default(""),
+  /** Inactive items stay in the panel but are hidden from the website. */
+  active: boolean("active").notNull().default(true),
   createdAt: text("created_at").notNull().default(nowText()),
   updatedAt: text("updated_at").notNull().default(nowText()),
 });

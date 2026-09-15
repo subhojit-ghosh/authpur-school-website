@@ -13,7 +13,7 @@ import { isValidISODate } from "@/lib/format";
 import { RICH_TEXT_LIMIT, richTextToPlain, sanitizeRichText } from "@/lib/rich-text";
 import { revalidateNoticesAndEvents } from "@/lib/revalidate";
 
-export type NoticeValues = { title: string; date: string; tag: string; description: string };
+export type NoticeValues = { title: string; date: string; tag: string; description: string; active: boolean };
 export type NoticeFormState = { error?: string; fieldErrors?: Partial<Record<keyof NoticeValues, string>>; values?: NoticeValues };
 
 function parseNotice(formData: FormData): { values: NoticeValues; fieldErrors: NoticeFormState["fieldErrors"] } {
@@ -22,6 +22,7 @@ function parseNotice(formData: FormData): { values: NoticeValues; fieldErrors: N
     date: String(formData.get("date") ?? "").trim(),
     tag: String(formData.get("tag") ?? "").trim(),
     description: sanitizeRichText(String(formData.get("description") ?? "")),
+    active: String(formData.get("active") ?? "active") !== "inactive",
   };
   const fieldErrors: NoticeFormState["fieldErrors"] = {};
   if (values.title.length < 3) fieldErrors.title = "Please enter a title (at least 3 characters).";
@@ -46,12 +47,12 @@ export async function createNotice(_prev: NoticeFormState, formData: FormData): 
   // New notices go to the top of the board.
   const [top] = await db.select({ m: min(notices.sortOrder) }).from(notices);
   await db.insert(notices).values({ ...values, sortOrder: (top?.m ?? 0) - 1 });
-  await recordAudit("Notice Board", "created", `Added the notice “${values.title}”`, {
-    details: { ...values, description: richTextToPlain(values.description) || "(none)" },
+  await recordAudit("Notice Board", "created", `Added the notice “${values.title}”${values.active ? "" : " (inactive)"}`, {
+    details: { ...values, active: values.active ? "Active" : "Inactive", description: richTextToPlain(values.description) || "(none)" },
   });
 
   refreshAll();
-  redirect("/admin/notices?saved=created");
+  redirect(`/admin/notices?saved=${values.active ? "created" : "created-inactive"}`);
 }
 
 export async function updateNotice(id: number, _prev: NoticeFormState, formData: FormData): Promise<NoticeFormState> {
@@ -69,8 +70,14 @@ export async function updateNotice(id: number, _prev: NoticeFormState, formData:
   await recordAudit("Notice Board", "updated", `Edited the notice “${values.title}”`, {
     details: before
       ? diff(
-          { title: before.title, date: before.date, tag: before.tag, description: richTextToPlain(before.description) },
-          { ...values, description: richTextToPlain(values.description) },
+          {
+            title: before.title,
+            date: before.date,
+            tag: before.tag,
+            description: richTextToPlain(before.description),
+            active: before.active ? "Active" : "Inactive",
+          },
+          { ...values, description: richTextToPlain(values.description), active: values.active ? "Active" : "Inactive" },
         )
       : undefined,
   });
@@ -97,7 +104,7 @@ export async function moveNotice(formData: FormData) {
   const id = Number(formData.get("id"));
   const direction = formData.get("direction") === "up" ? -1 : 1;
 
-  const ordered = await getNotices();
+  const ordered = await getNotices({ includeInactive: true });
   const index = ordered.findIndex((n) => n.id === id);
   const swapWith = index + direction;
   if (index === -1 || swapWith < 0 || swapWith >= ordered.length) return;
@@ -113,4 +120,25 @@ export async function moveNotice(formData: FormData) {
   await recordAudit("Notice Board", "re-ordered", `Moved the notice “${ordered[index].title}” ${direction < 0 ? "up" : "down"}`);
 
   refreshAll();
+}
+
+/** Show or hide a notice on the website without deleting it. */
+export async function toggleNoticeActive(formData: FormData) {
+  await requireUser();
+  const id = Number(formData.get("id"));
+  if (!Number.isInteger(id)) return;
+
+  const notice = await getNotice(id);
+  if (!notice) return;
+
+  const active = !notice.active;
+  await db.update(notices).set({ active, updatedAt: new Date().toISOString() }).where(eq(notices.id, id));
+  await recordAudit(
+    "Notice Board",
+    "updated",
+    `${active ? "Showed" : "Hid"} the notice “${notice.title}” ${active ? "on" : "from"} the website`,
+  );
+
+  refreshAll();
+  redirect(`/admin/notices?saved=${active ? "shown" : "hidden"}`);
 }

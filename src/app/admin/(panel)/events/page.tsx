@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CalendarDays, ExternalLink, FileText, Pencil, Plus, Trash2 } from "lucide-react";
+import { CalendarDays, Eye, EyeOff, ExternalLink, FileText, Pencil, Plus, Trash2 } from "lucide-react";
 import { ConfirmButton } from "@/components/admin/confirm-button";
 import { EmptyState } from "@/components/admin/empty-state";
 import { Flash } from "@/components/admin/flash";
@@ -10,7 +10,7 @@ import { getAllEvents } from "@/lib/content";
 import { formatDate, todayISO } from "@/lib/format";
 import { richTextToPlain } from "@/lib/rich-text";
 import { cn } from "@/lib/utils";
-import { deleteEvent } from "./actions";
+import { deleteEvent, toggleEventActive } from "./actions";
 
 export const metadata: Metadata = { title: "Events" };
 
@@ -66,7 +66,7 @@ export default async function EventsAdminPage({ searchParams }: { searchParams: 
                 <th className="w-40 px-4 py-3">Date</th>
                 <th className="px-4 py-3">Title</th>
                 <th className="px-4 py-3">Venue</th>
-                <th className="w-28 px-4 py-3">Status</th>
+                <th className="w-44 px-4 py-3">Status</th>
                 <th className="w-28 px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
@@ -87,13 +87,27 @@ export default async function EventsAdminPage({ searchParams }: { searchParams: 
                     </td>
                     <td className="px-4 py-2.5">{e.venue}</td>
                     <td className="px-4 py-2.5">
-                      {past ? (
-                        <span className="inline-flex rounded-full bg-muted px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">Past</span>
-                      ) : (
-                        <span className="inline-flex rounded-full bg-[oklch(0.92_0.05_150)] px-2.5 py-0.5 text-xs font-semibold text-[oklch(0.35_0.1_150)]">
-                          On website
-                        </span>
-                      )}
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <form action={toggleEventActive}>
+                          <input type="hidden" name="id" value={e.id} />
+                          <button
+                            type="submit"
+                            title={e.active ? "Hide from the website" : "Show on the website"}
+                            className={cn(
+                              "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold transition-colors",
+                              e.active
+                                ? "bg-[oklch(0.92_0.05_150)] text-[oklch(0.35_0.1_150)] hover:bg-[oklch(0.88_0.06_150)]"
+                                : "bg-muted text-muted-foreground hover:bg-secondary",
+                            )}
+                          >
+                            {e.active ? <Eye className="size-3.5" /> : <EyeOff className="size-3.5" />}
+                            {e.active ? "Active" : "Inactive"}
+                          </button>
+                        </form>
+                        {past ? (
+                          <span className="inline-flex rounded-full bg-muted px-2 py-0.5 text-[11px] font-semibold text-muted-foreground">Past</span>
+                        ) : null}
+                      </div>
                     </td>
                     <td className="px-4 py-2.5">
                       <div className="flex items-center justify-end gap-1">

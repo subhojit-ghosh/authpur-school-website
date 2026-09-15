@@ -35,7 +35,7 @@ export default async function AdminDashboardPage() {
     countNotices(),
     countUpcomingEvents(),
     countEnquiries(true),
-    getNotices(5),
+    getNotices({ limit: 5, includeInactive: true }),
     getEnquiries({ limit: 5 }),
     countBanners(),
     countGalleryPhotos(),
