@@ -53,7 +53,7 @@ export async function recordAudit(
       const session = await getSession();
       actor = session ? { id: session.user.id, name: session.user.displayName } : { id: null, name: "Unknown" };
     }
-    await db.insert(auditLog).values({
+    const row = {
       at: new Date().toISOString(),
       userId: actor.id,
       userName: actor.name,
@@ -61,7 +61,14 @@ export async function recordAudit(
       section,
       summary: summary.slice(0, 500),
       details: options.details ? JSON.stringify(options.details).slice(0, 4000) : null,
-    });
+    };
+    try {
+      await db.insert(auditLog).values(row);
+    } catch (first) {
+      // One retry: a cloud database waking from idle can drop the first query.
+      console.warn("[audit] first attempt failed, retrying", first);
+      await db.insert(auditLog).values(row);
+    }
   } catch (err) {
     console.error("[audit] could not record entry", err);
   }
