@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowDown, ArrowUp, Bell, ExternalLink, Pencil, Plus, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, Bell, ExternalLink, FileText, Pencil, Plus, Trash2 } from "lucide-react";
 import { ConfirmButton } from "@/components/admin/confirm-button";
 import { EmptyState } from "@/components/admin/empty-state";
 import { Flash } from "@/components/admin/flash";
@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { getNotices } from "@/lib/content";
 import { noticeTagClass } from "@/lib/content-types";
 import { formatDate } from "@/lib/format";
+import { richTextToPlain } from "@/lib/rich-text";
 import { deleteNotice, moveNotice } from "./actions";
 
 export const metadata: Metadata = { title: "Notice Board" };
@@ -96,7 +97,15 @@ export default async function NoticesAdminPage({ searchParams }: { searchParams:
                       <span className="ml-1 w-5 text-xs tabular-nums text-muted-foreground">{i + 1}</span>
                     </div>
                   </td>
-                  <td className="px-4 py-2.5 font-medium">{n.title}</td>
+                  <td className="px-4 py-2.5 font-medium">
+                    {n.title}
+                    {n.description ? (
+                      <span className="mt-0.5 flex items-center gap-1 text-xs font-normal text-muted-foreground">
+                        <FileText className="size-3" />
+                        {richTextToPlain(n.description, 70)}
+                      </span>
+                    ) : null}
+                  </td>
                   <td className="px-4 py-2.5">
                     <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${noticeTagClass(n.tag)}`}>{n.tag}</span>
                   </td>

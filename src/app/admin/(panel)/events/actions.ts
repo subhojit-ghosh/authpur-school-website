@@ -10,9 +10,10 @@ import { diff, recordAudit } from "@/lib/audit";
 import { getEvent } from "@/lib/content";
 import { LIMITS } from "@/lib/content-types";
 import { isValidISODate } from "@/lib/format";
+import { RICH_TEXT_LIMIT, richTextToPlain, sanitizeRichText } from "@/lib/rich-text";
 import { revalidateNoticesAndEvents } from "@/lib/revalidate";
 
-export type EventValues = { title: string; date: string; venue: string };
+export type EventValues = { title: string; date: string; venue: string; description: string };
 export type EventFormState = { error?: string; fieldErrors?: Partial<Record<keyof EventValues, string>>; values?: EventValues };
 
 function parseEvent(formData: FormData): { values: EventValues; fieldErrors: EventFormState["fieldErrors"] } {
@@ -20,6 +21,7 @@ function parseEvent(formData: FormData): { values: EventValues; fieldErrors: Eve
     title: String(formData.get("title") ?? "").trim().slice(0, LIMITS.eventTitle + 1),
     date: String(formData.get("date") ?? "").trim(),
     venue: String(formData.get("venue") ?? "").trim().slice(0, LIMITS.eventVenue + 1),
+    description: sanitizeRichText(String(formData.get("description") ?? "")),
   };
   const fieldErrors: EventFormState["fieldErrors"] = {};
   if (values.title.length < 3) fieldErrors.title = "Please enter a title (at least 3 characters).";
@@ -27,6 +29,7 @@ function parseEvent(formData: FormData): { values: EventValues; fieldErrors: Eve
   if (!isValidISODate(values.date)) fieldErrors.date = "Please choose a valid date.";
   if (values.venue.length < 2) fieldErrors.venue = "Please enter the venue.";
   else if (values.venue.length > LIMITS.eventVenue) fieldErrors.venue = `Keep the venue under ${LIMITS.eventVenue} characters.`;
+  if (values.description.length >= RICH_TEXT_LIMIT) fieldErrors.description = "The description is too long. Please shorten it.";
   return { values, fieldErrors };
 }
 
@@ -42,7 +45,9 @@ export async function createEvent(_prev: EventFormState, formData: FormData): Pr
   if (fieldErrors && Object.keys(fieldErrors).length) return { error: "Please correct the highlighted fields.", fieldErrors, values };
 
   await db.insert(events).values(values);
-  await recordAudit("Events", "created", `Added the event “${values.title}” on ${values.date}`, { details: values });
+  await recordAudit("Events", "created", `Added the event “${values.title}” on ${values.date}`, {
+    details: { ...values, description: richTextToPlain(values.description) || "(none)" },
+  });
   refreshAll();
   redirect("/admin/events?saved=created");
 }
@@ -60,7 +65,12 @@ export async function updateEvent(id: number, _prev: EventFormState, formData: F
     .returning({ id: events.id });
   if (updated.length === 0) return { error: "This event no longer exists.", values };
   await recordAudit("Events", "updated", `Edited the event “${values.title}”`, {
-    details: before ? diff({ title: before.title, date: before.date, venue: before.venue }, values) : undefined,
+    details: before
+      ? diff(
+          { title: before.title, date: before.date, venue: before.venue, description: richTextToPlain(before.description) },
+          { ...values, description: richTextToPlain(values.description) },
+        )
+      : undefined,
   });
 
   refreshAll();

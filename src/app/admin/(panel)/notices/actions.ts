@@ -10,9 +10,10 @@ import { diff, recordAudit } from "@/lib/audit";
 import { getNotice, getNotices } from "@/lib/content";
 import { isNoticeTag, LIMITS, NOTICE_TAGS } from "@/lib/content-types";
 import { isValidISODate } from "@/lib/format";
+import { RICH_TEXT_LIMIT, richTextToPlain, sanitizeRichText } from "@/lib/rich-text";
 import { revalidateNoticesAndEvents } from "@/lib/revalidate";
 
-export type NoticeValues = { title: string; date: string; tag: string };
+export type NoticeValues = { title: string; date: string; tag: string; description: string };
 export type NoticeFormState = { error?: string; fieldErrors?: Partial<Record<keyof NoticeValues, string>>; values?: NoticeValues };
 
 function parseNotice(formData: FormData): { values: NoticeValues; fieldErrors: NoticeFormState["fieldErrors"] } {
@@ -20,12 +21,14 @@ function parseNotice(formData: FormData): { values: NoticeValues; fieldErrors: N
     title: String(formData.get("title") ?? "").trim().slice(0, LIMITS.noticeTitle + 1),
     date: String(formData.get("date") ?? "").trim(),
     tag: String(formData.get("tag") ?? "").trim(),
+    description: sanitizeRichText(String(formData.get("description") ?? "")),
   };
   const fieldErrors: NoticeFormState["fieldErrors"] = {};
   if (values.title.length < 3) fieldErrors.title = "Please enter a title (at least 3 characters).";
   else if (values.title.length > LIMITS.noticeTitle) fieldErrors.title = `Keep the title under ${LIMITS.noticeTitle} characters.`;
   if (!isValidISODate(values.date)) fieldErrors.date = "Please choose a valid date.";
   if (!isNoticeTag(values.tag)) fieldErrors.tag = `Choose one of: ${NOTICE_TAGS.join(", ")}.`;
+  if (values.description.length >= RICH_TEXT_LIMIT) fieldErrors.description = "The description is too long. Please shorten it.";
   return { values, fieldErrors };
 }
 
@@ -43,7 +46,9 @@ export async function createNotice(_prev: NoticeFormState, formData: FormData): 
   // New notices go to the top of the board.
   const [top] = await db.select({ m: min(notices.sortOrder) }).from(notices);
   await db.insert(notices).values({ ...values, sortOrder: (top?.m ?? 0) - 1 });
-  await recordAudit("Notice Board", "created", `Added the notice “${values.title}”`, { details: values });
+  await recordAudit("Notice Board", "created", `Added the notice “${values.title}”`, {
+    details: { ...values, description: richTextToPlain(values.description) || "(none)" },
+  });
 
   refreshAll();
   redirect("/admin/notices?saved=created");
@@ -62,7 +67,12 @@ export async function updateNotice(id: number, _prev: NoticeFormState, formData:
     .returning({ id: notices.id });
   if (updated.length === 0) return { error: "This notice no longer exists.", values };
   await recordAudit("Notice Board", "updated", `Edited the notice “${values.title}”`, {
-    details: before ? diff({ title: before.title, date: before.date, tag: before.tag }, values) : undefined,
+    details: before
+      ? diff(
+          { title: before.title, date: before.date, tag: before.tag, description: richTextToPlain(before.description) },
+          { ...values, description: richTextToPlain(values.description) },
+        )
+      : undefined,
   });
 
   refreshAll();

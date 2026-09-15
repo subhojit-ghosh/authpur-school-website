@@ -18,7 +18,7 @@ export default async function EditEventPage({ params }: { params: Promise<{ id: 
       <div className="max-w-2xl rounded-2xl border bg-card p-6">
         <EventForm
           action={updateEvent.bind(null, event.id)}
-          initial={{ title: event.title, date: event.date, venue: event.venue }}
+          initial={{ title: event.title, date: event.date, venue: event.venue, description: event.description }}
           submitLabel="Save changes"
         />
       </div>

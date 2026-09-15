@@ -36,6 +36,10 @@ the Notices page.
 - **Add a notice:** click **Add notice**, type the title, pick the date and a
   category (Admissions, Result, Event or Notice), then **Publish notice**.
   New notices go to the top.
+- **Description (optional):** the box below the category is a rich text field.
+  Use the small toolbar for **bold**, *italic*, bulleted and numbered lists,
+  quotes and links, with undo and redo. The description appears under the
+  notice on the website's Notices page. Leave it empty for a one-line notice.
 - **Edit:** click the pencil icon, change what you need, **Save changes**.
 - **Change the order:** use the ↑ ↓ arrows. The website follows this order.
 - **Delete:** click the red bin icon and confirm.
@@ -46,6 +50,8 @@ Events appear beside the notice board as *Upcoming Events*.
 
 - **Add an event:** click **Add event**, enter the title, date and venue,
   then **Publish event**.
+- **Description (optional):** same rich text field as notices — bold, lists,
+  links and so on. It appears under the event on the Notices page.
 - Only events dated **today or later** are shown on the website. Past events
   stay in your list marked *Past*, so you can edit the date and re-use them
   next year.
@@ -172,6 +178,7 @@ change, any other device that was signed in must sign in again.
 | "Incorrect username or password" | Check Caps Lock and try again. After 5 attempts wait 15 minutes. |
 | A change does not show on the website | Refresh the page (Ctrl+R / Cmd+R). If it still does not show after a minute, contact the developer. |
 | A photo will not upload | Make sure it is a JPG, PNG, WebP or HEIC file under 15 MB. |
+| Formatting looks wrong after pasting | Paste is cleaned automatically; only bold, italic, lists, quotes and links are kept. |
 | Signed out unexpectedly | Sessions last 7 days; simply sign in again. |
 | Someone forgot their password | Another staff member can reset it from **Staff accounts**. |
 

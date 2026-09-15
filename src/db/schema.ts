@@ -42,6 +42,8 @@ export const notices = pgTable("notices", {
   date: text("date").notNull(),
   /** One of: Admissions, Result, Event, Notice. */
   tag: text("tag").notNull(),
+  /** Optional rich-text description, stored as sanitised HTML. */
+  description: text("description").notNull().default(""),
   /** Display order; lower numbers appear first. */
   sortOrder: integer("sort_order").notNull().default(0),
   createdAt: text("created_at").notNull().default(nowText()),
@@ -55,6 +57,8 @@ export const events = pgTable("events", {
   /** Calendar date as YYYY-MM-DD. */
   date: text("date").notNull(),
   venue: text("venue").notNull(),
+  /** Optional rich-text description, stored as sanitised HTML. */
+  description: text("description").notNull().default(""),
   createdAt: text("created_at").notNull().default(nowText()),
   updatedAt: text("updated_at").notNull().default(nowText()),
 });

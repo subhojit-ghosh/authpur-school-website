@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Bell, CalendarDays, ArrowRight } from "lucide-react";
 import { PageBanner } from "@/components/page-banner";
+import { RichText } from "@/components/rich-text";
 import { getNotices, getUpcomingEvents } from "@/lib/content";
 import { noticeTagClass } from "@/lib/content-types";
 import { dayMonth, formatDate } from "@/lib/format";
@@ -39,24 +40,27 @@ export default async function NoticesPage() {
                 {noticeList.map((n) => (
                   <li
                     key={n.id}
-                    className="group flex flex-col gap-3 rounded-2xl border bg-card p-5 transition-all hover:-translate-y-0.5 hover:shadow-md sm:flex-row sm:items-center"
+                    className="group rounded-2xl border bg-card p-5 transition-all hover:-translate-y-0.5 hover:shadow-md"
                   >
-                    <div className="flex items-center gap-3">
-                      <span
-                        className={`inline-flex shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ${noticeTagClass(n.tag)}`}
-                      >
-                        {n.tag}
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                      <div className="flex items-center gap-3">
+                        <span
+                          className={`inline-flex shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ${noticeTagClass(n.tag)}`}
+                        >
+                          {n.tag}
+                        </span>
+                        <span className="text-xs font-medium text-muted-foreground sm:hidden">
+                          {formatDate(n.date, "long")}
+                        </span>
+                      </div>
+                      <span className="flex-1 text-sm font-medium text-foreground transition-colors group-hover:text-brand">
+                        {n.title}
                       </span>
-                      <span className="text-xs font-medium text-muted-foreground sm:hidden">
+                      <span className="hidden shrink-0 text-xs font-medium text-muted-foreground sm:block">
                         {formatDate(n.date, "long")}
                       </span>
                     </div>
-                    <span className="flex-1 text-sm font-medium text-foreground transition-colors group-hover:text-brand">
-                      {n.title}
-                    </span>
-                    <span className="hidden shrink-0 text-xs font-medium text-muted-foreground sm:block">
-                      {formatDate(n.date, "long")}
-                    </span>
+                    {n.description ? <RichText html={n.description} className="mt-3 border-t pt-3" /> : null}
                   </li>
                 ))}
               </ul>
@@ -81,16 +85,19 @@ export default async function NoticesPage() {
                   return (
                     <div
                       key={e.id}
-                      className="flex items-center gap-4 rounded-2xl border bg-card p-4 transition-all hover:-translate-y-0.5 hover:shadow-md"
+                      className="rounded-2xl border bg-card p-4 transition-all hover:-translate-y-0.5 hover:shadow-md"
                     >
-                      <div className="grid size-16 shrink-0 place-items-center rounded-xl bg-brand text-brand-foreground">
-                        <span className="font-heading text-xl font-semibold leading-none">{day}</span>
-                        <span className="text-[11px] uppercase tracking-wide text-brand-foreground/70">{month}</span>
+                      <div className="flex items-center gap-4">
+                        <div className="grid size-16 shrink-0 place-items-center rounded-xl bg-brand text-brand-foreground">
+                          <span className="font-heading text-xl font-semibold leading-none">{day}</span>
+                          <span className="text-[11px] uppercase tracking-wide text-brand-foreground/70">{month}</span>
+                        </div>
+                        <div>
+                          <p className="font-semibold text-brand">{e.title}</p>
+                          <p className="text-sm text-muted-foreground">{e.venue}</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-semibold text-brand">{e.title}</p>
-                        <p className="text-sm text-muted-foreground">{e.venue}</p>
-                      </div>
+                      {e.description ? <RichText html={e.description} className="mt-3 border-t pt-3" /> : null}
                     </div>
                   );
                 })

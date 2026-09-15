@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CalendarDays, ExternalLink, Pencil, Plus, Trash2 } from "lucide-react";
+import { CalendarDays, ExternalLink, FileText, Pencil, Plus, Trash2 } from "lucide-react";
 import { ConfirmButton } from "@/components/admin/confirm-button";
 import { EmptyState } from "@/components/admin/empty-state";
 import { Flash } from "@/components/admin/flash";
@@ -8,6 +8,7 @@ import { AdminPageHeader } from "@/components/admin/page-header";
 import { Button } from "@/components/ui/button";
 import { getAllEvents } from "@/lib/content";
 import { formatDate, todayISO } from "@/lib/format";
+import { richTextToPlain } from "@/lib/rich-text";
 import { cn } from "@/lib/utils";
 import { deleteEvent } from "./actions";
 
@@ -75,7 +76,15 @@ export default async function EventsAdminPage({ searchParams }: { searchParams: 
                 return (
                   <tr key={e.id} className={cn("align-middle hover:bg-accent/30", past && "text-muted-foreground")}>
                     <td className="px-4 py-2.5 tabular-nums">{formatDate(e.date)}</td>
-                    <td className={cn("px-4 py-2.5 font-medium", !past && "text-foreground")}>{e.title}</td>
+                    <td className={cn("px-4 py-2.5 font-medium", !past && "text-foreground")}>
+                      {e.title}
+                      {e.description ? (
+                        <span className="mt-0.5 flex items-center gap-1 text-xs font-normal text-muted-foreground">
+                          <FileText className="size-3" />
+                          {richTextToPlain(e.description, 70)}
+                        </span>
+                      ) : null}
+                    </td>
                     <td className="px-4 py-2.5">{e.venue}</td>
                     <td className="px-4 py-2.5">
                       {past ? (

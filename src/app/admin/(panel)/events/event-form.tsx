@@ -5,6 +5,7 @@ import { useFormStatus } from "react-dom";
 import Link from "next/link";
 import { Save } from "lucide-react";
 import { FieldError, FormError } from "@/components/admin/form-message";
+import { RichTextEditor } from "@/components/admin/rich-text-editor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,7 +33,7 @@ export function EventForm({
   submitLabel: string;
 }) {
   const [state, formAction] = useActionState<EventFormState, FormData>(action, {});
-  const values = state.values ?? initial ?? { title: "", date: todayISO(), venue: "" };
+  const values = state.values ?? initial ?? { title: "", date: todayISO(), venue: "", description: "" };
   const fe = state.fieldErrors ?? {};
 
   return (
@@ -69,6 +70,18 @@ export function EventForm({
           />
           <FieldError message={fe.venue} />
         </div>
+      </div>
+
+      <div className="grid gap-2">
+        <Label htmlFor="description">Description <span className="font-normal text-muted-foreground">(optional)</span></Label>
+        <RichTextEditor
+          name="description"
+          defaultValue={values.description}
+          ariaLabel="Event description"
+          placeholder="Add the full details — you can use bold, lists and links."
+        />
+        <p className="text-xs text-muted-foreground">Shown under the event on the website&apos;s Notices page.</p>
+        <FieldError message={fe.description} />
       </div>
 
       <p className="text-xs text-muted-foreground">
