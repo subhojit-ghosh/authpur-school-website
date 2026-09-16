@@ -5,13 +5,17 @@ import { useRouter } from "next/navigation";
 import { AlertCircle, CheckCircle2, ImagePlus, Loader2 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { NativeSelect } from "@/components/ui/native-select";
+import { ImagePrepareError, prepareImage } from "@/lib/image-client";
 import { cn } from "@/lib/utils";
 
-type Item = { name: string; status: "uploading" | "done" | "error"; message?: string };
+type Item = { name: string; status: "preparing" | "uploading" | "done" | "error"; message?: string };
 
 /**
- * Drag-and-drop / click-to-choose uploader. Sends one request per file to
- * /admin/upload, shows progress per file and refreshes the page when finished.
+ * Drag-and-drop / click-to-choose uploader.
+ *
+ * Each photograph is resized and re-encoded here in the browser before it is
+ * sent, which keeps the upload small and needs no image library on the server.
+ * One request per file, progress shown per file, page refreshed at the end.
  */
 export function ImageUploader({
   kind,
@@ -36,24 +40,39 @@ export function ImageUploader({
     if (!list.length) return;
     setBusy(true);
     const start = items.length;
-    setItems((prev) => [...prev, ...list.map((f) => ({ name: f.name, status: "uploading" as const }))]);
+    setItems((prev) => [...prev, ...list.map((f) => ({ name: f.name, status: "preparing" as const }))]);
 
     for (const [i, file] of list.entries()) {
-      const fd = new FormData();
-      fd.set("kind", kind);
-      fd.set("file", file);
-      if (categories) fd.set("category", category);
+      const at = start + i;
       let result: Item;
       try {
+        const ready = await prepareImage(file, kind);
+        setItems((prev) => prev.map((it, idx) => (idx === at ? { ...it, status: "uploading" } : it)));
+
+        const extension = ready.type === "image/webp" ? "webp" : "jpg";
+        const base = file.name.replace(/\.[^.]+$/, "");
+        const fd = new FormData();
+        fd.set("kind", kind);
+        fd.set("file", new File([ready.full], `${base}.${extension}`, { type: ready.type }));
+        fd.set("thumb", new File([ready.thumb], `${base}-thumb.${extension}`, { type: ready.type }));
+        fd.set("width", String(ready.width));
+        fd.set("height", String(ready.height));
+        if (categories) fd.set("category", category);
+
         const res = await fetch("/admin/upload", { method: "POST", body: fd });
         const body = (await res.json().catch(() => ({}))) as { error?: string };
         result = res.ok
           ? { name: file.name, status: "done" }
           : { name: file.name, status: "error", message: body.error ?? "Upload failed." };
-      } catch {
-        result = { name: file.name, status: "error", message: "Network problem — please try again." };
+      } catch (err) {
+        result = {
+          name: file.name,
+          status: "error",
+          message:
+            err instanceof ImagePrepareError ? err.message : "Network problem — please try again.",
+        };
       }
-      setItems((prev) => prev.map((it, idx) => (idx === start + i ? result : it)));
+      setItems((prev) => prev.map((it, idx) => (idx === at ? result : it)));
     }
 
     setBusy(false);
@@ -115,7 +134,7 @@ export function ImageUploader({
         <ul className="mt-4 grid gap-1.5 text-sm">
           {items.map((it, i) => (
             <li key={`${it.name}-${i}`} className="flex items-center gap-2">
-              {it.status === "uploading" ? (
+              {it.status === "preparing" || it.status === "uploading" ? (
                 <Loader2 className="size-4 shrink-0 animate-spin text-muted-foreground" />
               ) : it.status === "done" ? (
                 <CheckCircle2 className="size-4 shrink-0 text-[oklch(0.45_0.12_150)]" />
@@ -124,7 +143,13 @@ export function ImageUploader({
               )}
               <span className="truncate">{it.name}</span>
               <span className={cn("ml-auto shrink-0 text-xs", it.status === "error" ? "font-medium text-destructive" : "text-muted-foreground")}>
-                {it.status === "uploading" ? "Uploading…" : it.status === "done" ? "Uploaded & optimised" : it.message}
+                {it.status === "preparing"
+                  ? "Resizing…"
+                  : it.status === "uploading"
+                    ? "Uploading…"
+                    : it.status === "done"
+                      ? "Uploaded & optimised"
+                      : it.message}
               </span>
             </li>
           ))}

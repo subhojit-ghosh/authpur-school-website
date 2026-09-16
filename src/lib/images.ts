@@ -1,76 +1,38 @@
 import "server-only";
 
 import { randomBytes } from "node:crypto";
-import sharp, { type Metadata } from "sharp";
+import { MAX_STORED_BYTES, STORED_TYPES, sniffImageType, type ImageKind } from "@/lib/image-types";
 
-/** Upload rules and automatic optimisation for banner and gallery images. */
-
-/** The installed libvips version, or the reason sharp could not be used. Shown only to signed-in staff. */
-export function sharpVersion(): string {
-  try {
-    return sharp.versions?.vips ?? "unknown";
-  } catch (err) {
-    return `unavailable: ${(err as Error).message}`;
-  }
-}
-
-export const MAX_UPLOAD_BYTES = 15 * 1024 * 1024; // 15 MB per file
-
-const ACCEPTED_FORMATS = new Set(["jpeg", "png", "webp", "heif", "avif", "tiff", "gif"]);
-
-export const IMAGE_PRESETS = {
-  banner: { maxWidth: 1920, thumbWidth: 480, quality: 82 },
-  gallery: { maxWidth: 1600, thumbWidth: 640, quality: 82 },
-} as const;
-
-export type ImageKind = keyof typeof IMAGE_PRESETS;
-
-export type ProcessedImage = {
-  full: Buffer;
-  thumb: Buffer;
-  width: number;
-  height: number;
-};
+/**
+ * Server-side checks for an uploaded image.
+ *
+ * The resizing and re-encoding happen in the browser (see lib/image-client),
+ * because the serverless host this site runs on cannot be relied on to load a
+ * native image library. What arrives here is therefore treated as untrusted:
+ * the leading bytes must match a format the site serves, and the size must be
+ * within the stored limit.
+ */
 
 export class ImageError extends Error {}
 
-/**
- * Validates the file really is an image, fixes EXIF rotation, resizes it to the
- * preset width and re-encodes both a full-size and a thumbnail WebP.
- */
-export async function processImage(input: Buffer, kind: ImageKind): Promise<ProcessedImage> {
-  if (input.byteLength > MAX_UPLOAD_BYTES) {
-    throw new ImageError("That file is larger than 15 MB. Please use a smaller photo.");
-  }
+export type CheckedImage = { bytes: Buffer; type: string; extension: string };
 
-  let meta: Metadata;
-  try {
-    meta = await sharp(input).metadata();
-  } catch {
-    throw new ImageError("Only image files (JPG, PNG, WebP or HEIC) can be uploaded.");
-  }
-  if (!meta.format || !ACCEPTED_FORMATS.has(meta.format)) {
-    throw new ImageError("Only image files (JPG, PNG, WebP or HEIC) can be uploaded.");
-  }
+export async function checkImage(file: File, label: string): Promise<CheckedImage> {
+  if (file.size === 0) throw new ImageError(`No ${label} was received. Please try again.`);
+  if (file.size > MAX_STORED_BYTES) throw new ImageError("That photo is too large even after resizing.");
 
-  const preset = IMAGE_PRESETS[kind];
-  const base = sharp(input, { animated: false }).rotate();
+  const bytes = Buffer.from(await file.arrayBuffer());
+  const type = sniffImageType(bytes);
+  if (!type) throw new ImageError("Only image files (JPG, PNG, WebP or HEIC) can be uploaded.");
 
-  const fullImage = base.clone().resize({ width: preset.maxWidth, withoutEnlargement: true });
-  const { data: full, info } = await fullImage.webp({ quality: preset.quality }).toBuffer({ resolveWithObject: true });
-
-  const thumb = await base
-    .clone()
-    .resize({ width: preset.thumbWidth, withoutEnlargement: true })
-    .webp({ quality: 78 })
-    .toBuffer();
-
-  return { full, thumb, width: info.width, height: info.height };
+  return { bytes, type, extension: STORED_TYPES[type] };
 }
 
 /** Unique, URL-safe storage keys for an upload and its thumbnail. */
-export function makeStorageKeys(kind: ImageKind) {
+export function makeStorageKeys(kind: ImageKind, extension: string) {
   const id = `${Date.now().toString(36)}-${randomBytes(6).toString("hex")}`;
   const folder = kind === "banner" ? "banners" : "gallery";
-  return { key: `${folder}/${id}.webp`, thumbKey: `${folder}/${id}-thumb.webp` };
+  return { key: `${folder}/${id}.${extension}`, thumbKey: `${folder}/${id}-thumb.${extension}` };
 }
+
+export type { ImageKind };
