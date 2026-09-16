@@ -52,10 +52,17 @@ export async function POST(request: Request) {
   }
 
   const { key, thumbKey } = makeStorageKeys(kind);
-  const [url, thumbUrl] = await Promise.all([
-    storage.put(key, processed.full, "image/webp"),
-    storage.put(thumbKey, processed.thumb, "image/webp"),
-  ]);
+  let url: string;
+  let thumbUrl: string;
+  try {
+    [url, thumbUrl] = await Promise.all([
+      storage.put(key, processed.full, "image/webp"),
+      storage.put(thumbKey, processed.thumb, "image/webp"),
+    ]);
+  } catch (err) {
+    console.error("Storing the uploaded image failed", err);
+    return json({ error: "The image could not be saved. Please try again in a moment." }, 500);
+  }
 
   if (kind === "banner") {
     const [last] = await db.select({ m: max(banners.sortOrder) }).from(banners);

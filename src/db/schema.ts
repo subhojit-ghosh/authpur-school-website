@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { bigint, boolean, integer, pgTable, serial, text } from "drizzle-orm/pg-core";
+import { bigint, boolean, customType, integer, pgTable, serial, text } from "drizzle-orm/pg-core";
 
 /**
  * Admin panel data model (PostgreSQL — Neon in production, embedded PGlite locally).
@@ -10,6 +10,11 @@ import { bigint, boolean, integer, pgTable, serial, text } from "drizzle-orm/pg-
 
 /** Timestamps are stored as text (ISO-like) to keep the schema simple and portable. */
 const nowText = () => sql`now()::text`;
+
+/** Raw bytes. Postgres `bytea` comes back from the driver as a Buffer. */
+const bytea = customType<{ data: Buffer; driverData: Buffer }>({
+  dataType: () => "bytea",
+});
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -149,3 +154,21 @@ export const auditLog = pgTable("audit_log", {
 });
 
 export type AuditEntry = typeof auditLog.$inferSelect;
+
+/**
+ * Uploaded images, stored in the database.
+ *
+ * The site runs on a serverless host with a read-only filesystem, so uploads
+ * cannot be written next to the code. Keeping the bytes here means photographs
+ * survive every deployment and need no external storage account. When a Vercel
+ * Blob store is connected the driver uses that instead and this table is
+ * simply not written to.
+ */
+export const uploadedFiles = pgTable("uploaded_files", {
+  /** Storage key, e.g. "gallery/abc123.webp". Matches banners.storageKey and gallery_photos.storageKey. */
+  key: text("key").primaryKey(),
+  contentType: text("content_type").notNull(),
+  data: bytea("data").notNull(),
+  size: integer("size").notNull(),
+  createdAt: text("created_at").notNull().default(nowText()),
+});
