@@ -23,7 +23,7 @@ export async function checkImage(file: File, label: string): Promise<CheckedImag
 
   const bytes = Buffer.from(await file.arrayBuffer());
   const type = sniffImageType(bytes);
-  if (!type) throw new ImageError("Only image files (JPG, PNG, WebP or HEIC) can be uploaded.");
+  if (!type) throw new ImageError("Only JPG, PNG and WebP images can be uploaded.");
 
   return { bytes, type, extension: STORED_TYPES[type] };
 }

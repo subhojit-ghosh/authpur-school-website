@@ -31,7 +31,7 @@ export default async function BannersPage() {
         }
       />
 
-      <ImageUploader kind="banner" hint="JPG, PNG, WebP or HEIC · up to 15 MB each · resized and optimised automatically" />
+      <ImageUploader kind="banner" hint="JPG, PNG or WebP · up to 15 MB each · resized and optimised automatically" />
 
       {list.length === 0 ? (
         <EmptyState icon={PanelTop} title="No banner images" description="Upload at least one photo above. Until then the home page shows the original sample banners." />

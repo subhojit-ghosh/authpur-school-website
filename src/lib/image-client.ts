@@ -45,7 +45,9 @@ async function loadImage(file: File): Promise<Source> {
     await img.decode();
   } catch {
     URL.revokeObjectURL(url);
-    throw new ImagePrepareError("That file could not be read as an image.");
+    throw new ImagePrepareError(
+      "This browser could not read that file. Please save the photo as JPG or PNG and try again.",
+    );
   }
   return {
     draw: img,
@@ -88,7 +90,7 @@ export async function prepareImage(file: File, kind: ImageKind): Promise<Prepare
     throw new ImagePrepareError("That file is larger than 15 MB. Please use a smaller photo.");
   }
   if (file.type && !file.type.startsWith("image/")) {
-    throw new ImagePrepareError("Only image files (JPG, PNG, WebP or HEIC) can be uploaded.");
+    throw new ImagePrepareError("Only JPG, PNG and WebP images can be uploaded.");
   }
 
   const preset = IMAGE_PRESETS[kind];

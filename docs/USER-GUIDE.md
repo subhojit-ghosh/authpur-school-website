@@ -218,7 +218,7 @@ change, any other device that was signed in must sign in again.
 | --- | --- |
 | "Incorrect username or password" | Check Caps Lock and try again. After 5 attempts wait 15 minutes. |
 | A change does not show on the website | Refresh the page (Ctrl+R / Cmd+R). If it still does not show after a minute, contact the developer. |
-| A photo will not upload | Make sure it is a JPG, PNG, WebP or HEIC file under 15 MB. |
+| A photo will not upload | Make sure it is a JPG, PNG or WebP file under 15 MB. |
 | Formatting looks wrong after pasting | Paste is cleaned automatically; only bold, italic, lists, quotes and links are kept. |
 | Signed out unexpectedly | Sessions last 7 days; simply sign in again. |
 | Someone forgot their password | Another staff member can reset it from **Staff accounts**. |

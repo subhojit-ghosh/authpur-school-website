@@ -40,7 +40,7 @@ export default async function GalleryAdminPage({ searchParams }: { searchParams:
         kind="gallery"
         categories={GALLERY_CATEGORIES}
         defaultCategory={active}
-        hint="JPG, PNG, WebP or HEIC · up to 15 MB each · you can select several at once"
+        hint="JPG, PNG or WebP · up to 15 MB each · you can select several at once"
       />
 
       {/* Category filter */}
