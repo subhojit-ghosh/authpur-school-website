@@ -25,11 +25,33 @@ function portOpen(port, host = "127.0.0.1", timeoutMs = 700) {
   });
 }
 
+/**
+ * `pg` treats sslmode=require (and prefer, and verify-ca) as verify-full today
+ * and warns that a coming major will give them their weaker libpq meaning.
+ * Neon presents a valid certificate, so naming verify-full explicitly keeps the
+ * strict check and silences the warning. Kept in step with pinSslMode() in
+ * src/db/index.ts; it is repeated rather than imported because importing that
+ * module would open a connection pool as a side effect.
+ */
+const ALIASED_SSL_MODES = new Set(["require", "prefer", "verify-ca"]);
+
+function pinSslMode(url) {
+  try {
+    const parsed = new URL(url);
+    const mode = parsed.searchParams.get("sslmode");
+    if (!mode || !ALIASED_SSL_MODES.has(mode)) return url;
+    parsed.searchParams.set("sslmode", "verify-full");
+    return parsed.toString();
+  } catch {
+    return url;
+  }
+}
+
 async function viaPg(url, label) {
   const { Pool } = await import("pg");
   const { drizzle } = await import("drizzle-orm/node-postgres");
   const { migrate } = await import("drizzle-orm/node-postgres/migrator");
-  const pool = new Pool({ connectionString: url, max: 1 });
+  const pool = new Pool({ connectionString: pinSslMode(url), max: 1 });
   const orm = drizzle(pool);
   return {
     label,

@@ -29,11 +29,19 @@ export interface StorageDriver {
   remove(key: string): Promise<void>;
 }
 
-export const UPLOADS_DIR = resolve(process.cwd(), process.env.UPLOADS_DIR?.trim() || "./data/uploads");
+/*
+ * The path is built at runtime, so Turbopack cannot tell which files it might
+ * reach and traces the entire project — sources and `public/` included — into
+ * the serverless bundle. Nothing here is read at build time, and on Vercel the
+ * disk is read-only so this branch never runs at all, so the tracing is opted
+ * out of rather than the lookup being made static: the directory stays
+ * configurable for a self-hosted install.
+ */
+export const UPLOADS_DIR = resolve(/*turbopackIgnore: true*/ process.cwd(), process.env.UPLOADS_DIR?.trim() || "./data/uploads");
 
 /** Resolves a storage key to an absolute path inside UPLOADS_DIR, or null if it escapes it. */
 export function safeUploadPath(key: string): string | null {
-  const full = resolve(UPLOADS_DIR, key);
+  const full = resolve(/*turbopackIgnore: true*/ UPLOADS_DIR, key);
   return full === UPLOADS_DIR || full.startsWith(UPLOADS_DIR + sep) ? full : null;
 }
 

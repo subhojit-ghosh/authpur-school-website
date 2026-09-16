@@ -55,9 +55,28 @@ the repository, add `DATABASE_URL`, click **Deploy**.
 
 Vercel picks the package manager from the lockfile in the repository. This
 project commits `bun.lock`, so Vercel installs with Bun and runs the `build`
-script with it — no build or install command needs to be set by hand. Keep
-`bun.lock` committed; if it is ever deleted Vercel falls back to npm and the
-build will fail on the missing `bun` in the `build` script.
+script with it. Keep `bun.lock` committed; if it is ever deleted Vercel falls
+back to npm and the build will fail on the missing `bun` in the `build` script.
+
+`vercel.json` sets the install command rather than leaving it to Vercel:
+
+```json
+"installCommand": "npx --yes bun@1.4.2 install --frozen-lockfile"
+```
+
+The build container still ships Bun 1.3, which cannot read the `bun.lock`
+written by Bun 1.4 (`lockfileVersion: 2`). Left alone it prints
+`error: Unknown lockfile version`, then `warn: Ignoring lockfile` and resolves
+every dependency afresh — so the versions deployed are whatever matched the
+ranges in `package.json` that morning, not the ones anybody tested. Naming the
+Bun version restores that guarantee, and `--frozen-lockfile` makes the build
+fail loudly if `package.json` and `bun.lock` have drifted apart.
+
+**Keep that version in step with the Bun used locally.** After upgrading Bun
+and re-running `bun install`, change the version in `vercel.json` to match,
+otherwise a newer lockfile format will fail the deploy. The pin can be dropped
+once Vercel's build container reads `lockfileVersion: 2` on its own
+([vercel/vercel#17577](https://github.com/vercel/vercel/issues/17577)).
 
 ## 4. Connect image storage (Vercel Blob)
 
