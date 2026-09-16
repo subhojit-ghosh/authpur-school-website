@@ -5,6 +5,15 @@ import sharp, { type Metadata } from "sharp";
 
 /** Upload rules and automatic optimisation for banner and gallery images. */
 
+/** The installed libvips version, or the reason sharp could not be used. Shown only to signed-in staff. */
+export function sharpVersion(): string {
+  try {
+    return sharp.versions?.vips ?? "unknown";
+  } catch (err) {
+    return `unavailable: ${(err as Error).message}`;
+  }
+}
+
 export const MAX_UPLOAD_BYTES = 15 * 1024 * 1024; // 15 MB per file
 
 const ACCEPTED_FORMATS = new Set(["jpeg", "png", "webp", "heif", "avif", "tiff", "gif"]);

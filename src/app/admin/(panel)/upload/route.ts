@@ -3,10 +3,10 @@ import { db } from "@/db";
 import { banners, galleryPhotos } from "@/db/schema";
 import { getSession } from "@/lib/auth";
 import { recordAudit } from "@/lib/audit";
-import { ImageError, makeStorageKeys, processImage, type ImageKind } from "@/lib/images";
+import { ImageError, makeStorageKeys, processImage, sharpVersion, type ImageKind } from "@/lib/images";
 import { revalidateGallery, revalidateHome } from "@/lib/revalidate";
 import { isGalleryCategory } from "@/lib/settings-types";
-import { storage } from "@/lib/storage";
+import { storage, storageDriverName } from "@/lib/storage";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +20,23 @@ const json = (body: unknown, status = 200) =>
  *   category: gallery category (gallery only)
  *   alt:      optional alt text / caption
  */
+/** Confirms the endpoint and its image library loaded. Used when diagnosing a failed upload. */
+export async function GET() {
+  const session = await getSession();
+  if (!session) return json({ error: "Please sign in again." }, 401);
+  return json({ ok: true, storage: storageDriverName, sharp: sharpVersion() });
+}
+
 export async function POST(request: Request) {
+  try {
+    return await handleUpload(request);
+  } catch (err) {
+    console.error("Upload failed", err);
+    return json({ error: "The upload failed unexpectedly.", detail: (err as Error)?.message ?? String(err) }, 500);
+  }
+}
+
+async function handleUpload(request: Request) {
   const session = await getSession();
   if (!session) return json({ error: "Please sign in again." }, 401);
 
