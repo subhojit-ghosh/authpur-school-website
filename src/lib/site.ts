@@ -221,9 +221,9 @@ export const footerNavigate = [
 export type HeroImage = { src: string; alt: string };
 
 export const heroImages: HeroImage[] = [
-  { src: "/banners/hero-1.jpg", alt: "Students learning together in a bright classroom" },
+  { src: "/banners/hero-1.jpg", alt: "Senior students in uniform listening during a lesson" },
   { src: "/banners/hero-2.jpg", alt: "Young students focused on their studies" },
-  { src: "/banners/hero-3.jpg", alt: "Students collaborating on a project" },
+  { src: "/banners/hero-3.jpg", alt: "Younger students at their desks during a class" },
   { src: "/banners/hero-4.jpg", alt: "The school campus building" },
   { src: "/banners/hero-5.jpg", alt: "Books and reading in the school library" },
 ];

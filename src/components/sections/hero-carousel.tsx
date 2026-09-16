@@ -34,20 +34,20 @@ export function HeroCarousel({ images }: { images: HeroImage[] }) {
       onMouseLeave={() => setPaused(false)}
     >
       {/*
-        The band's height follows its width rather than being a fixed number of
-        pixels. Banners keep whatever shape staff upload (the browser only
-        scales them to 1920px wide), so a fixed height made the slot far wider
-        than the photographs on a large screen and `object-cover` answered that
-        by cutting the top and bottom off. These ratios stay near the shape of
-        an ordinary photograph, and the cap stops the hero from swallowing the
-        page on a very wide monitor.
+        Sized the way a school banner usually is: a band that is tall enough to
+        read as a photograph but still leaves the page below it in view. Tying
+        the height to the width instead made the hero fill the whole screen on a
+        desktop, and a small fixed height made the slot so much wider than the
+        photographs that `object-cover` cut the top and bottom away. Half the
+        viewport, held between 400px and 520px, sits between the two, and the
+        crop is biased slightly upwards because faces sit above the middle in
+        most classroom photographs.
       */}
-      <div className="relative aspect-4/3 max-h-[720px] w-full overflow-hidden bg-brand sm:aspect-16/9 lg:aspect-2/1">
+      <div className="relative h-[280px] w-full overflow-hidden bg-brand sm:h-[360px] lg:h-[clamp(400px,50vh,520px)]">
         {images.map((img, i) => (
           // Deliberately a plain <img>: banners are already resized to 1920px
-          // and re-encoded as WebP in the browser before upload, and they are
-          // served from Blob storage, so next/image would re-optimise work that
-          // is already done.
+          // and re-encoded as WebP in the browser before upload, so next/image
+          // would re-optimise work that is already done.
           // oxlint-disable-next-line nextjs/no-img-element
           <img
             key={img.src}
@@ -57,7 +57,7 @@ export function HeroCarousel({ images }: { images: HeroImage[] }) {
             fetchPriority={i === 0 ? "high" : "low"}
             aria-hidden={i !== index}
             className={cn(
-              "absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ease-out",
+              "absolute inset-0 h-full w-full object-cover object-[center_40%] transition-opacity duration-1000 ease-out",
               i === index ? "opacity-100" : "opacity-0",
             )}
           />
