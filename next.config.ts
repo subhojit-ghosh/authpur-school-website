@@ -8,8 +8,13 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  // Native / WASM database drivers stay out of the server bundle.
-  serverExternalPackages: ["pg"],
+  /**
+   * Packages with native binaries must not be bundled: Vercel traces their
+   * platform-specific `.node` files only when they are left external. Bundling
+   * sharp made the upload function fail to start in production, which the
+   * browser saw as a crash page rather than an upload error.
+   */
+  serverExternalPackages: ["pg", "sharp"],
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }];
   },
