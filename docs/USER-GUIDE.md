@@ -136,8 +136,9 @@ Open **Website Text** in the menu and pick an area:
   paragraphs, quote and three pillars, Academics with its programme cards,
   Why Us, Campus Life, the notice board headings, Testimonials, the admissions
   call to action and the contact introduction.
-- **Chairman & Principal:** names, roles and the full message on each page. One
-  blank line starts a new paragraph.
+- **Chairman & Principal:** names, roles and the full message on each page. The
+  message is a formatting box, so you can make words bold or italic and add
+  bullet points, a quote or a link.
 - **Page headings:** the blue band at the top of each interior page — the small
   label, the title and the introduction.
 - **Laboratories:** the laboratories listed on the Labs page.
@@ -148,6 +149,14 @@ Rows can be re-ordered with ↑ ↓, removed with the bin, and added with the
 **Add** button. In the About paragraphs you can write `{year}` for the
 established year and `{shortName}` for the short school name. Click
 **Save & publish** at the bottom; the website updates straight away.
+
+Longer pieces of writing use the same formatting box as a notice description,
+with buttons for bold, italic, bullet points, numbered lists, a quote and a
+link. Those are the two leadership messages, the About paragraphs, each
+laboratory description, the footer paragraph, the note under the fee table on
+the Admissions page and the note on the School Timings page. Titles, labels,
+headings and statistics stay plain text, because the website styles those
+itself.
 
 ## 11. Staff accounts
 
