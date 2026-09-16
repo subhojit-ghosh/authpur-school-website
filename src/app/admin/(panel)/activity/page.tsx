@@ -24,8 +24,18 @@ const actionStyles: Record<string, string> = {
   "signed out": "bg-muted text-muted-foreground",
 };
 
+/** Turns a diff path such as `about.pillars[2].title` into “About › Pillars 2 › Title”. */
 function readable(key: string) {
-  return key.replace(/([A-Z])/g, " $1").replace(/^./, (c) => c.toUpperCase());
+  return key
+    .split(".")
+    .map((part) =>
+      part
+        .replace(/\[(\d+)\]/g, " $1")
+        .replace(/([A-Z])/g, " $1")
+        .replace(/^./, (c) => c.toUpperCase())
+        .trim(),
+    )
+    .join(" › ");
 }
 
 function short(value: unknown) {

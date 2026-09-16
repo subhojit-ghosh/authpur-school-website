@@ -93,7 +93,7 @@ export default async function HomeContentPage() {
               { key: "title", label: "Programme", placeholder: "e.g. Primary School" },
               { key: "grades", label: "Classes", placeholder: "e.g. Class I – V" },
               { key: "blurb", label: "Description", placeholder: "One or two sentences" },
-              { key: "points", label: "Points (one per line)", placeholder: "Play-based learning" },
+              { key: "points", label: "Points (one per line)", placeholder: "Play-based learning", multiline: true },
             ]}
             initial={home.academics.programmes}
             addLabel="Add programme"

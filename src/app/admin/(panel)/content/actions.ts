@@ -2,10 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth";
-import { recordAudit } from "@/lib/audit";
+import { flatDiff, recordAudit } from "@/lib/audit";
 import { parseRows } from "@/lib/form-rows";
 import { revalidateWholeSite } from "@/lib/revalidate";
-import { getHomeContent, getIdentity, getPageBanners } from "@/lib/page-content";
+import { getHomeContent, getIdentity, getLabsContent, getLeadership, getPageBanners } from "@/lib/page-content";
 import {
   CONTENT_KEYS,
   PAGE_BANNER_LABELS,
@@ -56,7 +56,7 @@ export async function saveIdentity(_prev: ContentState, formData: FormData): Pro
 
   await saveSetting(CONTENT_KEYS.identity, value);
   await recordAudit("Website Text", "updated", "Updated the school identity and footer", {
-    details: { changedFrom: before.shortName, changedTo: value.shortName },
+    details: flatDiff(before, value),
   });
   return done("School identity and footer");
 }
@@ -78,7 +78,9 @@ export async function savePageBanners(_prev: ContentState, formData: FormData): 
   }
 
   await saveSetting(CONTENT_KEYS.pageBanners, value);
-  await recordAudit("Website Text", "updated", "Updated the page headings");
+  await recordAudit("Website Text", "updated", "Updated the page headings", {
+    details: flatDiff(before, value),
+  });
   return done("Page headings");
 }
 
@@ -99,8 +101,11 @@ export async function saveLeadership(_prev: ContentState, formData: FormData): P
   if (!value.chairman.name || !value.principal.name) return { error: "Both names are required." };
   if (!value.chairman.message || !value.principal.message) return { error: "Both messages are required." };
 
+  const before = await getLeadership();
   await saveSetting(CONTENT_KEYS.leadership, value);
-  await recordAudit("Website Text", "updated", "Updated the Chairman's and Principal's messages");
+  await recordAudit("Website Text", "updated", "Updated the Chairman's and Principal's messages", {
+    details: flatDiff(before, value),
+  });
   return done("Leadership messages");
 }
 
@@ -113,8 +118,11 @@ export async function saveLabs(_prev: ContentState, formData: FormData): Promise
   if (rows.some((r) => !r.name || !r.blurb)) return { error: "Every laboratory needs a name and a description." };
 
   const value: LabsContent = { items: rows };
+  const before = await getLabsContent();
   await saveSetting(CONTENT_KEYS.labs, value);
-  await recordAudit("Website Text", "updated", `Updated the laboratories page (${rows.length} laboratories)`);
+  await recordAudit("Website Text", "updated", `Updated the laboratories page (${rows.length} laboratories)`, {
+    details: flatDiff(before, value),
+  });
   return done("Laboratories");
 }
 
@@ -168,7 +176,7 @@ export async function saveHome(_prev: ContentState, formData: FormData): Promise
 
   await saveSetting(CONTENT_KEYS.home, value);
   await recordAudit("Website Text", "updated", "Updated the home page sections", {
-    details: { headingBefore: before.about.heading, headingAfter: value.about.heading },
+    details: flatDiff(before, value),
   });
   return done("Home page sections");
 }

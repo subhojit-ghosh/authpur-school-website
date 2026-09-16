@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth";
-import { diff, recordAudit } from "@/lib/audit";
+import { flatDiff, recordAudit } from "@/lib/audit";
 import { parseRows } from "@/lib/form-rows";
 import { revalidateAdmissions } from "@/lib/revalidate";
 import { getAdmissionsContent, saveSetting } from "@/lib/settings";
@@ -33,7 +33,7 @@ export async function saveAdmissions(_prev: SaveState, formData: FormData): Prom
   const before = await getAdmissionsContent();
   await saveSetting(SETTING_KEYS.admissions, value);
   await recordAudit("Admissions Content", "updated", "Updated the admission dates, eligibility and fees", {
-    details: diff(before as unknown as Record<string, unknown>, value as unknown as Record<string, unknown>),
+    details: flatDiff(before, value),
   });
   revalidateAdmissions();
   revalidatePath("/admin/admissions");

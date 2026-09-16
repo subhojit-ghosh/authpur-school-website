@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth";
-import { diff, recordAudit } from "@/lib/audit";
+import { flatDiff, recordAudit } from "@/lib/audit";
 import { parseRows } from "@/lib/form-rows";
 import { revalidateWholeSite } from "@/lib/revalidate";
 import { getSchoolInfo, getTimings, saveSetting } from "@/lib/settings";
@@ -42,7 +42,7 @@ export async function saveSchoolInfo(_prev: SaveState, formData: FormData): Prom
   const before = await getSchoolInfo();
   await saveSetting(SETTING_KEYS.schoolInfo, value);
   await recordAudit("School Info", "updated", "Updated the contact details and address", {
-    details: diff(before as unknown as Record<string, unknown>, value as unknown as Record<string, unknown>),
+    details: flatDiff(before, value),
   });
   revalidateWholeSite();
   revalidatePath("/admin/school-info");
@@ -66,7 +66,7 @@ export async function saveTimings(_prev: SaveState, formData: FormData): Promise
   const before = await getTimings();
   await saveSetting(SETTING_KEYS.timings, value);
   await recordAudit("School Info", "updated", "Updated the school timings", {
-    details: diff(before as unknown as Record<string, unknown>, value as unknown as Record<string, unknown>),
+    details: flatDiff(before, value),
   });
   revalidatePath("/school-timings");
   revalidatePath("/admin/school-info");

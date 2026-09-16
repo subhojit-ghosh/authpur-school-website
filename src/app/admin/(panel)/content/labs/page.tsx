@@ -48,8 +48,8 @@ export default async function LabsContentPage() {
             columns={[
               { key: "icon", label: "Icon", placeholder: LAB_ICONS[0] },
               { key: "name", label: "Name", placeholder: "e.g. Physics Laboratory" },
-              { key: "blurb", label: "Description", placeholder: "One or two sentences" },
-              { key: "points", label: "Highlights (one per line)", placeholder: "Optics kits" },
+              { key: "blurb", label: "Description", placeholder: "One or two sentences", multiline: true },
+              { key: "points", label: "Highlights (one per line)", placeholder: "Optics kits", multiline: true },
             ]}
             initial={labs.items}
             addLabel="Add laboratory"

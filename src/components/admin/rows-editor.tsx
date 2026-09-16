@@ -4,8 +4,16 @@ import { useState } from "react";
 import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
-export type RowsColumn = { key: string; label: string; placeholder?: string; className?: string };
+export type RowsColumn = {
+  key: string;
+  label: string;
+  placeholder?: string;
+  className?: string;
+  /** Renders a textarea instead of a single-line box. Required for any value that holds line breaks — a single-line input silently drops them. */
+  multiline?: boolean;
+};
 
 /**
  * Editable list of rows for a form. Inputs are named `${name}[i][key]` so the
@@ -68,19 +76,31 @@ export function RowsEditor({
         <div
           key={row.id}
           style={gridVars}
-          className="grid gap-2 rounded-xl border bg-background/60 p-3 sm:grid-cols-[var(--rows-cols)] sm:items-center sm:rounded-none sm:border-0 sm:bg-transparent sm:p-0"
+          className="grid gap-2 rounded-xl border bg-background/60 p-3 sm:grid-cols-[var(--rows-cols)] sm:items-start sm:rounded-none sm:border-0 sm:bg-transparent sm:p-0"
         >
           {columns.map((c) => (
             <div key={c.key} className="grid gap-1">
               <span className="text-[11px] font-medium text-muted-foreground sm:hidden">{c.label}</span>
-              <Input
-                name={`${name}[${i}][${c.key}]`}
-                value={row.values[c.key] ?? ""}
-                placeholder={c.placeholder}
-                onChange={(e) => update(row.id, c.key, e.target.value)}
-                className={c.className}
-                aria-label={c.label}
-              />
+              {c.multiline ? (
+                <Textarea
+                  name={`${name}[${i}][${c.key}]`}
+                  value={row.values[c.key] ?? ""}
+                  placeholder={c.placeholder}
+                  onChange={(e) => update(row.id, c.key, e.target.value)}
+                  className={c.className}
+                  rows={3}
+                  aria-label={c.label}
+                />
+              ) : (
+                <Input
+                  name={`${name}[${i}][${c.key}]`}
+                  value={row.values[c.key] ?? ""}
+                  placeholder={c.placeholder}
+                  onChange={(e) => update(row.id, c.key, e.target.value)}
+                  className={c.className}
+                  aria-label={c.label}
+                />
+              )}
             </div>
           ))}
 

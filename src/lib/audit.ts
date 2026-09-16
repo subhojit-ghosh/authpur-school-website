@@ -86,6 +86,56 @@ export function diff<T extends Record<string, unknown>>(before: T, after: T) {
   return Object.keys(changed).length ? changed : undefined;
 }
 
+/**
+ * A field-level diff for nested content objects.
+ *
+ * `diff` compares top-level keys, so a change to one laboratory name shows up as
+ * the whole array. `flatDiff` walks into objects and arrays and reports dotted
+ * paths (`about.heading`, `labs[2].name`) with just the values that moved, which
+ * is what the activity log shows staff under “What changed”.
+ */
+export function flatDiff(before: unknown, after: unknown, limit = 25) {
+  const changed: Record<string, { from: unknown; to: unknown }> = {};
+
+  const walk = (a: unknown, b: unknown, path: string) => {
+    if (Object.keys(changed).length >= limit) return;
+    if (JSON.stringify(a) === JSON.stringify(b)) return;
+
+    const bothArrays = Array.isArray(a) && Array.isArray(b);
+    const bothObjects =
+      !bothArrays &&
+      a !== null &&
+      b !== null &&
+      typeof a === "object" &&
+      typeof b === "object" &&
+      !Array.isArray(a) &&
+      !Array.isArray(b);
+
+    if (bothArrays) {
+      const arrA = a as unknown[];
+      const arrB = b as unknown[];
+      for (let i = 0; i < Math.max(arrA.length, arrB.length); i++) {
+        walk(arrA[i], arrB[i], `${path}[${i + 1}]`);
+      }
+      return;
+    }
+
+    if (bothObjects) {
+      const objA = a as Record<string, unknown>;
+      const objB = b as Record<string, unknown>;
+      for (const key of new Set([...Object.keys(objA), ...Object.keys(objB)])) {
+        walk(objA[key], objB[key], path ? `${path}.${key}` : key);
+      }
+      return;
+    }
+
+    changed[path || "value"] = { from: a, to: b };
+  };
+
+  walk(before, after, "");
+  return Object.keys(changed).length ? changed : undefined;
+}
+
 export type AuditFilter = { q?: string; section?: string; person?: string; limit?: number; offset?: number };
 
 function where(f: AuditFilter): SQL | undefined {
