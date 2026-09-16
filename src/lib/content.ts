@@ -30,6 +30,16 @@ export async function getNotice(id: number) {
   return row;
 }
 
+/** A single notice for the public page. Inactive notices are treated as missing. */
+export async function getPublicNotice(id: number) {
+  const [row] = await db
+    .select()
+    .from(notices)
+    .where(and(eq(notices.id, id), eq(notices.active, true)))
+    .limit(1);
+  return row;
+}
+
 /** Number of notices shown on the website. */
 export async function countNotices(includeInactive = false) {
   const [row] = await db
@@ -57,6 +67,16 @@ export async function getAllEvents() {
 
 export async function getEvent(id: number) {
   const [row] = await db.select().from(events).where(eq(events.id, id)).limit(1);
+  return row;
+}
+
+/** A single event for the public page, past or future. Inactive events are treated as missing. */
+export async function getPublicEvent(id: number) {
+  const [row] = await db
+    .select()
+    .from(events)
+    .where(and(eq(events.id, id), eq(events.active, true)))
+    .limit(1);
   return row;
 }
 

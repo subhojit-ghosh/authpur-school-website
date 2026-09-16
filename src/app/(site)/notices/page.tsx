@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import { Bell, CalendarDays, ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { Bell, CalendarDays, ArrowRight, ChevronRight } from "lucide-react";
 import { PageBanner } from "@/components/page-banner";
 import { getHomeContent, getPageBanners } from "@/lib/page-content";
-import { RichText } from "@/components/rich-text";
 import { getNotices, getUpcomingEvents } from "@/lib/content";
 import { noticeTagClass } from "@/lib/content-types";
+import { eventPath, noticePath } from "@/lib/permalinks";
 import { dayMonth, formatDate } from "@/lib/format";
 
 export const metadata: Metadata = {
@@ -41,29 +42,31 @@ export default async function NoticesPage() {
             {noticeList.length ? (
               <ul className="mt-6 space-y-4">
                 {noticeList.map((n) => (
-                  <li
-                    key={n.id}
-                    className="group rounded-2xl border bg-card p-5 transition-all hover:-translate-y-0.5 hover:shadow-md"
-                  >
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                      <div className="flex items-center gap-3">
-                        <span
-                          className={`inline-flex shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ${noticeTagClass(n.tag)}`}
-                        >
-                          {n.tag}
+                  <li key={n.id}>
+                    <Link
+                      href={noticePath(n)}
+                      className="group block rounded-2xl border bg-card p-5 transition-all hover:-translate-y-0.5 hover:border-brand/30 hover:shadow-md"
+                    >
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                        <div className="flex items-center gap-3">
+                          <span
+                            className={`inline-flex shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ${noticeTagClass(n.tag)}`}
+                          >
+                            {n.tag}
+                          </span>
+                          <span className="text-xs font-medium text-muted-foreground sm:hidden">
+                            {formatDate(n.date, "long")}
+                          </span>
+                        </div>
+                        <span className="flex-1 text-sm font-medium text-foreground transition-colors group-hover:text-brand">
+                          {n.title}
                         </span>
-                        <span className="text-xs font-medium text-muted-foreground sm:hidden">
+                        <span className="hidden shrink-0 text-xs font-medium text-muted-foreground sm:block">
                           {formatDate(n.date, "long")}
                         </span>
+                        <ChevronRight className="hidden size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-brand sm:block" />
                       </div>
-                      <span className="flex-1 text-sm font-medium text-foreground transition-colors group-hover:text-brand">
-                        {n.title}
-                      </span>
-                      <span className="hidden shrink-0 text-xs font-medium text-muted-foreground sm:block">
-                        {formatDate(n.date, "long")}
-                      </span>
-                    </div>
-                    {n.description ? <RichText html={n.description} className="mt-3 border-t pt-3" /> : null}
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -86,9 +89,10 @@ export default async function NoticesPage() {
                 eventList.map((e) => {
                   const { day, month } = dayMonth(e.date);
                   return (
-                    <div
+                    <Link
                       key={e.id}
-                      className="rounded-2xl border bg-card p-4 transition-all hover:-translate-y-0.5 hover:shadow-md"
+                      href={eventPath(e)}
+                      className="group block rounded-2xl border bg-card p-4 transition-all hover:-translate-y-0.5 hover:border-brand/30 hover:shadow-md"
                     >
                       <div className="flex items-center gap-4">
                         <div className="grid size-16 shrink-0 place-items-center rounded-xl bg-brand text-brand-foreground">
@@ -99,9 +103,9 @@ export default async function NoticesPage() {
                           <p className="font-semibold text-brand">{e.title}</p>
                           <p className="text-sm text-muted-foreground">{e.venue}</p>
                         </div>
+                        <ChevronRight className="ml-auto size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-brand" />
                       </div>
-                      {e.description ? <RichText html={e.description} className="mt-3 border-t pt-3" /> : null}
-                    </div>
+                    </Link>
                   );
                 })
               ) : (

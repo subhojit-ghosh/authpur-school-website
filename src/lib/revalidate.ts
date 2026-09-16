@@ -6,6 +6,9 @@ import { revalidatePath } from "next/cache";
 export function revalidateNoticesAndEvents() {
   revalidatePath("/");
   revalidatePath("/notices");
+  // Every individual notice and event page, including the "other notices" lists on them.
+  revalidatePath("/notices/[slug]", "page");
+  revalidatePath("/events/[slug]", "page");
 }
 
 /** Home page only (hero banners). */

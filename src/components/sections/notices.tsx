@@ -1,8 +1,10 @@
-import { Bell, CalendarDays, ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { Bell, CalendarDays, ArrowRight, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getNotices, getUpcomingEvents } from "@/lib/content";
 import { getHomeContent } from "@/lib/page-content";
 import { noticeTagClass } from "@/lib/content-types";
+import { eventPath, noticePath } from "@/lib/permalinks";
 import { dayMonth, formatDate } from "@/lib/format";
 
 export async function Notices() {
@@ -31,21 +33,24 @@ export async function Notices() {
           {noticeList.length ? (
             <ul className="mt-8 divide-y rounded-2xl border bg-card">
               {noticeList.map((n) => (
-                <li
-                  key={n.id}
-                  className="group flex flex-col gap-2 p-5 transition-colors hover:bg-accent/40 sm:flex-row sm:items-center sm:gap-5"
-                >
-                  <span className="w-24 shrink-0 text-xs font-medium text-muted-foreground">
-                    {formatDate(n.date)}
-                  </span>
-                  <span
-                    className={`inline-flex w-fit shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ${noticeTagClass(n.tag)}`}
+                <li key={n.id}>
+                  <Link
+                    href={noticePath(n)}
+                    className="group flex flex-col gap-2 p-5 transition-colors hover:bg-accent/40 sm:flex-row sm:items-center sm:gap-5"
                   >
-                    {n.tag}
-                  </span>
-                  <span className="flex-1 text-sm font-medium text-foreground transition-colors group-hover:text-brand">
-                    {n.title}
-                  </span>
+                    <span className="w-24 shrink-0 text-xs font-medium text-muted-foreground">
+                      {formatDate(n.date)}
+                    </span>
+                    <span
+                      className={`inline-flex w-fit shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ${noticeTagClass(n.tag)}`}
+                    >
+                      {n.tag}
+                    </span>
+                    <span className="flex-1 text-sm font-medium text-foreground transition-colors group-hover:text-brand">
+                      {n.title}
+                    </span>
+                    <ChevronRight className="hidden size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-brand sm:block" />
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -56,10 +61,10 @@ export async function Notices() {
           )}
 
           <Button variant="ghost" className="mt-5 text-brand hover:text-brand" asChild>
-            <a href="/notices">
+            <Link href="/notices">
               View all notices
               <ArrowRight className="size-4" />
-            </a>
+            </Link>
           </Button>
         </div>
 
@@ -76,9 +81,10 @@ export async function Notices() {
               eventList.map((e) => {
                 const { day, month } = dayMonth(e.date);
                 return (
-                  <div
+                  <Link
                     key={e.id}
-                    className="flex items-center gap-4 rounded-2xl border bg-card p-4 transition-all hover:-translate-y-0.5 hover:shadow-md"
+                    href={eventPath(e)}
+                    className="group flex items-center gap-4 rounded-2xl border bg-card p-4 transition-all hover:-translate-y-0.5 hover:border-brand/30 hover:shadow-md"
                   >
                     <div className="grid size-16 shrink-0 flex-col place-items-center rounded-xl bg-brand text-brand-foreground">
                       <span className="font-heading text-xl font-semibold leading-none">{day}</span>
@@ -88,7 +94,8 @@ export async function Notices() {
                       <p className="font-semibold text-brand">{e.title}</p>
                       <p className="text-sm text-muted-foreground">{e.venue}</p>
                     </div>
-                  </div>
+                    <ChevronRight className="ml-auto size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-brand" />
+                  </Link>
                 );
               })
             ) : (
