@@ -33,9 +33,22 @@ export function HeroCarousel({ images }: { images: HeroImage[] }) {
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <div className="relative h-[190px] w-full overflow-hidden bg-brand sm:h-[240px] lg:h-[320px] xl:h-[360px]">
+      {/*
+        The band's height follows its width rather than being a fixed number of
+        pixels. Banners keep whatever shape staff upload (the browser only
+        scales them to 1920px wide), so a fixed height made the slot far wider
+        than the photographs on a large screen and `object-cover` answered that
+        by cutting the top and bottom off. These ratios stay near the shape of
+        an ordinary photograph, and the cap stops the hero from swallowing the
+        page on a very wide monitor.
+      */}
+      <div className="relative aspect-4/3 max-h-[720px] w-full overflow-hidden bg-brand sm:aspect-16/9 lg:aspect-2/1">
         {images.map((img, i) => (
-          // eslint-disable-next-line @next/next/no-img-element
+          // Deliberately a plain <img>: banners are already resized to 1920px
+          // and re-encoded as WebP in the browser before upload, and they are
+          // served from Blob storage, so next/image would re-optimise work that
+          // is already done.
+          // oxlint-disable-next-line nextjs/no-img-element
           <img
             key={img.src}
             src={img.src}
