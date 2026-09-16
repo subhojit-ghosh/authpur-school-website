@@ -1,4 +1,5 @@
 import { GraduationCap, Phone, CalendarCheck, FileText, Users } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { getSchoolInfo } from "@/lib/settings";
 import { getHomeContent } from "@/lib/page-content";
@@ -33,10 +34,10 @@ export async function Admissions() {
                   className="h-12 bg-gold px-7 text-[15px] font-semibold text-gold-foreground hover:bg-gold/90 [&_svg:not([class*='size-'])]:size-[18px]"
                   asChild
                 >
-                  <a href="/admission-enquiry">
+                  <Link href="/admission-enquiry">
                     <GraduationCap />
                     Start Application
-                  </a>
+                  </Link>
                 </Button>
                 <Button
                   size="lg"

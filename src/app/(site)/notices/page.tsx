@@ -115,13 +115,13 @@ export default async function NoticesPage() {
               )}
             </div>
 
-            <a
+            <Link
               href="/admission-enquiry"
               className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-brand transition-colors hover:text-gold-foreground"
             >
               Have a question? Get in touch
               <ArrowRight className="size-4" />
-            </a>
+            </Link>
           </div>
         </div>
       </section>

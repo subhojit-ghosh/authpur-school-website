@@ -2,8 +2,8 @@
 // the Postgres database (local PGlite, or Neon when DATABASE_URL is set).
 // Existing rows in the target are left alone; rows are inserted by id.
 //
-//   npm run db:copy-from-sqlite
-//   DATABASE_URL=postgres://... npm run db:copy-from-sqlite
+//   bun run db:copy-from-sqlite
+//   DATABASE_URL=postgres://... bun run db:copy-from-sqlite
 
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";

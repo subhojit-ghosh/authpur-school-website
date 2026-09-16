@@ -40,7 +40,7 @@ Follow `docs/DEPLOYMENT.md`, then:
 
 | # | What to do | What you should see | Pass? |
 | --- | --- | --- | --- |
-| 4C.1 | `npm run build:local` then `npm run start:local` (or `npm run build` + `npx next start -p 3001` while `npm run dev` is running). | Build completes; migrations run first; site serves on port 3001. | ☐ |
+| 4C.1 | `bun run build:local` then `bun run start:local` (or `bun run build` + `bunx next start -p 3001` while `bun run dev` is running). | Build completes; migrations run first; site serves on port 3001. | ☐ |
 | 4C.2 | Visit every public page and admin page on the production server. | All return 200 (admin pages redirect to login when signed out). | ☐ |
 | 4C.3 | Check `robots.txt`, a missing upload URL, and the response headers. | `Disallow: /admin`; 404 for a missing upload; security headers present. | ☐ |
 

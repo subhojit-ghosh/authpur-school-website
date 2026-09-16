@@ -1,10 +1,10 @@
 // Creates (or resets) the staff admin account.
 //
-//   npm run db:seed                       -> username "admin", random password printed once
-//   ADMIN_PASSWORD=... npm run db:seed    -> username "admin", chosen password
-//   ADMIN_USERNAME=... ADMIN_PASSWORD=... npm run db:seed
+//   bun run db:seed                       -> username "admin", random password printed once
+//   ADMIN_PASSWORD=... bun run db:seed    -> username "admin", chosen password
+//   ADMIN_USERNAME=... ADMIN_PASSWORD=... bun run db:seed
 //
-// Run `npm run db:migrate` first so the tables exist.
+// Run `bun run db:migrate` first so the tables exist.
 
 import { randomBytes } from "node:crypto";
 import { hashPassword, passwordProblem } from "../src/lib/password.ts";

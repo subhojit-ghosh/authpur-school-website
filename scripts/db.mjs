@@ -2,7 +2,7 @@
 //
 // Order of preference:
 //   1. DATABASE_URL (Neon in production, or the URL injected by `pglite-server --run`)
-//   2. The local dev database server started by `npm run dev` (127.0.0.1:54329)
+//   2. The local dev database server started by `bun run dev` (127.0.0.1:54329)
 //   3. Open the local PGlite folder (./data/pg) directly — only when nothing else is using it.
 import { mkdirSync } from "node:fs";
 import { resolve } from "node:path";

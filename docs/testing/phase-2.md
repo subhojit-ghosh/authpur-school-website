@@ -7,7 +7,7 @@ delete), and a live Dashboard. The public website now reads notices and
 events from the database, and the Admission Enquiry form saves into the
 inbox instead of opening an email app.
 
-**Where:** run `npm run dev`, then open <http://localhost:3000/admin> and sign
+**Where:** run `bun run dev`, then open <http://localhost:3000/admin> and sign
 in with the `admin` account and the password you set in Phase 1.
 
 Have ready: about 30 minutes, and a second browser tab for the public site.

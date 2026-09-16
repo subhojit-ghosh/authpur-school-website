@@ -5,10 +5,10 @@
 dashboard, the admin shell with links to every future section, and an
 Account page where staff change their own password.
 
-**Where:** run `npm run dev`, then open <http://localhost:3000/admin>.
+**Where:** run `bun run dev`, then open <http://localhost:3000/admin>.
 
 **Login for testing:** username `admin`, password `anm-admin-2026`.
-(Reset it any time with `ADMIN_PASSWORD=... npm run db:seed`.)
+(Reset it any time with `ADMIN_PASSWORD=... bun run db:seed`.)
 
 Have ready: a computer with a modern browser and a phone (or the browser's
 mobile view: right-click → Inspect → toggle device toolbar).
@@ -43,7 +43,7 @@ mobile view: right-click → Inspect → toggle device toolbar).
 or tell the developer the new one:
 
 ```bash
-ADMIN_PASSWORD=anm-admin-2026 npm run db:seed
+ADMIN_PASSWORD=anm-admin-2026 bun run db:seed
 ```
 
 ## Report a problem

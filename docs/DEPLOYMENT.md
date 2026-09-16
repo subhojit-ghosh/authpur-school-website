@@ -53,6 +53,12 @@ migrations first, then builds the site; the log shows
 `✓ Database is up to date`. First-time setup: **Add New → Project**, import
 the repository, add `DATABASE_URL`, click **Deploy**.
 
+Vercel picks the package manager from the lockfile in the repository. This
+project commits `bun.lock`, so Vercel installs with Bun and runs the `build`
+script with it — no build or install command needs to be set by hand. Keep
+`bun.lock` committed; if it is ever deleted Vercel falls back to npm and the
+build will fail on the missing `bun` in the `build` script.
+
 ## 4. Connect image storage (Vercel Blob)
 
 Uploaded banners and gallery photos need permanent cloud storage.
@@ -86,14 +92,14 @@ during the build, so the site is never empty.
 yourself with the Neon connection string:
 
 ```bash
-DATABASE_URL="postgres://…" ADMIN_PASSWORD="ChooseAStrongPassword1" npm run db:seed
+DATABASE_URL="postgres://…" ADMIN_PASSWORD="ChooseAStrongPassword1" bun run db:seed
 ```
 
 If you were already using the panel locally and want that content on the live
 site, copy it across (the old SQLite file must still be present):
 
 ```bash
-DATABASE_URL="postgres://…" npm run db:copy-from-sqlite
+DATABASE_URL="postgres://…" bun run db:copy-from-sqlite
 ```
 
 ## 6. Custom domain (optional, billed separately per the proposal)
@@ -118,7 +124,7 @@ changes made in the admin panel never need a deployment.
 | Website + admin panel | Vercel project |
 | Notices, events, enquiries, settings, users | Neon PostgreSQL |
 | Uploaded images | Vercel Blob store |
-| Staff login | `users` table; created via /admin/setup, or reset with `npm run db:seed` |
+| Staff login | `users` table; created via /admin/setup, or reset with `bun run db:seed` |
 
 ## Environment variables reference
 
@@ -131,8 +137,8 @@ changes made in the admin panel never need a deployment.
 
 ## Local development note
 
-`npm run dev` starts a local Postgres (PGlite) on `127.0.0.1:54329` alongside
-Next.js; the `db:*` scripts and `npm run build` connect to it while it runs.
-With the dev server stopped, use `npm run build:local`, `npm run start:local`
-or `npm run db:local`, which start that server for you. None of this applies
+`bun run dev` starts a local Postgres (PGlite) on `127.0.0.1:54329` alongside
+Next.js; the `db:*` scripts and `bun run build` connect to it while it runs.
+With the dev server stopped, use `bun run build:local`, `bun run start:local`
+or `bun run db:local`, which start that server for you. None of this applies
 to Neon in production.

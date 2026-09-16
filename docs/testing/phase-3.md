@@ -7,7 +7,7 @@ Info settings (phone numbers, email, address, office hours, daily schedule,
 section timings). Uploaded photos are checked, rotated correctly, resized
 and converted to WebP automatically, with a thumbnail.
 
-**Where:** run `npm run dev`, then open <http://localhost:3000/admin> and sign
+**Where:** run `bun run dev`, then open <http://localhost:3000/admin> and sign
 in with the `admin` account.
 
 Have ready: 3–4 landscape photos (JPG/PNG/HEIC), one very large photo straight

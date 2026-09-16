@@ -7,7 +7,7 @@ import * as schema from "./schema";
  * Database connection (PostgreSQL, via the `pg` driver in every environment).
  *
  * Production: DATABASE_URL=postgres://… (Neon).
- * Local development: `npm run dev` wraps Next.js in a small local Postgres
+ * Local development: `bun run dev` wraps Next.js in a small local Postgres
  * server (PGlite, files in ./data/pg) and injects DATABASE_URL automatically.
  * If DATABASE_URL is missing we fall back to that local server's address so
  * `next build` / `next start` also work locally while it is running.

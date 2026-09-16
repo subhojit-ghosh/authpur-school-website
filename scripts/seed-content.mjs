@@ -1,7 +1,7 @@
 // Copies the sample notices, events and hero banners from src/lib/site.ts into
 // the database, but only when those tables are still empty. Safe to run repeatedly.
 //
-//   npm run db:seed-content
+//   bun run db:seed-content
 
 import { notices, events, heroImages } from "../src/lib/site.ts";
 import { openDb } from "./db.mjs";

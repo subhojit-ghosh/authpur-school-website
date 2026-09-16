@@ -6,14 +6,18 @@ Built with **Next.js 16 (App Router)**, **TypeScript**, **Tailwind CSS v4** and 
 
 ## Getting started
 
+[Bun](https://bun.com) is the package manager and script runner for this
+project (`curl -fsSL https://bun.com/install | bash`). Next.js itself still
+builds and serves on Node.js — Bun installs the packages and runs the scripts.
+
 ```bash
-npm install
-npm run dev      # http://localhost:3000
+bun install
+bun run dev      # http://localhost:3000
 ```
 
 ```bash
-npm run build    # production build
-npm run start    # serve the production build
+bun run build    # production build
+bun run start    # serve the production build
 ```
 
 ## Admin panel (local setup)
@@ -24,34 +28,39 @@ automatically — nothing to install:
 
 ```bash
 cp .env.example .env.local   # optional; defaults work as-is
-npm run db:setup             # creates tables + the "admin" account (prints a temporary password) + starter content
-npm run dev                  # then open http://localhost:3000/admin
+bun run db:setup             # creates tables + the "admin" account (prints a temporary password) + starter content
+bun run dev                  # then open http://localhost:3000/admin
 ```
 
 Useful scripts:
 
 | Script | What it does |
 | --- | --- |
-| `npm run db:migrate` | Apply pending SQL migrations from `drizzle/` |
-| `npm run db:generate` | Generate a new migration after editing `src/db/schema.ts` |
-| `npm run db:seed` | Create or reset the admin login (`ADMIN_USERNAME`, `ADMIN_PASSWORD` env vars optional) |
-| `npm run db:seed-content` | Import the starter notices, events and banners if the tables are empty |
-| `npm run db:copy-from-sqlite` | One-off: copy data from the old `data/school.db` SQLite file |
-| `npm run db:local` | Run the local database server alone (for scripts when the dev server is stopped) |
-| `npm run build:local` / `start:local` | Production build / serve on port 3001 with the local database server |
+| `bun run db:migrate` | Apply pending SQL migrations from `drizzle/` |
+| `bun run db:generate` | Generate a new migration after editing `src/db/schema.ts` |
+| `bun run db:seed` | Create or reset the admin login (`ADMIN_USERNAME`, `ADMIN_PASSWORD` env vars optional) |
+| `bun run db:seed-content` | Import the starter notices, events and banners if the tables are empty |
+| `bun run verify` | Type-check, then lint — run this before pushing |
+| `bun run typecheck` | `tsc --noEmit` (TypeScript 7) |
+| `bun run lint` | `oxlint --type-aware` (`lint:fix` applies the safe fixes) |
+| `bun run db:copy-from-sqlite` | One-off: copy data from the old `data/school.db` SQLite file |
+| `bun run db:local` | Run the local database server alone (for scripts when the dev server is stopped) |
+| `bun run build:local` / `start:local` | Production build / serve on port 3001 with the local database server |
 
-`npm run dev` also starts the local database server (PGlite on
+`bun run dev` also starts the local database server (PGlite on
 `127.0.0.1:54329`) and the `db:*` scripts connect through it, so they can run
 while the dev server is up. When the dev server is **not** running, use
-`npm run build:local` / `npm run start:local` (they start the database server
-for you), or `npm run db:local` to run it on its own.
+`bun run build:local` / `bun run start:local` (they start the database server
+for you), or `bun run db:local` to run it on its own.
 
 In production set `DATABASE_URL` to a Neon PostgreSQL connection string; the
 same code and migrations run unchanged. See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
-Uploaded banner and gallery photos are optimised with `sharp` (resized, WebP,
-thumbnail) and stored under `data/uploads` locally or in Vercel Blob in
-production (`src/lib/storage.ts` picks the driver from `BLOB_READ_WRITE_TOKEN`).
+Uploaded banner and gallery photos are resized and re-encoded in the browser
+(`src/lib/image-client.ts` — WebP where supported, JPEG otherwise, plus a
+thumbnail), so the server needs no native image library. They are stored under
+`data/uploads` locally or in Vercel Blob in production (`src/lib/storage.ts`
+picks the driver from `BLOB_READ_WRITE_TOKEN`).
 
 Editable text content (contact details, timings, admission dates / fees /
 eligibility) lives in the `site_settings` table and falls back to the values

@@ -1,0 +1,47 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "typescript",
+    "unicorn",
+    "oxc",
+    "react",
+    "nextjs",
+    "jsx-a11y",
+    "import",
+    "promise"
+  ],
+  "ignorePatterns": [
+    ".next/**",
+    "out/**",
+    "build/**",
+    "drizzle/**",
+    "next-env.d.ts"
+  ],
+  "rules": {
+    // Every hit is the `String(formData.get("field") ?? "")` idiom in the
+    // server actions. `FormData.get` is typed `string | File | null`, so the
+    // rule is right in the abstract, but each of these reads a plain text
+    // input and the value is trimmed and length-capped straight afterwards.
+    // oxlint does not yet honour rule options for type-aware rules, so this
+    // cannot be narrowed to "allow File" — it is all or nothing. Revisit if
+    // oxlint gains the typescript-eslint `ignoredTypeNames` option.
+    "typescript/no-base-to-string": "off",
+
+    // The jsx-a11y rules below all fire on existing markup that
+    // eslint-config-next never checked. They are off so the linter switch
+    // reports nothing rather than because the markup is known to be correct —
+    // turning any of them back on is a real accessibility task, not a config
+    // tweak. Known outstanding items:
+    //   - anchor-is-valid: the three social icons in the footer are still
+    //     `href="#"` placeholders waiting for real URLs.
+    //   - control-has-associated-label: icon-only row buttons on the notices
+    //     admin list.
+    //   - no-autofocus: deliberate, the admin forms focus their first field.
+    "jsx-a11y/anchor-is-valid": "off",
+    "jsx-a11y/control-has-associated-label": "off",
+    "jsx-a11y/label-has-associated-control": "off",
+    "jsx-a11y/no-autofocus": "off",
+    "jsx-a11y/no-noninteractive-element-interactions": "off",
+    "jsx-a11y/prefer-tag-over-role": "off"
+  }
+}
