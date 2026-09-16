@@ -41,14 +41,14 @@ export default async function LabsContentPage() {
       <ContentForm action={saveLabs}>
         <Section
           title="Laboratories"
-          description={`Icon choices: ${LAB_ICONS.join(", ")}. Put each highlight on its own line.`}
+          description={`Icon choices: ${LAB_ICONS.join(", ")}. The description can be formatted; put each highlight on its own line.`}
         >
           <RowsEditor
             name="labs"
             columns={[
               { key: "icon", label: "Icon", placeholder: LAB_ICONS[0] },
               { key: "name", label: "Name", placeholder: "e.g. Physics Laboratory" },
-              { key: "blurb", label: "Description", placeholder: "One or two sentences", multiline: true },
+              { key: "blurb", label: "Description", placeholder: "One or two sentences", richText: true },
               { key: "points", label: "Highlights (one per line)", placeholder: "Optics kits", multiline: true },
             ]}
             initial={labs.items}

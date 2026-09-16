@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Mail, Phone, MapPin, Clock, Globe, MessageCircle, AtSign } from "lucide-react";
+import { RichText } from "@/components/rich-text";
 import { Crest } from "@/components/crest";
 import { defaultIdentity, type Identity } from "@/lib/page-content-types";
 import { defaultSchoolInfo, telHref, type SchoolInfo } from "@/lib/settings-types";
@@ -25,9 +26,10 @@ export function SiteFooter({
               </p>
             </div>
           </div>
-          <p className="mt-5 max-w-xs text-sm leading-relaxed text-brand-foreground/70">
-            {identity.footerBlurb.replaceAll("{year}", identity.established)}
-          </p>
+          <RichText
+            html={identity.footerBlurb.replaceAll("{year}", identity.established)}
+            className="mt-5 max-w-xs text-sm leading-relaxed text-brand-foreground/70 [&_a]:text-gold [&_blockquote]:border-gold [&_strong]:text-brand-foreground"
+          />
           <p className="mt-5 font-heading text-sm italic text-gold">
             {identity.motto}
           </p>

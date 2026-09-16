@@ -1,11 +1,13 @@
 import { Quote } from "lucide-react";
+import { RichText } from "@/components/rich-text";
 
 
 type Person = {
   name: string;
   role: string;
   initials: string;
-  message: readonly string[];
+  /** Formatted message written in the admin panel. */
+  message: string;
 };
 
 export function LeadershipMessage({ person, motto }: { person: Person; motto?: string }) {
@@ -32,20 +34,10 @@ export function LeadershipMessage({ person, motto }: { person: Person; motto?: s
         {/* Message */}
         <div>
           <Quote className="size-10 text-gold" />
-          <div className="mt-4 space-y-5">
-            {person.message.map((para, i) => (
-              <p
-                key={i}
-                className={
-                  i === 0
-                    ? "text-pretty font-heading text-xl leading-relaxed text-foreground first-letter:float-left first-letter:mr-2 first-letter:font-heading first-letter:text-6xl first-letter:font-semibold first-letter:leading-[0.8] first-letter:text-brand"
-                    : "text-pretty leading-relaxed text-muted-foreground"
-                }
-              >
-                {para}
-              </p>
-            ))}
-          </div>
+          <RichText
+            html={person.message}
+            className="mt-4 text-base [&>p:first-child]:text-pretty [&>p:first-child]:font-heading [&>p:first-child]:text-xl [&>p:first-child]:leading-relaxed [&>p:first-child]:text-foreground [&>p:first-child]:first-letter:float-left [&>p:first-child]:first-letter:mr-2 [&>p:first-child]:first-letter:font-heading [&>p:first-child]:first-letter:text-6xl [&>p:first-child]:first-letter:font-semibold [&>p:first-child]:first-letter:leading-[0.8] [&>p:first-child]:first-letter:text-brand [&_p]:my-5 [&_p]:text-pretty [&_p]:leading-relaxed"
+          />
 
           <div className="mt-10 border-t pt-6">
             <p className="font-heading text-2xl italic text-brand">{person.name}</p>

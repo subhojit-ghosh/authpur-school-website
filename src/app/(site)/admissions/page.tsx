@@ -10,6 +10,7 @@ import {
   Phone,
 } from "lucide-react";
 import { PageBanner } from "@/components/page-banner";
+import { RichText } from "@/components/rich-text";
 import { getPageBanners } from "@/lib/page-content";
 import { Button } from "@/components/ui/button";
 
@@ -109,9 +110,10 @@ export default async function AdmissionsPage() {
                   </li>
                 ))}
               </ul>
-              <p className="mt-5 rounded-lg bg-secondary/60 p-3 text-xs leading-relaxed text-muted-foreground">
-                {feeNote}
-              </p>
+              <RichText
+                html={feeNote}
+                className="mt-5 rounded-lg bg-secondary/60 p-3 text-xs leading-relaxed"
+              />
             </div>
 
             {/* Documents */}

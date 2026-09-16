@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth";
 import { flatDiff, recordAudit } from "@/lib/audit";
 import { parseRows } from "@/lib/form-rows";
+import { sanitizeRichText } from "@/lib/rich-text";
 import { revalidateWholeSite } from "@/lib/revalidate";
 import { getSchoolInfo, getTimings, saveSetting } from "@/lib/settings";
 import { SETTING_KEYS, type SchoolInfo, type Timings } from "@/lib/settings-types";
@@ -55,7 +56,7 @@ export async function saveTimings(_prev: SaveState, formData: FormData): Promise
   const value: Timings = {
     dailySchedule: parseRows(formData, "daily", ["label", "time"]),
     sectionTimings: parseRows(formData, "sections", ["section", "days", "time"]),
-    timingsNote: field(formData, "timingsNote", 600),
+    timingsNote: sanitizeRichText(String(formData.get("timingsNote") ?? "")),
   };
 
   const incomplete =

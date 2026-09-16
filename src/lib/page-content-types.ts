@@ -296,15 +296,6 @@ export function fillPlaceholders(text: string, vars: { year: string; shortName: 
     .replaceAll("{name}", vars.name);
 }
 
-/** Splits a textarea value into paragraphs (blank line separated). */
-export function toParagraphs(text: string): string[] {
-  return text
-    .split(/\n\s*\n/)
-    .map((p) => p.trim())
-    .filter(Boolean);
-}
-
-/** Splits a textarea value into list items (one per line). */
 export function toLines(text: string): string[] {
   return text
     .split("\n")

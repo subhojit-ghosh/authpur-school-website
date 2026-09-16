@@ -5,10 +5,10 @@ import { useFormStatus } from "react-dom";
 import { CalendarDays, ClipboardList, FileText, GraduationCap, IndianRupee, Save } from "lucide-react";
 import { FormError } from "@/components/admin/form-message";
 import { Flash } from "@/components/admin/flash";
+import { RichTextEditor } from "@/components/admin/rich-text-editor";
 import { RowsEditor } from "@/components/admin/rows-editor";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import type { AdmissionsContent } from "@/lib/settings-types";
 import { saveAdmissions, type SaveState } from "./actions";
 
@@ -76,7 +76,12 @@ export function AdmissionsForm({ initial }: { initial: AdmissionsContent }) {
         />
         <div className="mt-4 grid gap-2">
           <Label htmlFor="feeNote">Note under the fee table</Label>
-          <Textarea id="feeNote" name="feeNote" defaultValue={initial.feeNote} maxLength={600} rows={3} />
+          <RichTextEditor
+            name="feeNote"
+            defaultValue={initial.feeNote}
+            placeholder="e.g. Fees may be paid termly. Sibling concessions apply."
+            ariaLabel="Note under the fee table"
+          />
         </div>
       </Section>
 

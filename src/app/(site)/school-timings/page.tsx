@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Clock, Sun, Building2, Info } from "lucide-react";
 import { PageBanner } from "@/components/page-banner";
+import { RichText } from "@/components/rich-text";
 import { getPageBanners } from "@/lib/page-content";
 import { getSchoolInfo, getTimings } from "@/lib/settings";
 
@@ -64,7 +65,7 @@ export default async function SchoolTimingsPage() {
 
             <div className="flex gap-4 rounded-2xl border border-gold/30 bg-gold-soft/40 p-6">
               <Info className="size-5 shrink-0 text-gold-foreground" />
-              <p className="text-sm leading-relaxed text-foreground">{timingsNote}</p>
+              <RichText html={timingsNote} className="text-sm leading-relaxed text-foreground" />
             </div>
           </div>
         </div>

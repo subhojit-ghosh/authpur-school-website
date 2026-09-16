@@ -1,12 +1,14 @@
-import { sanitizeRichText } from "@/lib/rich-text";
+import { toRichHtml } from "@/lib/rich-text";
 import { cn } from "@/lib/utils";
 
 /**
- * Renders a description written in the admin panel. The HTML is sanitised when
- * it is saved and again here, so a stored value can never inject markup.
+ * Renders wording written in the admin panel. The HTML is sanitised when it is
+ * saved and again here, so a stored value can never inject markup. A value that
+ * is still plain text from before the field became rich text renders as
+ * paragraphs.
  */
 export function RichText({ html, className }: { html: string; className?: string }) {
-  const safe = sanitizeRichText(html);
+  const safe = toRichHtml(html);
   if (!safe) return null;
 
   return (

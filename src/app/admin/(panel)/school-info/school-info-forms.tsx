@@ -5,11 +5,11 @@ import { useFormStatus } from "react-dom";
 import { Building2, Clock, Save } from "lucide-react";
 import { FieldError, FormError } from "@/components/admin/form-message";
 import { Flash } from "@/components/admin/flash";
+import { RichTextEditor } from "@/components/admin/rich-text-editor";
 import { RowsEditor } from "@/components/admin/rows-editor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import type { SchoolInfo, Timings } from "@/lib/settings-types";
 import { saveSchoolInfo, saveTimings, type SaveState } from "./actions";
 
@@ -117,7 +117,12 @@ export function TimingsForm({ initial }: { initial: Timings }) {
         </div>
         <div className="grid gap-2">
           <Label htmlFor="timingsNote">Note shown on the page</Label>
-          <Textarea id="timingsNote" name="timingsNote" defaultValue={initial.timingsNote} maxLength={600} rows={3} />
+          <RichTextEditor
+            name="timingsNote"
+            defaultValue={initial.timingsNote}
+            placeholder="e.g. Gates open fifteen minutes before assembly."
+            ariaLabel="Note shown on the page"
+          />
         </div>
       </div>
 

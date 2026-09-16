@@ -52,3 +52,35 @@ export function richTextToPlain(html: string, max = 200): string {
     .trim();
   return text.length > max ? text.slice(0, max).trimEnd() + "…" : text;
 }
+
+const HTML_TAG = /<(p|br|ul|ol|li|h3|h4|blockquote|strong|b|em|i|u|s|a)\b[^>]*>/i;
+
+function escapeHtml(text: string) {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+/**
+ * Safe HTML for a field that may hold either editor HTML or older plain text.
+ *
+ * Several fields were plain textareas before they became rich-text fields, so
+ * what is stored can still be plain text with blank lines between paragraphs.
+ * That is converted to paragraphs here, which means no data migration is
+ * needed and a value keeps rendering correctly either way.
+ */
+export function toRichHtml(value: string): string {
+  const text = (value ?? "").trim();
+  if (!text) return "";
+  if (HTML_TAG.test(text)) return sanitizeRichText(text);
+
+  const html = text
+    .split(/\n\s*\n/)
+    .map((para) => para.trim())
+    .filter(Boolean)
+    .map((para) => `<p>${escapeHtml(para).replace(/\n/g, "<br />")}</p>`)
+    .join("");
+  return sanitizeRichText(html);
+}

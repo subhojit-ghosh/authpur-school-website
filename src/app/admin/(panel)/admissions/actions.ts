@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth";
 import { flatDiff, recordAudit } from "@/lib/audit";
 import { parseRows } from "@/lib/form-rows";
+import { sanitizeRichText } from "@/lib/rich-text";
 import { revalidateAdmissions } from "@/lib/revalidate";
 import { getAdmissionsContent, saveSetting } from "@/lib/settings";
 import { SETTING_KEYS, type AdmissionsContent } from "@/lib/settings-types";
@@ -17,7 +18,7 @@ export async function saveAdmissions(_prev: SaveState, formData: FormData): Prom
     dates: parseRows(formData, "dates", ["event", "date"]),
     eligibility: parseRows(formData, "eligibility", ["level", "criteria"]),
     fees: parseRows(formData, "fees", ["head", "amount"]),
-    feeNote: String(formData.get("feeNote") ?? "").trim().slice(0, 600),
+    feeNote: sanitizeRichText(String(formData.get("feeNote") ?? "")),
     steps: parseRows(formData, "steps", ["title", "text"], 600),
     documents: parseRows(formData, "documents", ["item"], 200),
   };

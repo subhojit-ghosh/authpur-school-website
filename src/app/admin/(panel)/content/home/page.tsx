@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { getHomeContent } from "@/lib/page-content";
 import { CAMPUS_ICONS, FEATURE_ICONS, PILLAR_ICONS } from "@/lib/page-content-types";
 import { saveHome } from "../actions";
-import { ContentForm, Field, HeadingFields, Section, TextField } from "@/components/admin/content-form";
+import { ContentForm, Field, HeadingFields, RichField, Section, TextField } from "@/components/admin/content-form";
+import { toRichHtml } from "@/lib/rich-text";
 
 export const metadata: Metadata = { title: "Home page sections" };
 
@@ -57,12 +58,12 @@ export default async function HomeContentPage() {
             <Field name="about.eyebrow" label="Small label" defaultValue={home.about.eyebrow} />
             <Field name="about.heading" label="Heading" defaultValue={home.about.heading} />
           </div>
-          <TextField
+          <RichField
             name="about.paragraphs"
             label="Paragraphs"
-            defaultValue={home.about.paragraphs}
-            rows={7}
-            hint="One blank line starts a new paragraph. Write {year} for the established year and {shortName} for the short school name."
+            defaultValue={toRichHtml(home.about.paragraphs)}
+            placeholder="Write the welcome paragraphs here…"
+            hint="Write {year} for the established year and {shortName} for the short school name."
           />
           <input type="hidden" name="about.blurb" value={home.about.blurb} />
           <TextField name="about.quote" label="Pull quote" defaultValue={home.about.quote} rows={3} />

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth";
 import { flatDiff, recordAudit } from "@/lib/audit";
 import { parseRows } from "@/lib/form-rows";
+import { isEmptyRichText, RICH_TEXT_LIMIT, sanitizeRichText } from "@/lib/rich-text";
 import { revalidateWholeSite } from "@/lib/revalidate";
 import { getHomeContent, getIdentity, getLabsContent, getLeadership, getPageBanners } from "@/lib/page-content";
 import {
@@ -21,6 +22,8 @@ export type ContentState = { error?: string; success?: string };
 
 const text = (fd: FormData, name: string, max = 400) => String(fd.get(name) ?? "").trim().slice(0, max);
 const long = (fd: FormData, name: string, max = 4000) => String(fd.get(name) ?? "").trim().slice(0, max);
+/** Formatted wording from the rich-text editor. Sanitised here, never truncated mid-tag. */
+const rich = (fd: FormData, name: string) => sanitizeRichText(String(fd.get(name) ?? ""));
 
 function done(what: string): ContentState {
   revalidateWholeSite();
@@ -41,7 +44,7 @@ export async function saveIdentity(_prev: ContentState, formData: FormData): Pro
     tagline: text(formData, "tagline", 160),
     motto: text(formData, "motto", 120),
     mottoMeaning: text(formData, "mottoMeaning", 200),
-    footerBlurb: long(formData, "footerBlurb", 400),
+    footerBlurb: rich(formData, "footerBlurb"),
     affiliationLine: text(formData, "affiliationLine", 120),
     trustLine: text(formData, "trustLine", 120),
     footerCopyrightNote: text(formData, "footerCopyrightNote", 200),
@@ -94,12 +97,14 @@ export async function saveLeadership(_prev: ContentState, formData: FormData): P
     role: text(formData, `${prefix}.role`, 120),
     initials: text(formData, `${prefix}.initials`, 4).toUpperCase(),
     photoTag: text(formData, `${prefix}.photoTag`, 40),
-    message: long(formData, `${prefix}.message`, 6000),
+    message: rich(formData, `${prefix}.message`),
   });
 
   const value: Leadership = { chairman: person("chairman"), principal: person("principal") };
   if (!value.chairman.name || !value.principal.name) return { error: "Both names are required." };
-  if (!value.chairman.message || !value.principal.message) return { error: "Both messages are required." };
+  if (isEmptyRichText(value.chairman.message) || isEmptyRichText(value.principal.message)) {
+    return { error: "Both messages are required." };
+  }
 
   const before = await getLeadership();
   await saveSetting(CONTENT_KEYS.leadership, value);
@@ -114,8 +119,16 @@ export async function saveLeadership(_prev: ContentState, formData: FormData): P
 export async function saveLabs(_prev: ContentState, formData: FormData): Promise<ContentState> {
   await requireUser();
 
-  const rows = parseRows(formData, "labs", ["icon", "name", "blurb", "points"], 2000);
-  if (rows.some((r) => !r.name || !r.blurb)) return { error: "Every laboratory needs a name and a description." };
+  const rows = parseRows(formData, "labs", ["icon", "name", "blurb", "points"], RICH_TEXT_LIMIT).map((r) => ({
+    ...r,
+    icon: r.icon.slice(0, 40),
+    name: r.name.slice(0, 120),
+    blurb: sanitizeRichText(r.blurb),
+    points: r.points.slice(0, 2000),
+  }));
+  if (rows.some((r) => !r.name || isEmptyRichText(r.blurb))) {
+    return { error: "Every laboratory needs a name and a description." };
+  }
 
   const value: LabsContent = { items: rows };
   const before = await getLabsContent();
@@ -142,7 +155,7 @@ export async function saveHome(_prev: ContentState, formData: FormData): Promise
     stats: parseRows(formData, "stats", ["value", "label", "hint"]),
     about: {
       ...heading("about"),
-      paragraphs: long(formData, "about.paragraphs", 4000),
+      paragraphs: rich(formData, "about.paragraphs"),
       quote: long(formData, "about.quote", 600),
       quoteName: text(formData, "about.quoteName", 120),
       quoteRole: text(formData, "about.quoteRole", 120),

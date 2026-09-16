@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { Save } from "lucide-react";
 import { Flash } from "@/components/admin/flash";
+import { RichTextEditor } from "@/components/admin/rich-text-editor";
 import { FormError } from "@/components/admin/form-message";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -72,6 +73,29 @@ export function TextField({
     <div className="grid gap-2">
       <Label htmlFor={name}>{label}</Label>
       <Textarea id={name} name={name} defaultValue={defaultValue} rows={rows} {...props} />
+      {hint ? <p className="text-xs text-muted-foreground">{hint}</p> : null}
+    </div>
+  );
+}
+
+/** A formatted block of wording: bold, italics, lists, quotes and links. */
+export function RichField({
+  name,
+  label,
+  defaultValue,
+  hint,
+  placeholder,
+}: {
+  name: string;
+  label: string;
+  defaultValue?: string;
+  hint?: string;
+  placeholder?: string;
+}) {
+  return (
+    <div className="grid gap-2">
+      <Label htmlFor={name}>{label}</Label>
+      <RichTextEditor name={name} defaultValue={defaultValue ?? ""} placeholder={placeholder} ariaLabel={label} />
       {hint ? <p className="text-xs text-muted-foreground">{hint}</p> : null}
     </div>
   );

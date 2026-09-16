@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { PageBanner } from "@/components/page-banner";
 import { LeadershipMessage } from "@/components/leadership-message";
 import { getIdentity, getLeadership, getPageBanners } from "@/lib/page-content";
-import { toParagraphs } from "@/lib/page-content-types";
 
 export const metadata: Metadata = {
   title: "Principal's Message",
@@ -20,7 +19,7 @@ export default async function PrincipalsMessagePage() {
     <>
       <PageBanner eyebrow={banner.eyebrow} title={banner.title} subtitle={banner.subtitle} />
       <LeadershipMessage
-        person={{ ...principal, message: toParagraphs(principal.message) }}
+        person={principal}
         motto={id.motto ? `${id.motto} — “${id.mottoMeaning}”` : undefined}
       />
     </>

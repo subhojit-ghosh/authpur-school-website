@@ -6,7 +6,8 @@ import { RowsEditor } from "@/components/admin/rows-editor";
 import { Button } from "@/components/ui/button";
 import { getIdentity } from "@/lib/page-content";
 import { saveIdentity } from "../actions";
-import { ContentForm, Field, Section, TextField } from "@/components/admin/content-form";
+import { ContentForm, Field, RichField, Section } from "@/components/admin/content-form";
+import { toRichHtml } from "@/lib/rich-text";
 
 export const metadata: Metadata = { title: "School identity & footer" };
 
@@ -49,11 +50,10 @@ export default async function IdentityContentPage() {
         </Section>
 
         <Section title="Footer">
-          <TextField
+          <RichField
             name="footerBlurb"
             label="Short paragraph under the crest"
-            defaultValue={id.footerBlurb}
-            rows={2}
+            defaultValue={toRichHtml(id.footerBlurb)}
             hint="Write {year} where the established year should appear."
           />
           <Field name="footerCopyrightNote" label="Note beside the copyright line" defaultValue={id.footerCopyrightNote} />

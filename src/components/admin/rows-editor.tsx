@@ -5,6 +5,7 @@ import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/admin/rich-text-editor";
 
 export type RowsColumn = {
   key: string;
@@ -13,6 +14,8 @@ export type RowsColumn = {
   className?: string;
   /** Renders a textarea instead of a single-line box. Required for any value that holds line breaks — a single-line input silently drops them. */
   multiline?: boolean;
+  /** Renders the formatting editor (bold, lists, links). The column then holds HTML. */
+  richText?: boolean;
 };
 
 /**
@@ -81,7 +84,14 @@ export function RowsEditor({
           {columns.map((c) => (
             <div key={c.key} className="grid gap-1">
               <span className="text-[11px] font-medium text-muted-foreground sm:hidden">{c.label}</span>
-              {c.multiline ? (
+              {c.richText ? (
+                <RichTextEditor
+                  name={`${name}[${i}][${c.key}]`}
+                  defaultValue={row.values[c.key] ?? ""}
+                  placeholder={c.placeholder}
+                  ariaLabel={c.label}
+                />
+              ) : c.multiline ? (
                 <Textarea
                   name={`${name}[${i}][${c.key}]`}
                   value={row.values[c.key] ?? ""}

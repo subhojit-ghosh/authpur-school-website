@@ -4,8 +4,9 @@ import { ArrowLeft } from "lucide-react";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { Button } from "@/components/ui/button";
 import { getLeadership } from "@/lib/page-content";
+import { toRichHtml } from "@/lib/rich-text";
 import { saveLeadership } from "../actions";
-import { ContentForm, Field, Section, TextField } from "@/components/admin/content-form";
+import { ContentForm, Field, RichField, Section } from "@/components/admin/content-form";
 
 export const metadata: Metadata = { title: "Chairman & Principal" };
 
@@ -17,7 +18,7 @@ export default async function LeadershipContentPage() {
       <AdminPageHeader
         eyebrow="Website Text"
         title="Chairman & Principal"
-        description="Shown on the Chairman's Message and Principal's Message pages. Leave a blank line between paragraphs."
+        description="Shown on the Chairman's Message and Principal's Message pages, with the formatting you apply here."
         actions={
           <Button asChild variant="outline" className="h-10">
             <Link href="/admin/content">
@@ -43,12 +44,12 @@ export default async function LeadershipContentPage() {
               />
               <Field name={`${who}.photoTag`} label="Photo label" defaultValue={people[who].photoTag} />
             </div>
-            <TextField
+            <RichField
               name={`${who}.message`}
               label="Message"
-              defaultValue={people[who].message}
-              rows={10}
-              hint="One blank line starts a new paragraph."
+              defaultValue={toRichHtml(people[who].message)}
+              placeholder="Write the message here…"
+              hint="Use the buttons above to make text bold or italic, add bullet points, a quote or a link."
             />
           </Section>
         ))}

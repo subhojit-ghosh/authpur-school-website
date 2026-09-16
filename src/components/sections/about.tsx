@@ -1,6 +1,7 @@
 import { Target, Eye, HeartHandshake, Quote, type LucideIcon } from "lucide-react";
 import { getHomeContent, getIdentity } from "@/lib/page-content";
-import { fillPlaceholders, toParagraphs } from "@/lib/page-content-types";
+import { fillPlaceholders } from "@/lib/page-content-types";
+import { RichText } from "@/components/rich-text";
 
 const pillarIcons: Record<string, LucideIcon> = { eye: Eye, target: Target, heart: HeartHandshake };
 
@@ -8,7 +9,7 @@ export async function About() {
   const [home, id] = await Promise.all([getHomeContent(), getIdentity()]);
   const about = home.about;
   const vars = { year: id.established, shortName: id.shortName, name: id.name };
-  const paragraphs = toParagraphs(about.paragraphs).map((p) => fillPlaceholders(p, vars));
+  const paragraphs = fillPlaceholders(about.paragraphs, vars);
 
   return (
     <section id="about" className="scroll-mt-24 py-20 lg:py-28">
@@ -20,11 +21,7 @@ export async function About() {
             <h2 className="mt-4 text-balance font-heading text-3xl font-semibold text-brand sm:text-4xl">
               {about.heading}
             </h2>
-            {paragraphs.map((p, i) => (
-              <p key={i} className={`${i === 0 ? "mt-5" : "mt-4"} text-pretty leading-relaxed text-muted-foreground`}>
-                {p}
-              </p>
-            ))}
+            <RichText html={paragraphs} className="mt-5 text-base [&_p]:my-4 [&_p]:text-pretty [&_p]:leading-relaxed" />
 
             {about.quote ? (
               <figure className="mt-8 rounded-2xl border bg-card p-6 shadow-sm">

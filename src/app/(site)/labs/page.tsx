@@ -9,6 +9,7 @@ import {
   Check,
 } from "lucide-react";
 import { PageBanner } from "@/components/page-banner";
+import { RichText } from "@/components/rich-text";
 import { getLabsContent, getPageBanners } from "@/lib/page-content";
 import { toLines } from "@/lib/page-content-types";
 
@@ -53,9 +54,7 @@ export default async function LabsPage() {
                   <Icon className="size-6" />
                 </span>
                 <h2 className="mt-5 font-heading text-lg font-semibold text-brand">{lab.name}</h2>
-                <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
-                  {lab.blurb}
-                </p>
+                <RichText html={lab.blurb} className="mt-2 flex-1" />
                 <ul className="mt-5 space-y-2 border-t pt-4">
                   {toLines(lab.points).map((h) => (
                     <li key={h} className="flex items-center gap-2.5 text-sm text-foreground">
