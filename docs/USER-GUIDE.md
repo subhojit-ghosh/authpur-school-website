@@ -127,7 +127,29 @@ One place for details that appear across the whole website.
   hours table and the note shown on the School Timings page.
 - Click the **Save** button under each form.
 
-## 10. Staff accounts
+## 10. Website text
+
+Everything written on the public site can be edited here, section by section.
+Open **Website Text** in the menu and pick an area:
+
+- **Home page sections:** the statistics band, the About section with its
+  paragraphs, quote and three pillars, Academics with its programme cards,
+  Why Us, Campus Life, the notice board headings, Testimonials, the admissions
+  call to action and the contact introduction.
+- **Chairman & Principal:** names, roles and the full message on each page. One
+  blank line starts a new paragraph.
+- **Page headings:** the blue band at the top of each interior page — the small
+  label, the title and the introduction.
+- **Laboratories:** the laboratories listed on the Labs page.
+- **School identity & footer:** school name, established year, tagline, motto,
+  the two trust lines, the footer paragraph and the footer link lists.
+
+Rows can be re-ordered with ↑ ↓, removed with the bin, and added with the
+**Add** button. In the About paragraphs you can write `{year}` for the
+established year and `{shortName}` for the short school name. Click
+**Save & publish** at the bottom; the website updates straight away.
+
+## 11. Staff accounts
 
 Anyone who needs to update the website gets their own account, so you can see
 who changed what and remove access when someone leaves.
@@ -145,7 +167,7 @@ who changed what and remove access when someone leaves.
 All accounts have the same access. You cannot remove your own account, and the
 last remaining account cannot be removed, so the school is never locked out.
 
-## 11. Activity log
+## 12. Activity log
 
 A permanent record of everything done in this panel, newest first.
 
@@ -162,13 +184,13 @@ A permanent record of everything done in this panel, newest first.
 Entries cannot be edited or deleted from the panel, so the record stays
 trustworthy.
 
-## 12. Account & Password
+## 13. Account & Password
 
 Change the staff password here: enter the current password, then the new one
 twice. Use at least 8 characters with both letters and numbers. After a
 change, any other device that was signed in must sign in again.
 
-## 13. Good habits
+## 14. Good habits
 
 - **Check the website** after saving: each section has a *View on website*
   button that opens the public page in a new tab.
@@ -181,7 +203,7 @@ change, any other device that was signed in must sign in again.
   documents as banners.
 - **Password:** never share it by message; change it if in doubt.
 
-## 14. If something goes wrong
+## 15. If something goes wrong
 
 | Problem | What to do |
 | --- | --- |

@@ -9,7 +9,8 @@ import {
   Check,
 } from "lucide-react";
 import { PageBanner } from "@/components/page-banner";
-import { labs } from "@/lib/site";
+import { getLabsContent, getPageBanners } from "@/lib/page-content";
+import { toLines } from "@/lib/page-content-types";
 
 export const metadata: Metadata = {
   title: "School Laboratories",
@@ -17,28 +18,32 @@ export const metadata: Metadata = {
     "Modern Physics, Chemistry, Biology, Computer and Language laboratories at Authpur National Model Higher Secondary School.",
 };
 
-const iconMap = {
+const iconMap: Record<string, typeof Atom> = {
   atom: Atom,
   flask: FlaskConical,
   microscope: Microscope,
+  leaf: Microscope,
+  monitor: Cpu,
   cpu: Cpu,
+  book: Languages,
   languages: Languages,
   shield: ShieldCheck,
-} as const;
+};
 
-export default function LabsPage() {
+export const revalidate = 3600;
+
+export default async function LabsPage() {
+  const [{ items }, banners] = await Promise.all([getLabsContent(), getPageBanners()]);
+  const banner = banners.labs;
+
   return (
     <>
-      <PageBanner
-        eyebrow="Academics"
-        title="School Laboratories"
-        subtitle="Learning by doing — our well-equipped laboratories turn theory into discovery, safely and hands-on."
-      />
+      <PageBanner eyebrow={banner.eyebrow} title={banner.title} subtitle={banner.subtitle} />
 
       <section className="py-16 lg:py-24">
         <div className="container-edge grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {labs.map((lab) => {
-            const Icon = iconMap[lab.icon];
+          {items.map((lab) => {
+            const Icon = iconMap[lab.icon] ?? Atom;
             return (
               <div
                 key={lab.name}
@@ -49,10 +54,10 @@ export default function LabsPage() {
                 </span>
                 <h2 className="mt-5 font-heading text-lg font-semibold text-brand">{lab.name}</h2>
                 <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
-                  {lab.text}
+                  {lab.blurb}
                 </p>
                 <ul className="mt-5 space-y-2 border-t pt-4">
-                  {lab.highlights.map((h) => (
+                  {toLines(lab.points).map((h) => (
                     <li key={h} className="flex items-center gap-2.5 text-sm text-foreground">
                       <span className="grid size-5 shrink-0 place-items-center rounded-full bg-gold-soft text-gold-foreground">
                         <Check className="size-3" />

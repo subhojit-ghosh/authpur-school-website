@@ -1,5 +1,5 @@
 import { Quote } from "lucide-react";
-import { school } from "@/lib/site";
+
 
 type Person = {
   name: string;
@@ -8,7 +8,7 @@ type Person = {
   message: readonly string[];
 };
 
-export function LeadershipMessage({ person }: { person: Person }) {
+export function LeadershipMessage({ person, motto }: { person: Person; motto?: string }) {
   return (
     <section className="py-16 lg:py-24">
       <div className="container-edge grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
@@ -51,7 +51,7 @@ export function LeadershipMessage({ person }: { person: Person }) {
             <p className="font-heading text-2xl italic text-brand">{person.name}</p>
             <p className="text-sm text-muted-foreground">{person.role}</p>
             <p className="mt-4 font-heading text-sm italic text-gold-foreground">
-              {school.motto} — “{school.mottoMeaning}”
+              {motto}
             </p>
           </div>
         </div>

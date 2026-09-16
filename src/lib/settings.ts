@@ -14,7 +14,8 @@ import {
   type Timings,
 } from "@/lib/settings-types";
 
-async function readSetting<T extends object>(key: string, defaults: T): Promise<T> {
+/** Reads one JSON settings row, merged over the supplied defaults. */
+export async function getSetting<T extends object>(key: string, defaults: T): Promise<T> {
   const [row] = await db.select().from(siteSettings).where(eq(siteSettings.key, key)).limit(1);
   if (!row) return defaults;
   try {
@@ -35,10 +36,10 @@ export async function saveSetting<T extends object>(key: string, value: T) {
 }
 
 /** Contact details, address and office hours. De-duplicated per request. */
-export const getSchoolInfo = cache(() => readSetting<SchoolInfo>(SETTING_KEYS.schoolInfo, defaultSchoolInfo));
+export const getSchoolInfo = cache(() => getSetting<SchoolInfo>(SETTING_KEYS.schoolInfo, defaultSchoolInfo));
 
-export const getTimings = cache(() => readSetting<Timings>(SETTING_KEYS.timings, defaultTimings));
+export const getTimings = cache(() => getSetting<Timings>(SETTING_KEYS.timings, defaultTimings));
 
 export const getAdmissionsContent = cache(() =>
-  readSetting<AdmissionsContent>(SETTING_KEYS.admissions, defaultAdmissions),
+  getSetting<AdmissionsContent>(SETTING_KEYS.admissions, defaultAdmissions),
 );

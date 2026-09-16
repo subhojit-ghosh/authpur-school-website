@@ -9,6 +9,7 @@ import {
   KeyRound,
   LayoutDashboard,
   PanelTop,
+  Type,
   UsersRound,
   type LucideProps,
 } from "lucide-react";
@@ -23,6 +24,7 @@ const icons = {
   images: Images,
   graduation: GraduationCap,
   building: Building2,
+  text: Type,
   users: UsersRound,
   history: History,
   key: KeyRound,

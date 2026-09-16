@@ -1,16 +1,15 @@
 import { GraduationCap, Phone, CalendarCheck, FileText, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getSchoolInfo } from "@/lib/settings";
+import { getHomeContent } from "@/lib/page-content";
 import { telHref } from "@/lib/settings-types";
 
-const steps = [
-  { icon: FileText, title: "Enquire & collect form", text: "Visit the school office or request a form online." },
-  { icon: Users, title: "Interaction", text: "A friendly meeting with the child and parents." },
-  { icon: CalendarCheck, title: "Confirm admission", text: "Complete the formalities and welcome aboard." },
-];
+const stepIcons = [FileText, Users, CalendarCheck];
 
 export async function Admissions() {
-  const info = await getSchoolInfo();
+  const [info, home] = await Promise.all([getSchoolInfo(), getHomeContent()]);
+  const cta = home.admissionsCta;
+  const steps = cta.steps;
   return (
     <section id="admissions" className="scroll-mt-24 py-20 lg:py-28">
       <div className="container-edge">
@@ -21,14 +20,13 @@ export async function Admissions() {
 
           <div className="relative grid gap-12 lg:grid-cols-[1fr_1.1fr] lg:items-center">
             <div>
-              <span className="eyebrow text-gold">Admissions 2026–27</span>
+              <span className="eyebrow text-gold">{cta.eyebrow}</span>
               <h2 className="mt-4 text-balance font-heading text-3xl font-semibold text-brand-foreground sm:text-4xl">
-                Give your child a school that feels like a second home
+                {cta.heading}
               </h2>
-              <p className="mt-4 max-w-lg text-pretty leading-relaxed text-brand-foreground/75">
-                Applications are now open for Nursery through Class XI. Seats are limited —
-                begin your child&apos;s journey with us today.
-              </p>
+              {cta.blurb ? (
+                <p className="mt-4 max-w-lg text-pretty leading-relaxed text-brand-foreground/75">{cta.blurb}</p>
+              ) : null}
               <div className="mt-8 flex flex-wrap gap-3">
                 <Button
                   size="lg"
@@ -56,7 +54,9 @@ export async function Admissions() {
 
             {/* Steps */}
             <div className="grid gap-4">
-              {steps.map((s, i) => (
+              {steps.map((s, i) => {
+                const Icon = stepIcons[Math.min(i, stepIcons.length - 1)];
+                return (
                 <div
                   key={s.title}
                   className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.04] p-5 backdrop-blur-sm"
@@ -66,13 +66,14 @@ export async function Admissions() {
                   </span>
                   <div>
                     <p className="flex items-center gap-2 font-semibold text-brand-foreground">
-                      <s.icon className="size-4 text-gold" />
+                      <Icon className="size-4 text-gold" />
                       {s.title}
                     </p>
                     <p className="mt-0.5 text-sm text-brand-foreground/70">{s.text}</p>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>

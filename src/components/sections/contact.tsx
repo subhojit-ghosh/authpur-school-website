@@ -1,11 +1,13 @@
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
 import { ContactForm } from "@/components/sections/contact-form";
 import { getSchoolInfo } from "@/lib/settings";
+import { getHomeContent } from "@/lib/page-content";
 import { fullAddress, mapQuery, telHref } from "@/lib/settings-types";
-import { school } from "@/lib/site";
+import { getIdentity } from "@/lib/page-content";
 
 export async function Contact() {
-  const info = await getSchoolInfo();
+  const [info, home, id] = await Promise.all([getSchoolInfo(), getHomeContent(), getIdentity()]);
+  const copy = home.contact;
 
   const details = [
     { icon: MapPin, label: "Visit us", value: fullAddress(info) },
@@ -20,14 +22,13 @@ export async function Contact() {
     <section id="contact" className="scroll-mt-24 bg-secondary py-20 lg:py-28">
       <div className="container-edge">
         <div className="mx-auto max-w-2xl text-center">
-          <span className="eyebrow justify-center">Get in touch</span>
+          <span className="eyebrow justify-center">{copy.eyebrow}</span>
           <h2 className="mt-4 text-balance font-heading text-3xl font-semibold text-brand sm:text-4xl">
-            We&apos;d love to hear from you
+            {copy.heading}
           </h2>
-          <p className="mt-4 text-pretty leading-relaxed text-muted-foreground">
-            Have a question about admissions or our programmes? Reach out and our team will
-            be happy to help.
-          </p>
+          {copy.blurb ? (
+            <p className="mt-4 text-pretty leading-relaxed text-muted-foreground">{copy.blurb}</p>
+          ) : null}
         </div>
 
         <div className="mt-14 grid gap-8 lg:grid-cols-2">
@@ -58,7 +59,7 @@ export async function Contact() {
 
             <div className="overflow-hidden rounded-2xl border shadow-sm">
               <iframe
-                title={`Map to ${school.name}`}
+                title={`Map to ${id.name}`}
                 src={mapSrc}
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"

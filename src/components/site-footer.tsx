@@ -1,10 +1,16 @@
 import Link from "next/link";
 import { Mail, Phone, MapPin, Clock, Globe, MessageCircle, AtSign } from "lucide-react";
 import { Crest } from "@/components/crest";
-import { footerExplore, footerNavigate, school } from "@/lib/site";
+import { defaultIdentity, type Identity } from "@/lib/page-content-types";
 import { defaultSchoolInfo, telHref, type SchoolInfo } from "@/lib/settings-types";
 
-export function SiteFooter({ info = defaultSchoolInfo }: { info?: SchoolInfo }) {
+export function SiteFooter({
+  info = defaultSchoolInfo,
+  identity = defaultIdentity,
+}: {
+  info?: SchoolInfo;
+  identity?: Identity;
+}) {
   return (
     <footer className="bg-brand text-brand-foreground">
       <div className="container-edge grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-4">
@@ -13,19 +19,21 @@ export function SiteFooter({ info = defaultSchoolInfo }: { info?: SchoolInfo }) 
           <div className="flex items-center gap-3">
             <Crest className="h-12 w-12" />
             <div className="leading-tight">
-              <p className="font-heading text-lg font-semibold">{school.shortName}</p>
+              <p className="font-heading text-lg font-semibold">{identity.shortName}</p>
               <p className="text-xs uppercase tracking-[0.15em] text-brand-foreground/60">
                 Higher Secondary School
               </p>
             </div>
           </div>
           <p className="mt-5 max-w-xs text-sm leading-relaxed text-brand-foreground/70">
-            Nurturing curious minds with knowledge, character and service since {school.established}.
+            {identity.footerBlurb.replaceAll("{year}", identity.established)}
           </p>
           <p className="mt-5 font-heading text-sm italic text-gold">
-            {school.motto}
+            {identity.motto}
           </p>
-          <p className="text-xs text-brand-foreground/55">“{school.mottoMeaning}”</p>
+          {identity.mottoMeaning ? (
+            <p className="text-xs text-brand-foreground/55">“{identity.mottoMeaning}”</p>
+          ) : null}
         </div>
 
         {/* Quick links */}
@@ -34,7 +42,7 @@ export function SiteFooter({ info = defaultSchoolInfo }: { info?: SchoolInfo }) 
             Explore
           </h3>
           <ul className="mt-5 space-y-3 text-sm">
-            {footerExplore.map((l) => (
+            {identity.footerExplore.map((l) => (
               <li key={l.href}>
                 <Link
                   href={l.href}
@@ -53,7 +61,7 @@ export function SiteFooter({ info = defaultSchoolInfo }: { info?: SchoolInfo }) 
             Navigate
           </h3>
           <ul className="mt-5 space-y-3 text-sm">
-            {footerNavigate.map((l) => (
+            {identity.footerNavigate.map((l) => (
               <li key={l.href}>
                 <Link
                   href={l.href}
@@ -115,9 +123,9 @@ export function SiteFooter({ info = defaultSchoolInfo }: { info?: SchoolInfo }) 
       <div className="border-t border-brand-foreground/15">
         <div className="container-edge flex flex-col items-center justify-between gap-2 py-5 text-xs text-brand-foreground/55 sm:flex-row">
           <p>
-            © {new Date().getFullYear()} {school.name}. All rights reserved.
+            © {new Date().getFullYear()} {identity.name}. All rights reserved.
           </p>
-          <p>Affiliated to WBBSE &amp; WBCHSE · Recognised by the Govt. of West Bengal</p>
+          <p>{identity.footerCopyrightNote}</p>
         </div>
       </div>
     </footer>

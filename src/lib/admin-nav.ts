@@ -10,6 +10,7 @@ export type AdminIcon =
   | "images"
   | "graduation"
   | "building"
+  | "text"
   | "users"
   | "history"
   | "key";
@@ -88,6 +89,14 @@ export const adminNav: AdminNavItem[] = [
     description: "Update contact details, address, phone, email and timings.",
     icon: "building",
     phase: 3,
+  },
+  {
+    href: "/admin/content",
+    label: "Website Text",
+    short: "Text",
+    description: "Edit the wording on every page: headings, sections, messages and the footer.",
+    icon: "text",
+    phase: 1,
   },
   {
     href: "/admin/users",

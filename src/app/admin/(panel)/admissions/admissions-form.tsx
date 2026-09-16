@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
-import { CalendarDays, GraduationCap, IndianRupee, Save } from "lucide-react";
+import { CalendarDays, ClipboardList, FileText, GraduationCap, IndianRupee, Save } from "lucide-react";
 import { FormError } from "@/components/admin/form-message";
 import { Flash } from "@/components/admin/flash";
 import { RowsEditor } from "@/components/admin/rows-editor";
@@ -78,6 +78,27 @@ export function AdmissionsForm({ initial }: { initial: AdmissionsContent }) {
           <Label htmlFor="feeNote">Note under the fee table</Label>
           <Textarea id="feeNote" name="feeNote" defaultValue={initial.feeNote} maxLength={600} rows={3} />
         </div>
+      </Section>
+
+      <Section icon={ClipboardList} title="How to apply" description="The four numbered steps at the top of the Admissions page.">
+        <RowsEditor
+          name="steps"
+          columns={[
+            { key: "title", label: "Step", placeholder: "e.g. Submit application" },
+            { key: "text", label: "Description", placeholder: "One or two sentences" },
+          ]}
+          initial={initial.steps}
+          addLabel="Add step"
+        />
+      </Section>
+
+      <Section icon={FileText} title="Documents required" description="The checklist shown beside the fee table.">
+        <RowsEditor
+          name="documents"
+          columns={[{ key: "item", label: "Document", placeholder: "e.g. Birth certificate of the child" }]}
+          initial={initial.documents}
+          addLabel="Add document"
+        />
       </Section>
 
       <FormError message={state.error} />

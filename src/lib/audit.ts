@@ -16,6 +16,7 @@ export const AUDIT_SECTIONS = [
   "Admissions Content",
   "School Info",
   "Staff Accounts",
+  "Website Text",
   "Sign in",
 ] as const;
 export type AuditSection = (typeof AUDIT_SECTIONS)[number];

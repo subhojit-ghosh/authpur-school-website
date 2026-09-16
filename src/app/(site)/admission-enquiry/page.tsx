@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Phone, Mail, MapPin, Clock, CheckCircle2 } from "lucide-react";
 import { PageBanner } from "@/components/page-banner";
+import { getPageBanners } from "@/lib/page-content";
 import { ContactForm } from "@/components/sections/contact-form";
 import { getSchoolInfo } from "@/lib/settings";
 import { telHref } from "@/lib/settings-types";
@@ -19,7 +20,8 @@ const reasons = [
 
 
 export default async function AdmissionEnquiryPage() {
-  const info = await getSchoolInfo();
+  const [info, banners] = await Promise.all([getSchoolInfo(), getPageBanners()]);
+  const banner = banners.admissionEnquiry;
   const details = [
     { icon: Phone, label: "Admissions helpline", value: info.admissionsPhone, href: telHref(info.admissionsPhone) },
     { icon: Mail, label: "Email", value: info.email, href: `mailto:${info.email}` },
@@ -29,11 +31,7 @@ export default async function AdmissionEnquiryPage() {
 
   return (
     <>
-      <PageBanner
-        eyebrow="Admissions 2026–27"
-        title="Admission Enquiry"
-        subtitle="Tell us a little about your child and we'll get back to you with everything you need to know."
-      />
+      <PageBanner eyebrow={banner.eyebrow} title={banner.title} subtitle={banner.subtitle} />
 
       <section className="py-16 lg:py-24">
         <div className="container-edge grid gap-10 lg:grid-cols-[1fr_1.1fr]">

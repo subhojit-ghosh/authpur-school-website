@@ -1,11 +1,17 @@
 import { Bell, CalendarDays, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getNotices, getUpcomingEvents } from "@/lib/content";
+import { getHomeContent } from "@/lib/page-content";
 import { noticeTagClass } from "@/lib/content-types";
 import { dayMonth, formatDate } from "@/lib/format";
 
 export async function Notices() {
-  const [noticeList, eventList] = await Promise.all([getNotices({ limit: 4 }), getUpcomingEvents({ limit: 3 })]);
+  const [noticeList, eventList, home] = await Promise.all([
+    getNotices({ limit: 4 }),
+    getUpcomingEvents({ limit: 3 }),
+    getHomeContent(),
+  ]);
+  const copy = home.notices;
 
   return (
     <section id="notices" className="scroll-mt-24 py-20 lg:py-28">
@@ -14,10 +20,10 @@ export async function Notices() {
         <div>
           <div className="flex items-center justify-between">
             <div>
-              <span className="eyebrow">Stay informed</span>
+              <span className="eyebrow">{copy.eyebrow}</span>
               <h2 className="mt-3 flex items-center gap-2.5 font-heading text-3xl font-semibold text-brand">
                 <Bell className="size-6 text-gold" />
-                Notice Board
+                {copy.heading}
               </h2>
             </div>
           </div>
@@ -59,10 +65,10 @@ export async function Notices() {
 
         {/* Upcoming events */}
         <div>
-          <span className="eyebrow">What&apos;s next</span>
+          <span className="eyebrow">{copy.eventsEyebrow}</span>
           <h2 className="mt-3 flex items-center gap-2.5 font-heading text-3xl font-semibold text-brand">
             <CalendarDays className="size-6 text-gold" />
-            Upcoming Events
+            {copy.eventsHeading}
           </h2>
 
           <div className="mt-8 space-y-4">

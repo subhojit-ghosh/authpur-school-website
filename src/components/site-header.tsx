@@ -13,11 +13,18 @@ import {
   SheetTrigger,
   SheetClose,
 } from "@/components/ui/sheet";
-import { mainNav, school } from "@/lib/site";
+import { mainNav } from "@/lib/site";
+import { defaultIdentity, type Identity } from "@/lib/page-content-types";
 import { defaultSchoolInfo, telHref, type SchoolInfo } from "@/lib/settings-types";
 import { cn } from "@/lib/utils";
 
-export function SiteHeader({ info = defaultSchoolInfo }: { info?: SchoolInfo }) {
+export function SiteHeader({
+  info = defaultSchoolInfo,
+  identity = defaultIdentity,
+}: {
+  info?: SchoolInfo;
+  identity?: Identity;
+}) {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -63,10 +70,10 @@ export function SiteHeader({ info = defaultSchoolInfo }: { info?: SchoolInfo }) 
             <Crest className="h-11 w-11 shrink-0" />
             <span className="flex flex-col leading-none">
               <span className="font-heading text-[15px] font-semibold tracking-tight text-brand sm:text-base">
-                {school.shortName}
+                {identity.shortName}
               </span>
               <span className="mt-1 text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
-                Higher Secondary · Est. {school.established}
+                Higher Secondary · Est. {identity.established}
               </span>
             </span>
           </Link>
@@ -131,7 +138,7 @@ export function SiteHeader({ info = defaultSchoolInfo }: { info?: SchoolInfo }) 
                 <SheetHeader>
                   <SheetTitle className="flex items-center gap-2">
                     <Crest className="h-8 w-8" />
-                    <span className="font-heading text-base text-brand">{school.shortName}</span>
+                    <span className="font-heading text-base text-brand">{identity.shortName}</span>
                   </SheetTitle>
                 </SheetHeader>
                 <div className="flex flex-col gap-1 px-4 pb-6">

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Bell, CalendarDays, ArrowRight } from "lucide-react";
 import { PageBanner } from "@/components/page-banner";
+import { getHomeContent, getPageBanners } from "@/lib/page-content";
 import { RichText } from "@/components/rich-text";
 import { getNotices, getUpcomingEvents } from "@/lib/content";
 import { noticeTagClass } from "@/lib/content-types";
@@ -16,15 +17,17 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default async function NoticesPage() {
-  const [noticeList, eventList] = await Promise.all([getNotices(), getUpcomingEvents()]);
+  const [noticeList, eventList, banners, home] = await Promise.all([
+    getNotices(),
+    getUpcomingEvents(),
+    getPageBanners(),
+    getHomeContent(),
+  ]);
+  const banner = banners.notices;
 
   return (
     <>
-      <PageBanner
-        eyebrow="Stay informed"
-        title="Notice Board"
-        subtitle="Announcements, circulars and upcoming events — everything happening at our school, in one place."
-      />
+      <PageBanner eyebrow={banner.eyebrow} title={banner.title} subtitle={banner.subtitle} />
 
       <section className="py-16 lg:py-24">
         <div className="container-edge grid gap-12 lg:grid-cols-[1.5fr_1fr]">
@@ -32,7 +35,7 @@ export default async function NoticesPage() {
           <div>
             <h2 className="flex items-center gap-2.5 font-heading text-2xl font-semibold text-brand">
               <Bell className="size-6 text-gold" />
-              Latest Notices
+              {home.notices.heading}
             </h2>
 
             {noticeList.length ? (
@@ -75,7 +78,7 @@ export default async function NoticesPage() {
           <div>
             <h2 className="flex items-center gap-2.5 font-heading text-2xl font-semibold text-brand">
               <CalendarDays className="size-6 text-gold" />
-              Upcoming Events
+              {home.notices.eventsHeading}
             </h2>
 
             <div className="mt-6 space-y-4">

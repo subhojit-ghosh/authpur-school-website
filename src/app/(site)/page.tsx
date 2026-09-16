@@ -1,4 +1,5 @@
-import { HeroCarousel, StatsBand } from "@/components/sections/hero-carousel";
+import { HeroCarousel } from "@/components/sections/hero-carousel";
+import { StatsBand } from "@/components/sections/stats-band";
 import { UpdatesTicker } from "@/components/sections/updates-ticker";
 import { About } from "@/components/sections/about";
 import { Academics } from "@/components/sections/academics";

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { PageBanner } from "@/components/page-banner";
 import { LeadershipMessage } from "@/components/leadership-message";
-import { principal } from "@/lib/site";
+import { getIdentity, getLeadership, getPageBanners } from "@/lib/page-content";
+import { toParagraphs } from "@/lib/page-content-types";
 
 export const metadata: Metadata = {
   title: "Principal's Message",
@@ -9,15 +10,19 @@ export const metadata: Metadata = {
     "A message from the Principal of Authpur National Model Higher Secondary School.",
 };
 
-export default function PrincipalsMessagePage() {
+export const revalidate = 3600;
+
+export default async function PrincipalsMessagePage() {
+  const [{ principal }, banners, id] = await Promise.all([getLeadership(), getPageBanners(), getIdentity()]);
+  const banner = banners.principalsMessage;
+
   return (
     <>
-      <PageBanner
-        eyebrow="Leadership"
-        title="Principal's Message"
-        subtitle="A warm welcome from our Principal, on the values and everyday care that shape life at our school."
+      <PageBanner eyebrow={banner.eyebrow} title={banner.title} subtitle={banner.subtitle} />
+      <LeadershipMessage
+        person={{ ...principal, message: toParagraphs(principal.message) }}
+        motto={id.motto ? `${id.motto} — “${id.mottoMeaning}”` : undefined}
       />
-      <LeadershipMessage person={principal} />
     </>
   );
 }

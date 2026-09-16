@@ -1,5 +1,7 @@
 import {
   admissionDates,
+  admissionDocuments,
+  admissionSteps,
   dailySchedule,
   eligibility,
   feeNote,
@@ -31,6 +33,8 @@ export type AdmissionsContent = {
   eligibility: { level: string; criteria: string }[];
   fees: { head: string; amount: string }[];
   feeNote: string;
+  steps: { title: string; text: string }[];
+  documents: { item: string }[];
 };
 
 export const SETTING_KEYS = {
@@ -59,6 +63,8 @@ export const defaultAdmissions: AdmissionsContent = {
   eligibility: eligibility.map((e) => ({ ...e })),
   fees: feeStructure.map((f) => ({ ...f })),
   feeNote,
+  steps: admissionSteps.map((s) => ({ ...s })),
+  documents: admissionDocuments.map((item) => ({ item })),
 };
 
 export const GALLERY_CATEGORIES = ["Campus", "Academics", "Sports", "Events"] as const;

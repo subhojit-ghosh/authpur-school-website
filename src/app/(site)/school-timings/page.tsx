@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Clock, Sun, Building2, Info } from "lucide-react";
 import { PageBanner } from "@/components/page-banner";
+import { getPageBanners } from "@/lib/page-content";
 import { getSchoolInfo, getTimings } from "@/lib/settings";
 
 export const metadata: Metadata = {
@@ -13,16 +14,13 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default async function SchoolTimingsPage() {
-  const [timings, info] = await Promise.all([getTimings(), getSchoolInfo()]);
+  const [timings, info, banners] = await Promise.all([getTimings(), getSchoolInfo(), getPageBanners()]);
+  const banner = banners.schoolTimings;
   const { dailySchedule, sectionTimings, timingsNote } = timings;
   const officeHours = info.officeHours;
   return (
     <>
-      <PageBanner
-        eyebrow="Academics"
-        title="School Timings"
-        subtitle="Our daily rhythm — from the morning assembly to the final bell — and section-wise hours."
-      />
+      <PageBanner eyebrow={banner.eyebrow} title={banner.title} subtitle={banner.subtitle} />
 
       <section className="py-16 lg:py-24">
         <div className="container-edge grid gap-8 lg:grid-cols-2">

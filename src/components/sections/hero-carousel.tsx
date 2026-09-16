@@ -1,8 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, BadgeCheck, Award } from "lucide-react";
-import { stats } from "@/lib/site";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export type HeroImage = { src: string; alt: string };
 import { cn } from "@/lib/utils";
@@ -80,35 +79,6 @@ export function HeroCarousel({ images }: { images: HeroImage[] }) {
                 i === index ? "w-7 bg-gold" : "w-2 bg-white/70 hover:bg-white",
               )}
             />
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-export function StatsBand() {
-  return (
-    <section className="border-b bg-background py-10 lg:py-12">
-      <div className="container-edge">
-        <div className="mb-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
-          <span className="flex items-center gap-2">
-            <BadgeCheck className="size-4 text-brand" />
-            Affiliated to WBBSE &amp; WBCHSE
-          </span>
-          <span className="hidden h-4 w-px bg-border sm:block" />
-          <span className="flex items-center gap-2">
-            <Award className="size-4 text-brand" />
-            40+ years of trust
-          </span>
-        </div>
-        <div className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border bg-border shadow-sm lg:grid-cols-4">
-          {stats.map((s) => (
-            <div key={s.label} className="bg-card px-6 py-7 text-center">
-              <p className="font-heading text-3xl font-semibold text-brand sm:text-4xl">{s.value}</p>
-              <p className="mt-1 text-sm font-medium text-foreground">{s.label}</p>
-              <p className="mt-0.5 text-xs text-muted-foreground">{s.hint}</p>
-            </div>
           ))}
         </div>
       </div>

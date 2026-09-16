@@ -10,8 +10,9 @@ import {
   Phone,
 } from "lucide-react";
 import { PageBanner } from "@/components/page-banner";
+import { getPageBanners } from "@/lib/page-content";
 import { Button } from "@/components/ui/button";
-import { admissionSteps, admissionDocuments } from "@/lib/site";
+
 import { getAdmissionsContent, getSchoolInfo } from "@/lib/settings";
 import { telHref } from "@/lib/settings-types";
 
@@ -25,15 +26,12 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default async function AdmissionsPage() {
-  const [content, info] = await Promise.all([getAdmissionsContent(), getSchoolInfo()]);
-  const { dates: admissionDates, eligibility, fees: feeStructure, feeNote } = content;
+  const [content, info, banners] = await Promise.all([getAdmissionsContent(), getSchoolInfo(), getPageBanners()]);
+  const banner = banners.admissions;
+  const { dates: admissionDates, eligibility, fees: feeStructure, feeNote, steps: admissionSteps, documents } = content;
   return (
     <>
-      <PageBanner
-        eyebrow="Admissions 2026–27"
-        title="Admission"
-        subtitle="Everything you need to begin your child's journey with us — the process, dates, eligibility and fees."
-      />
+      <PageBanner eyebrow={banner.eyebrow} title={banner.title} subtitle={banner.subtitle} />
 
       <section className="py-16 lg:py-24">
         <div className="container-edge space-y-16">
@@ -123,7 +121,7 @@ export default async function AdmissionsPage() {
                 Documents required
               </h2>
               <ul className="mt-6 space-y-3">
-                {admissionDocuments.map((doc) => (
+                {documents.map(({ item: doc }) => (
                   <li key={doc} className="flex items-start gap-3 text-sm text-foreground">
                     <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-gold-soft text-gold-foreground">
                       <Check className="size-3" />
