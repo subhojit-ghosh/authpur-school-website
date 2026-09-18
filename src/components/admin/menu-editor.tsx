@@ -126,7 +126,9 @@ export function MenuEditor({ name, initial }: { name: string; initial: MenuItem[
                 />
               </div>
               <div className="grid flex-1 gap-2">
-                <Label htmlFor={`menu-href-${row.id}`}>{isDropdown ? "Address (not used)" : "Address"}</Label>
+                <Label htmlFor={`menu-href-${row.id}`}>
+                  {isDropdown ? "Address (not used while it has a dropdown)" : "Address"}
+                </Label>
                 <Input
                   id={`menu-href-${row.id}`}
                   value={item.href}

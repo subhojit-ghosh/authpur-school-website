@@ -257,7 +257,10 @@ function parseMenu(raw: string): { items: MenuItem[] } | { error: string } {
       return { error: `“${label}” needs an address such as /notices, or a dropdown link underneath it.` };
     }
 
-    items.push({ label, href: children.length ? "" : href, children });
+    // An item with a dropdown does not use its own address, but the address is
+    // kept so that removing the dropdown links again restores the plain link
+    // rather than leaving the item with nowhere to go.
+    items.push({ label, href: isAllowedHref(href) ? href : "", children });
   }
 
   if (!items.length) return { error: "The menu needs at least one item." };
