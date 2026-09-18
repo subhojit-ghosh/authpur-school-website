@@ -101,19 +101,21 @@ export function flatDiff(before: unknown, after: unknown, limit = 25) {
     if (Object.keys(changed).length >= limit) return;
     if (JSON.stringify(a) === JSON.stringify(b)) return;
 
-    const bothArrays = Array.isArray(a) && Array.isArray(b);
+    // When a row is added or removed one side is missing. Treating the missing
+    // side as an empty array or object lets the walk continue into the other,
+    // so the log names the fields that appeared rather than printing raw data.
+    const missing = (v: unknown) => v === undefined || v === null;
+    const isArray = (v: unknown) => Array.isArray(v);
+    const isPlainObject = (v: unknown) => v !== null && typeof v === "object" && !Array.isArray(v);
+
+    const bothArrays = (isArray(a) && (isArray(b) || missing(b))) || (missing(a) && isArray(b));
     const bothObjects =
       !bothArrays &&
-      a !== null &&
-      b !== null &&
-      typeof a === "object" &&
-      typeof b === "object" &&
-      !Array.isArray(a) &&
-      !Array.isArray(b);
+      ((isPlainObject(a) && (isPlainObject(b) || missing(b))) || (missing(a) && isPlainObject(b)));
 
     if (bothArrays) {
-      const arrA = a as unknown[];
-      const arrB = b as unknown[];
+      const arrA = (isArray(a) ? a : []) as unknown[];
+      const arrB = (isArray(b) ? b : []) as unknown[];
       for (let i = 0; i < Math.max(arrA.length, arrB.length); i++) {
         walk(arrA[i], arrB[i], `${path}[${i + 1}]`);
       }
@@ -121,8 +123,8 @@ export function flatDiff(before: unknown, after: unknown, limit = 25) {
     }
 
     if (bothObjects) {
-      const objA = a as Record<string, unknown>;
-      const objB = b as Record<string, unknown>;
+      const objA = (isPlainObject(a) ? a : {}) as Record<string, unknown>;
+      const objB = (isPlainObject(b) ? b : {}) as Record<string, unknown>;
       for (const key of new Set([...Object.keys(objA), ...Object.keys(objB)])) {
         walk(objA[key], objB[key], path ? `${path}.${key}` : key);
       }
