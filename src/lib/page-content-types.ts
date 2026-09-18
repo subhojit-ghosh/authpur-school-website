@@ -34,6 +34,8 @@ export const FEATURE_ICONS = ["flask", "book", "monitor", "trophy", "palette", "
 export const PILLAR_ICONS = ["eye", "target", "heart"] as const;
 export const CAMPUS_ICONS = ["building", "flask", "library", "medal", "music"] as const;
 export const LAB_ICONS = ["atom", "flask", "leaf", "monitor", "book"] as const;
+/** Icons offered for the round buttons at the bottom of the footer. */
+export const SOCIAL_ICONS = ["website", "share", "photos", "video", "message", "email"] as const;
 
 export type LinkItem = { label: string; href: string };
 
@@ -89,6 +91,9 @@ export function isAllowedHref(href: string): boolean {
 
 // ---------------------------------------------------------------- identity
 
+/** One round button at the bottom of the footer. */
+export type SocialLink = { icon: string; label: string; href: string };
+
 export type Identity = {
   name: string;
   shortName: string;
@@ -100,8 +105,18 @@ export type Identity = {
   affiliationLine: string;
   trustLine: string;
   footerCopyrightNote: string;
+  /** The small line under the school name beside the crest in the footer. */
+  footerCrestLine: string;
+  /** The three gold column headings in the footer. */
+  footerExploreHeading: string;
+  footerNavigateHeading: string;
+  footerContactHeading: string;
+  /** The wording after the year in the copyright line. */
+  footerRightsNote: string;
   footerExplore: LinkItem[];
   footerNavigate: LinkItem[];
+  /** Empty by default: the row of buttons is hidden until a real address is added. */
+  footerSocial: SocialLink[];
 };
 
 export const defaultIdentity: Identity = {
@@ -115,8 +130,14 @@ export const defaultIdentity: Identity = {
   affiliationLine: "Affiliated to WBBSE & WBCHSE",
   trustLine: "40+ years of trust",
   footerCopyrightNote: "Affiliated to WBBSE & WBCHSE · Recognised by the Govt. of West Bengal",
+  footerCrestLine: "Higher Secondary School",
+  footerExploreHeading: "Explore",
+  footerNavigateHeading: "Navigate",
+  footerContactHeading: "Reach Us",
+  footerRightsNote: "All rights reserved.",
   footerExplore: footerExplore.map((l) => ({ ...l })),
   footerNavigate: footerNavigate.map((l) => ({ ...l })),
+  footerSocial: [],
 };
 
 // ------------------------------------------------------------------- home

@@ -61,13 +61,29 @@ export async function saveIdentity(_prev: ContentState, formData: FormData): Pro
     affiliationLine: text(formData, "affiliationLine", 120),
     trustLine: text(formData, "trustLine", 120),
     footerCopyrightNote: text(formData, "footerCopyrightNote", 200),
+    footerCrestLine: text(formData, "footerCrestLine", 80),
+    footerExploreHeading: text(formData, "footerExploreHeading", 40),
+    footerNavigateHeading: text(formData, "footerNavigateHeading", 40),
+    footerContactHeading: text(formData, "footerContactHeading", 40),
+    footerRightsNote: text(formData, "footerRightsNote", 120),
     footerExplore: parseRows(formData, "explore", ["label", "href"]),
     footerNavigate: parseRows(formData, "navigate", ["label", "href"]),
+    footerSocial: parseRows(formData, "social", ["icon", "label", "href"]),
   };
 
   if (!value.name || !value.shortName) return { error: "The school name and short name are both required." };
   if (value.footerExplore.some((l) => !l.label || !l.href) || value.footerNavigate.some((l) => !l.label || !l.href)) {
     return { error: "Every footer link needs both a label and an address." };
+  }
+  const badLink = [...value.footerExplore, ...value.footerNavigate].find((l) => !isAllowedHref(l.href));
+  if (badLink) {
+    return { error: `“${badLink.label}” needs an address such as /notices or https://example.com.` };
+  }
+  const badSocial = value.footerSocial.find((l) => !l.label || !isAllowedHref(l.href));
+  if (badSocial) {
+    return {
+      error: `Every footer button needs a name and an address, such as https://facebook.com/yourschool.`,
+    };
   }
 
   await saveSetting(CONTENT_KEYS.identity, value);

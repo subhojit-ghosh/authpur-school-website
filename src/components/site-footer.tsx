@@ -1,9 +1,31 @@
 import Link from "next/link";
-import { Mail, Phone, MapPin, Clock, Globe, MessageCircle, AtSign } from "lucide-react";
+import {
+  AtSign,
+  Camera,
+  Clock,
+  Globe,
+  Mail,
+  MapPin,
+  MessageCircle,
+  Phone,
+  Share2,
+  Video,
+  type LucideIcon,
+} from "lucide-react";
 import { RichText } from "@/components/rich-text";
 import { Crest } from "@/components/crest";
 import { defaultIdentity, type Identity } from "@/lib/page-content-types";
 import { defaultSchoolInfo, telHref, type SchoolInfo } from "@/lib/settings-types";
+
+/** Icon names offered in the admin panel, mapped to the icons themselves. */
+const socialIcons: Record<string, LucideIcon> = {
+  website: Globe,
+  share: Share2,
+  photos: Camera,
+  video: Video,
+  message: MessageCircle,
+  email: AtSign,
+};
 
 export function SiteFooter({
   info = defaultSchoolInfo,
@@ -21,9 +43,11 @@ export function SiteFooter({
             <Crest className="h-12 w-12" />
             <div className="leading-tight">
               <p className="font-heading text-lg font-semibold">{identity.shortName}</p>
-              <p className="text-xs uppercase tracking-[0.15em] text-brand-foreground/60">
-                Higher Secondary School
-              </p>
+              {identity.footerCrestLine ? (
+                <p className="text-xs uppercase tracking-[0.15em] text-brand-foreground/60">
+                  {identity.footerCrestLine}
+                </p>
+              ) : null}
             </div>
           </div>
           <RichText
@@ -41,7 +65,7 @@ export function SiteFooter({
         {/* Quick links */}
         <div>
           <h3 className="text-sm font-semibold uppercase tracking-[0.14em] text-gold">
-            Explore
+            {identity.footerExploreHeading}
           </h3>
           <ul className="mt-5 space-y-3 text-sm">
             {identity.footerExplore.map((l) => (
@@ -60,7 +84,7 @@ export function SiteFooter({
         {/* Menu */}
         <div>
           <h3 className="text-sm font-semibold uppercase tracking-[0.14em] text-gold">
-            Navigate
+            {identity.footerNavigateHeading}
           </h3>
           <ul className="mt-5 space-y-3 text-sm">
             {identity.footerNavigate.map((l) => (
@@ -79,7 +103,7 @@ export function SiteFooter({
         {/* Contact */}
         <div>
           <h3 className="text-sm font-semibold uppercase tracking-[0.14em] text-gold">
-            Reach Us
+            {identity.footerContactHeading}
           </h3>
           <ul className="mt-5 space-y-4 text-sm text-brand-foreground/75">
             <li className="flex gap-3">
@@ -107,25 +131,33 @@ export function SiteFooter({
             </li>
           </ul>
 
-          <div className="mt-6 flex gap-3">
-            {[Globe, MessageCircle, AtSign].map((Icon, i) => (
-              <a
-                key={i}
-                href="#"
-                aria-label="Social media"
-                className="grid size-9 place-items-center rounded-full border border-brand-foreground/20 text-brand-foreground/80 transition-colors hover:border-gold hover:bg-gold hover:text-gold-foreground"
-              >
-                <Icon className="size-4" />
-              </a>
-            ))}
-          </div>
+          {identity.footerSocial.length ? (
+            <div className="mt-6 flex flex-wrap gap-3">
+              {identity.footerSocial.map((link) => {
+                const Icon = socialIcons[link.icon] ?? Globe;
+                return (
+                  <a
+                    key={`${link.label}-${link.href}`}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={link.label}
+                    title={link.label}
+                    className="grid size-9 place-items-center rounded-full border border-brand-foreground/20 text-brand-foreground/80 transition-colors hover:border-gold hover:bg-gold hover:text-gold-foreground"
+                  >
+                    <Icon className="size-4" />
+                  </a>
+                );
+              })}
+            </div>
+          ) : null}
         </div>
       </div>
 
       <div className="border-t border-brand-foreground/15">
         <div className="container-edge flex flex-col items-center justify-between gap-2 py-5 text-xs text-brand-foreground/55 sm:flex-row">
           <p>
-            © {new Date().getFullYear()} {identity.name}. All rights reserved.
+            © {new Date().getFullYear()} {identity.name}. {identity.footerRightsNote}
           </p>
           <p>{identity.footerCopyrightNote}</p>
         </div>

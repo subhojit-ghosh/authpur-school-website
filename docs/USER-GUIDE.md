@@ -147,7 +147,11 @@ Open **Website Text** in the menu and pick an area:
   label, the title and the introduction.
 - **Laboratories:** the laboratories listed on the Labs page.
 - **School identity & footer:** school name, established year, tagline, motto,
-  the two trust lines, the footer paragraph and the footer link lists.
+  the two trust lines, and the whole footer: the line beside the crest, the
+  paragraph, the three column headings, both link lists, the round buttons for
+  the school's Facebook or WhatsApp page, and the wording of the copyright
+  line. The address, phone, email and office hours in the footer come from
+  School Info.
 
 Rows can be re-ordered with ↑ ↓, removed with the bin, and added with the
 **Add** button. In the About paragraphs you can write `{year}` for the
