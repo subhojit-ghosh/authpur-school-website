@@ -13,17 +13,18 @@ import {
   SheetTrigger,
   SheetClose,
 } from "@/components/ui/sheet";
-import { mainNav } from "@/lib/site";
-import { defaultIdentity, type Identity } from "@/lib/page-content-types";
+import { defaultIdentity, defaultNavigation, type Identity, type Navigation } from "@/lib/page-content-types";
 import { defaultSchoolInfo, telHref, type SchoolInfo } from "@/lib/settings-types";
 import { cn } from "@/lib/utils";
 
 export function SiteHeader({
   info = defaultSchoolInfo,
   identity = defaultIdentity,
+  nav = defaultNavigation,
 }: {
   info?: SchoolInfo;
   identity?: Identity;
+  nav?: Navigation;
 }) {
   const [scrolled, setScrolled] = useState(false);
 
@@ -80,8 +81,8 @@ export function SiteHeader({
 
           {/* Desktop nav */}
           <div className="hidden items-center lg:flex">
-            {mainNav.map((item) =>
-              item.children ? (
+            {nav.items.map((item) =>
+              item.children.length ? (
                 <div key={item.label} className="group relative">
                   <button className="flex items-center gap-1 whitespace-nowrap rounded-md px-2.5 py-2 text-sm font-medium text-foreground/75 transition-colors group-hover:bg-accent group-hover:text-brand xl:px-3">
                     {item.label}
@@ -91,7 +92,7 @@ export function SiteHeader({
                     <div className="min-w-64 rounded-xl border bg-popover p-2 shadow-xl shadow-brand/5">
                       {item.children.map((child) => (
                         <Link
-                          key={child.href}
+                          key={`${child.label}-${child.href}`}
                           href={child.href}
                           className="block rounded-lg px-3 py-2.5 transition-colors hover:bg-accent"
                         >
@@ -107,7 +108,7 @@ export function SiteHeader({
               ) : (
                 <Link
                   key={item.label}
-                  href={item.href!}
+                  href={item.href}
                   className="whitespace-nowrap rounded-md px-2.5 py-2 text-sm font-medium text-foreground/75 transition-colors hover:bg-accent hover:text-brand xl:px-3"
                 >
                   {item.label}
@@ -121,9 +122,9 @@ export function SiteHeader({
               asChild
               className="hidden h-10 bg-gold px-5 font-semibold text-gold-foreground shadow-sm hover:bg-gold/90 sm:inline-flex lg:hidden xl:inline-flex"
             >
-              <Link href="/admissions">
+              <Link href={nav.applyHref}>
                 <GraduationCap className="size-4" />
-                Apply Now
+                {nav.applyLabel}
               </Link>
             </Button>
 
@@ -142,14 +143,14 @@ export function SiteHeader({
                   </SheetTitle>
                 </SheetHeader>
                 <div className="flex flex-col gap-1 px-4 pb-6">
-                  {mainNav.map((item) =>
-                    item.children ? (
+                  {nav.items.map((item) =>
+                    item.children.length ? (
                       <div key={item.label} className="py-1">
                         <p className="px-3 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                           {item.label}
                         </p>
                         {item.children.map((child) => (
-                          <SheetClose asChild key={child.href}>
+                          <SheetClose asChild key={`${child.label}-${child.href}`}>
                             <Link
                               href={child.href}
                               className="block rounded-md px-3 py-2.5 text-sm font-medium text-foreground/80 transition-colors hover:bg-accent hover:text-brand"
@@ -162,7 +163,7 @@ export function SiteHeader({
                     ) : (
                       <SheetClose asChild key={item.label}>
                         <Link
-                          href={item.href!}
+                          href={item.href}
                           className="rounded-md px-3 py-2.5 text-sm font-semibold text-foreground/85 transition-colors hover:bg-accent hover:text-brand"
                         >
                           {item.label}
@@ -175,9 +176,9 @@ export function SiteHeader({
                       asChild
                       className="mt-4 w-full bg-gold font-semibold text-gold-foreground hover:bg-gold/90"
                     >
-                      <Link href="/admissions">
+                      <Link href={nav.applyHref}>
                         <GraduationCap className="size-4" />
-                        Apply for Admission
+                        {nav.applyLabelMobile}
                       </Link>
                     </Button>
                   </SheetClose>

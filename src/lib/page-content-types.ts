@@ -4,6 +4,7 @@ import {
   footerExplore,
   footerNavigate,
   labs,
+  mainNav,
   principal,
   programmes,
   school,
@@ -25,6 +26,7 @@ export const CONTENT_KEYS = {
   leadership: "leadership",
   pageBanners: "page_banners",
   labs: "labs_content",
+  navigation: "navigation",
 } as const;
 
 /** Icon choices offered in the admin forms. Keys map to lucide icons at render time. */
@@ -34,6 +36,56 @@ export const CAMPUS_ICONS = ["building", "flask", "library", "medal", "music"] a
 export const LAB_ICONS = ["atom", "flask", "leaf", "monitor", "book"] as const;
 
 export type LinkItem = { label: string; href: string };
+
+// -------------------------------------------------------------- navigation
+
+/** One entry in a dropdown. The description is the small grey line under the label. */
+export type MenuChild = { label: string; href: string; desc: string };
+
+/**
+ * A top-level header menu entry. With no dropdown links it is a plain link and
+ * uses `href`; with one or more it becomes a dropdown and `href` is ignored.
+ */
+export type MenuItem = { label: string; href: string; children: MenuChild[] };
+
+export type Navigation = {
+  items: MenuItem[];
+  /** The gold button at the right of the header. */
+  applyLabel: string;
+  applyHref: string;
+  /** The same button inside the phone menu, where there is room for more words. */
+  applyLabelMobile: string;
+};
+
+export const MAX_MENU_ITEMS = 12;
+export const MAX_MENU_CHILDREN = 10;
+
+export const defaultNavigation: Navigation = {
+  items: mainNav.map((item) => ({
+    label: item.label,
+    href: item.href ?? "",
+    children: (item.children ?? []).map((child) => ({
+      label: child.label,
+      href: child.href,
+      desc: child.desc ?? "",
+    })),
+  })),
+  applyLabel: "Apply Now",
+  applyHref: "/admissions",
+  applyLabelMobile: "Apply for Admission",
+};
+
+/**
+ * Addresses staff may enter. A path stays on the site; a full web address, an
+ * email link or a telephone link leaves it. Anything else is rejected, so a
+ * menu can never carry a script address.
+ */
+export function isAllowedHref(href: string): boolean {
+  const value = href.trim();
+  if (!value) return false;
+  if (value.startsWith("/") || value.startsWith("#")) return true;
+  return /^(https?:\/\/|mailto:|tel:)/i.test(value);
+}
 
 // ---------------------------------------------------------------- identity
 

@@ -14,6 +14,8 @@ import {
   type LabsContent,
   type Leadership,
   type PageBanners,
+  defaultNavigation,
+  type Navigation,
 } from "@/lib/page-content-types";
 
 /** Server-side readers for the editable website wording. */
@@ -22,4 +24,5 @@ export const getIdentity = cache(() => getSetting<Identity>(CONTENT_KEYS.identit
 export const getHomeContent = cache(() => getSetting<HomeContent>(CONTENT_KEYS.home, defaultHome));
 export const getLeadership = cache(() => getSetting<Leadership>(CONTENT_KEYS.leadership, defaultLeadership));
 export const getPageBanners = cache(() => getSetting<PageBanners>(CONTENT_KEYS.pageBanners, defaultPageBanners));
+export const getNavigation = cache(() => getSetting<Navigation>(CONTENT_KEYS.navigation, defaultNavigation));
 export const getLabsContent = cache(() => getSetting<LabsContent>(CONTENT_KEYS.labs, defaultLabs));

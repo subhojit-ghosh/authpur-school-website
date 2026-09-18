@@ -6,14 +6,27 @@ import { flatDiff, recordAudit } from "@/lib/audit";
 import { parseRows } from "@/lib/form-rows";
 import { isEmptyRichText, RICH_TEXT_LIMIT, sanitizeRichText } from "@/lib/rich-text";
 import { revalidateWholeSite } from "@/lib/revalidate";
-import { getHomeContent, getIdentity, getLabsContent, getLeadership, getPageBanners } from "@/lib/page-content";
+import {
+  getHomeContent,
+  getIdentity,
+  getLabsContent,
+  getLeadership,
+  getNavigation,
+  getPageBanners,
+} from "@/lib/page-content";
 import {
   CONTENT_KEYS,
+  isAllowedHref,
+  MAX_MENU_CHILDREN,
+  MAX_MENU_ITEMS,
   PAGE_BANNER_LABELS,
   type HomeContent,
   type Identity,
   type LabsContent,
   type Leadership,
+  type MenuChild,
+  type MenuItem,
+  type Navigation,
   type PageBanners,
 } from "@/lib/page-content-types";
 import { saveSetting } from "@/lib/settings";
@@ -192,4 +205,87 @@ export async function saveHome(_prev: ContentState, formData: FormData): Promise
     details: flatDiff(before, value),
   });
   return done("Home page sections");
+}
+
+// ----------------------------------------------------------- header menu
+
+/** Trims a value and keeps it within a sensible length for a menu. */
+const short = (value: unknown, max: number) => String(value ?? "").trim().slice(0, max);
+
+/**
+ * Rebuilds the menu from the editor's JSON field.
+ *
+ * Everything is treated as untrusted: only the fields below are kept, the
+ * counts are capped, and every address must be one the site is willing to link
+ * to, so a menu can never carry a script address.
+ */
+function parseMenu(raw: string): { items: MenuItem[] } | { error: string } {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return { error: "The menu could not be read. Please reload the page and try again." };
+  }
+  if (!Array.isArray(parsed)) return { error: "The menu could not be read. Please reload the page and try again." };
+  if (parsed.length > MAX_MENU_ITEMS) return { error: `A menu can have at most ${MAX_MENU_ITEMS} items.` };
+
+  const items: MenuItem[] = [];
+  for (const entry of parsed) {
+    const source = (entry ?? {}) as Record<string, unknown>;
+    const label = short(source.label, 40);
+    if (!label) return { error: "Every menu item needs a name." };
+
+    const rawChildren = Array.isArray(source.children) ? source.children : [];
+    if (rawChildren.length > MAX_MENU_CHILDREN) {
+      return { error: `“${label}” can have at most ${MAX_MENU_CHILDREN} dropdown links.` };
+    }
+
+    const children: MenuChild[] = [];
+    for (const rawChild of rawChildren) {
+      const childSource = (rawChild ?? {}) as Record<string, unknown>;
+      const childLabel = short(childSource.label, 40);
+      const childHref = short(childSource.href, 200);
+      if (!childLabel) return { error: `Every dropdown link under “${label}” needs a name.` };
+      if (!isAllowedHref(childHref)) {
+        return { error: `“${childLabel}” needs an address such as /notices or https://example.com.` };
+      }
+      children.push({ label: childLabel, href: childHref, desc: short(childSource.desc, 80) });
+    }
+
+    const href = short(source.href, 200);
+    if (!children.length && !isAllowedHref(href)) {
+      return { error: `“${label}” needs an address such as /notices, or a dropdown link underneath it.` };
+    }
+
+    items.push({ label, href: children.length ? "" : href, children });
+  }
+
+  if (!items.length) return { error: "The menu needs at least one item." };
+  return { items };
+}
+
+export async function saveNavigation(_prev: ContentState, formData: FormData): Promise<ContentState> {
+  await requireUser();
+
+  const parsed = parseMenu(String(formData.get("menu") ?? ""));
+  if ("error" in parsed) return { error: parsed.error };
+
+  const applyLabel = text(formData, "applyLabel", 40);
+  const applyHref = text(formData, "applyHref", 200);
+  if (!applyLabel) return { error: "The apply button needs some text." };
+  if (!isAllowedHref(applyHref)) return { error: "The apply button needs an address such as /admissions." };
+
+  const value: Navigation = {
+    items: parsed.items,
+    applyLabel,
+    applyHref,
+    applyLabelMobile: text(formData, "applyLabelMobile", 60) || applyLabel,
+  };
+
+  const before = await getNavigation();
+  await saveSetting(CONTENT_KEYS.navigation, value);
+  await recordAudit("Website Text", "updated", `Updated the header menu (${value.items.length} items)`, {
+    details: flatDiff(before, value),
+  });
+  return done("Header menu");
 }

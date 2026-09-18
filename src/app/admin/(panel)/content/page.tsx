@@ -1,11 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Building2, FlaskConical, Home, Quote, Type } from "lucide-react";
+import { ArrowRight, Building2, FlaskConical, Home, Menu, Quote, Type } from "lucide-react";
 import { AdminPageHeader } from "@/components/admin/page-header";
 
 export const metadata: Metadata = { title: "Website Text" };
 
 const areas = [
+  {
+    href: "/admin/content/menu",
+    icon: Menu,
+    title: "Header menu",
+    description:
+      "The menu across the top of every page: add or rename an item, change where it goes, reorder it, or give it a dropdown. Includes the gold apply button.",
+  },
   {
     href: "/admin/content/home",
     icon: Home,
@@ -45,7 +52,7 @@ export default function WebsiteTextPage() {
       <AdminPageHeader
         eyebrow="Website Text"
         title="Wording on the website"
-        description="Everything written on the public site can be edited here. Notices, events, photos, admission dates and contact details have their own sections in the menu."
+        description="Everything written on the public site can be edited here, including the header menu. Notices, events, photos, admission dates and contact details have their own sections in the menu."
       />
 
       <div className="grid gap-4 sm:grid-cols-2">

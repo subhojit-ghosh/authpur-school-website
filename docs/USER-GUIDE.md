@@ -132,6 +132,10 @@ One place for details that appear across the whole website.
 Everything written on the public site can be edited here, section by section.
 Open **Website Text** in the menu and pick an area:
 
+- **Header menu:** the menu across the top of every page. Rename an item,
+  change where it goes, move it up or down, remove it, or add a new one. An
+  item with links underneath it becomes a dropdown. The gold apply button is
+  set here too. Addresses beginning with `/` stay on this website.
 - **Home page sections:** the statistics band, the About section with its
   paragraphs, quote and three pillars, Academics with its programme cards,
   Why Us, Campus Life, the notice board headings, Testimonials, the admissions
