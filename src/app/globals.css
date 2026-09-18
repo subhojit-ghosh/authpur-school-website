@@ -170,8 +170,14 @@
 }
 
 @layer components {
+  /*
+   * The page's content column. The cap keeps lines of text readable on a very
+   * wide monitor; it was 80rem, which left a broad empty margin either side on
+   * a laptop, so it is now 96rem with a little more breathing room only once
+   * the screen is wider than that.
+   */
   .container-edge {
-    @apply mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-10;
+    @apply mx-auto w-full max-w-[96rem] px-5 sm:px-8 lg:px-10 2xl:px-12;
   }
   .eyebrow {
     @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-gold-foreground;
