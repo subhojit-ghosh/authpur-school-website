@@ -32,10 +32,36 @@ export const CONTENT_KEYS = {
 /** Icon choices offered in the admin forms. Keys map to lucide icons at render time. */
 export const FEATURE_ICONS = ["flask", "book", "monitor", "trophy", "palette", "bus"] as const;
 export const PILLAR_ICONS = ["eye", "target", "heart"] as const;
-export const CAMPUS_ICONS = ["building", "flask", "library", "medal", "music"] as const;
+/** Icons for the quick links over the foot of the home page banner. */
+export const QUICK_LINK_ICONS = ["apply", "notices", "timings", "gallery", "events", "phone", "book", "map"] as const;
+/** The banner has room for four quick links in a row. */
+export const MAX_QUICK_LINKS = 4;
 export const LAB_ICONS = ["atom", "flask", "leaf", "monitor", "book"] as const;
 /** Icons offered for the round buttons at the bottom of the footer. */
-export const SOCIAL_ICONS = ["website", "share", "photos", "video", "message", "email"] as const;
+export const SOCIAL_ICONS = [
+  "facebook",
+  "youtube",
+  "whatsapp",
+  "website",
+  "share",
+  "photos",
+  "video",
+  "message",
+  "email",
+] as const;
+
+/** How each choice is named in the admin panel's dropdown. */
+export const SOCIAL_ICON_LABELS: Record<(typeof SOCIAL_ICONS)[number], string> = {
+  facebook: "Facebook logo",
+  youtube: "YouTube logo",
+  whatsapp: "WhatsApp logo",
+  website: "Globe (any website)",
+  share: "Share",
+  photos: "Camera",
+  video: "Video",
+  message: "Speech bubble",
+  email: "Email",
+};
 
 export type LinkItem = { label: string; href: string };
 
@@ -115,7 +141,7 @@ export type Identity = {
   footerRightsNote: string;
   footerExplore: LinkItem[];
   footerNavigate: LinkItem[];
-  /** Empty by default: the row of buttons is hidden until a real address is added. */
+  /** The round buttons at the foot of the page; the row is hidden when there are none. */
   footerSocial: SocialLink[];
 };
 
@@ -127,9 +153,9 @@ export const defaultIdentity: Identity = {
   motto: school.motto,
   mottoMeaning: school.mottoMeaning,
   footerBlurb: "Nurturing curious minds with knowledge, character and service since {year}.",
-  affiliationLine: "Affiliated to WBBSE & WBCHSE",
+  affiliationLine: "Affiliated to CISCE (ICSE & ISC), code WB173",
   trustLine: "40+ years of trust",
-  footerCopyrightNote: "Affiliated to WBBSE & WBCHSE · Recognised by the Govt. of West Bengal",
+  footerCopyrightNote: "Affiliated to the Council for the Indian School Certificate Examinations (CISCE), New Delhi. Affiliation code WB173.",
   footerCrestLine: "Higher Secondary School",
   footerExploreHeading: "Explore",
   footerNavigateHeading: "Navigate",
@@ -137,14 +163,30 @@ export const defaultIdentity: Identity = {
   footerRightsNote: "All rights reserved.",
   footerExplore: footerExplore.map((l) => ({ ...l })),
   footerNavigate: footerNavigate.map((l) => ({ ...l })),
-  footerSocial: [],
+  // The school's pages as linked from its previous website.
+  footerSocial: [
+    { icon: "facebook", label: "Facebook", href: "https://www.facebook.com/authpurnationalmodelschool/" },
+    { icon: "youtube", label: "YouTube", href: "https://www.youtube.com/channel/UCbMbdtNf7FgCOYCJI6qvaEg" },
+    { icon: "whatsapp", label: "WhatsApp", href: "https://wa.me/918274887550" },
+  ],
 };
 
 // ------------------------------------------------------------------- home
 
 export type SectionHeading = { eyebrow: string; heading: string; blurb: string };
 
+/** One of the coloured links lifted over the foot of the home page banner. */
+export type QuickLink = { icon: string; label: string; text: string; href: string };
+
+/**
+ * A campus tile's photograph is a reference such as "gallery:12" or
+ * "banner:3", resolved against the photos that exist when the page renders.
+ * Empty, or pointing at a deleted photo, means "pick one automatically".
+ */
+export type CampusTile = { label: string; photo?: string };
+
 export type HomeContent = {
+  quickLinks: QuickLink[];
   stats: { value: string; label: string; hint: string }[];
   about: SectionHeading & {
     paragraphs: string;
@@ -157,7 +199,7 @@ export type HomeContent = {
     programmes: { title: string; grades: string; blurb: string; points: string }[];
   };
   whyUs: SectionHeading & { features: { icon: string; title: string; text: string }[] };
-  campus: SectionHeading & { tiles: { icon: string; label: string }[] };
+  campus: SectionHeading & { tiles: CampusTile[] };
   testimonials: SectionHeading & { items: { quote: string; name: string; role: string }[] };
   notices: { eyebrow: string; heading: string; eventsEyebrow: string; eventsHeading: string };
   admissionsCta: SectionHeading & { steps: { title: string; text: string }[] };
@@ -165,6 +207,17 @@ export type HomeContent = {
 };
 
 export const defaultHome: HomeContent = {
+  quickLinks: [
+    {
+      icon: "apply",
+      label: "Apply for admission",
+      text: "Send an enquiry for the coming session.",
+      href: "/admission-enquiry",
+    },
+    { icon: "notices", label: "Notice board", text: "Circulars, results and holidays.", href: "/notices" },
+    { icon: "timings", label: "School timings", text: "Class hours for every section.", href: "/school-timings" },
+    { icon: "gallery", label: "Photo gallery", text: "Life on campus through the year.", href: "/gallery" },
+  ],
   stats: stats.map((s) => ({ ...s })),
   about: {
     eyebrow: "Welcome to our school",
@@ -219,11 +272,11 @@ export const defaultHome: HomeContent = {
     heading: "A campus that comes alive every single day",
     blurb: "Beyond the classroom, students explore, create, compete and celebrate together.",
     tiles: [
-      { icon: "building", label: "Green Campus" },
-      { icon: "flask", label: "Science Labs" },
-      { icon: "library", label: "Library" },
-      { icon: "medal", label: "Sports & Athletics" },
-      { icon: "music", label: "Music & Arts" },
+      { label: "Green Campus", photo: "" },
+      { label: "Science Labs", photo: "" },
+      { label: "Library", photo: "" },
+      { label: "Sports & Athletics", photo: "" },
+      { label: "Music & Arts", photo: "" },
     ],
   },
   testimonials: {
@@ -288,6 +341,7 @@ export type PageBanners = {
   gallery: Banner;
   schoolTimings: Banner;
   labs: Banner;
+  examPattern: Banner;
   chairmansMessage: Banner;
   principalsMessage: Banner;
 };
@@ -299,6 +353,7 @@ export const PAGE_BANNER_LABELS: Record<keyof PageBanners, string> = {
   gallery: "Gallery",
   schoolTimings: "School Timings",
   labs: "Laboratories",
+  examPattern: "Examination Pattern",
   chairmansMessage: "Chairman's Message",
   principalsMessage: "Principal's Message",
 };
@@ -333,6 +388,11 @@ export const defaultPageBanners: PageBanners = {
     eyebrow: "Facilities",
     title: "Laboratories",
     subtitle: "Well-equipped laboratories where lessons become experiments and ideas take shape.",
+  },
+  examPattern: {
+    eyebrow: "Academics",
+    title: "Examination Pattern",
+    subtitle: "How and when each class is assessed through the session, how the marks are made up, and what it takes to pass.",
   },
   chairmansMessage: {
     eyebrow: "Leadership",

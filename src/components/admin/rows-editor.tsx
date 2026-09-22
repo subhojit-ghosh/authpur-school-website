@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { NativeSelect } from "@/components/ui/native-select";
 import { RichTextEditor } from "@/components/admin/rich-text-editor";
 
 export type RowsColumn = {
@@ -16,7 +17,77 @@ export type RowsColumn = {
   multiline?: boolean;
   /** Renders the formatting editor (bold, lists, links). The column then holds HTML. */
   richText?: boolean;
+  /**
+   * Renders a dropdown of these choices. With `thumbUrl` set, a small preview
+   * of the chosen photo shows beside it. `blankLabel` names the empty choice.
+   */
+  options?: RowsOption[];
+  blankLabel?: string;
 };
+
+export type RowsOption = { value: string; label: string; thumbUrl?: string };
+
+function OptionField({
+  column,
+  name,
+  value,
+  onChange,
+}: {
+  column: RowsColumn;
+  name: string;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const options = column.options ?? [];
+  const chosen = options.find((o) => o.value === value);
+  // A choice that no longer exists (a deleted photo, say) reads as blank.
+  const current = chosen ? value : "";
+  const hasThumbs = options.some((o) => o.thumbUrl);
+
+  // After a save, React resets the form. A reset puts every <select> back on
+  // its first option, and React does not notice because its own state has not
+  // changed, so a failed save would quietly send the blank choice next time.
+  // Put the chosen value back once the reset has run.
+  const selectRef = useRef<HTMLSelectElement>(null);
+  useEffect(() => {
+    const form = selectRef.current?.form;
+    if (!form) return;
+    const restore = () =>
+      setTimeout(() => {
+        if (selectRef.current) selectRef.current.value = current;
+      });
+    form.addEventListener("reset", restore);
+    return () => form.removeEventListener("reset", restore);
+  }, [current]);
+
+  return (
+    <div className="flex items-center gap-2">
+      {hasThumbs ? (
+        <span className="size-10 shrink-0 overflow-hidden rounded-md border bg-muted">
+          {chosen?.thumbUrl ? (
+            // oxlint-disable-next-line nextjs/no-img-element -- a thumbnail that is already small
+            <img src={chosen.thumbUrl} alt="" className="size-full object-cover" />
+          ) : null}
+        </span>
+      ) : null}
+      <NativeSelect
+        ref={selectRef}
+        name={name}
+        value={current}
+        onChange={(e) => onChange(e.target.value)}
+        aria-label={column.label}
+        className={column.className}
+      >
+        <option value="">{column.blankLabel ?? "Choose…"}</option>
+        {options.map((o) => (
+          <option key={o.value} value={o.value}>
+            {o.label}
+          </option>
+        ))}
+      </NativeSelect>
+    </div>
+  );
+}
 
 /**
  * Editable list of rows for a form. Inputs are named `${name}[i][key]` so the
@@ -84,7 +155,14 @@ export function RowsEditor({
           {columns.map((c) => (
             <div key={c.key} className="grid gap-1">
               <span className="text-[11px] font-medium text-muted-foreground sm:hidden">{c.label}</span>
-              {c.richText ? (
+              {c.options ? (
+                <OptionField
+                  column={c}
+                  name={`${name}[${i}][${c.key}]`}
+                  value={row.values[c.key] ?? ""}
+                  onChange={(v) => update(row.id, c.key, v)}
+                />
+              ) : c.richText ? (
                 <RichTextEditor
                   name={`${name}[${i}][${c.key}]`}
                   defaultValue={row.values[c.key] ?? ""}

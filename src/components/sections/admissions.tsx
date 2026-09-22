@@ -1,83 +1,71 @@
-import { GraduationCap, Phone, CalendarCheck, FileText, Users } from "lucide-react";
+import { GraduationCap, Phone } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { getSchoolInfo } from "@/lib/settings";
 import { getHomeContent } from "@/lib/page-content";
 import { telHref } from "@/lib/settings-types";
+import type { HeroImage } from "@/components/sections/hero-carousel";
+import { Parallax, Reveal, RevealGroup, RevealItem } from "@/components/motion";
 
-const stepIcons = [FileText, Users, CalendarCheck];
-
-export async function Admissions() {
+export async function Admissions({ photo }: { photo?: HeroImage }) {
   const [info, home] = await Promise.all([getSchoolInfo(), getHomeContent()]);
   const cta = home.admissionsCta;
-  const steps = cta.steps;
+
   return (
-    <section id="admissions" className="scroll-mt-24 py-20 lg:py-28">
-      <div className="container-edge">
-        <div className="relative overflow-hidden rounded-[2rem] bg-brand px-6 py-14 shadow-2xl shadow-brand/20 sm:px-12 lg:px-16">
-          <div className="bg-grid absolute inset-0 opacity-[0.08]" />
-          <div className="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-gold/25 blur-3xl" />
-          <div className="absolute -bottom-24 -left-16 h-72 w-72 rounded-full bg-white/5 blur-3xl" />
+    <section id="admissions" className="relative scroll-mt-28 overflow-hidden bg-brand text-brand-foreground">
+      {photo ? (
+        <Parallax className="absolute! inset-0" strength={90}>
+          {/* oxlint-disable-next-line nextjs/no-img-element -- already resized on upload */}
+          <img src={photo.src} alt="" loading="lazy" className="h-full w-full object-cover" />
+        </Parallax>
+      ) : null}
+      <div className="absolute inset-0 bg-brand/85" />
 
-          <div className="relative grid gap-12 lg:grid-cols-[1fr_1.1fr] lg:items-center">
-            <div>
-              <span className="eyebrow text-gold">{cta.eyebrow}</span>
-              <h2 className="mt-4 text-balance font-heading text-3xl font-semibold text-brand-foreground sm:text-4xl">
-                {cta.heading}
-              </h2>
-              {cta.blurb ? (
-                <p className="mt-4 max-w-lg text-pretty leading-relaxed text-brand-foreground/75">{cta.blurb}</p>
-              ) : null}
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Button
-                  size="lg"
-                  className="h-12 bg-gold px-7 text-[15px] font-semibold text-gold-foreground hover:bg-gold/90 [&_svg:not([class*='size-'])]:size-[18px]"
-                  asChild
-                >
-                  <Link href="/admission-enquiry">
-                    <GraduationCap />
-                    Start Application
-                  </Link>
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="h-12 border-white/25 bg-transparent px-7 text-[15px] text-brand-foreground hover:bg-white/10 hover:text-brand-foreground [&_svg:not([class*='size-'])]:size-[18px]"
-                  asChild
-                >
-                  <a href={telHref(info.admissionsPhone)}>
-                    <Phone />
-                    {info.admissionsPhone}
-                  </a>
-                </Button>
-              </div>
-            </div>
+      <div className="container-edge relative py-20 lg:py-28">
+        <Reveal className="max-w-3xl">
+          {cta.eyebrow ? <p className="kicker text-gold">{cta.eyebrow}</p> : null}
+          <h2 className="section-title mt-3 text-white sm:text-5xl">{cta.heading}</h2>
+          {cta.blurb ? (
+            <p className="mt-5 max-w-2xl text-pretty text-lg leading-relaxed text-white/80">{cta.blurb}</p>
+          ) : null}
+        </Reveal>
 
-            {/* Steps */}
-            <div className="grid gap-4">
-              {steps.map((s, i) => {
-                const Icon = stepIcons[Math.min(i, stepIcons.length - 1)];
-                return (
-                <div
-                  key={s.title}
-                  className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.04] p-5 backdrop-blur-sm"
-                >
-                  <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-gold/15 font-heading text-lg font-semibold text-gold">
-                    {i + 1}
-                  </span>
-                  <div>
-                    <p className="flex items-center gap-2 font-semibold text-brand-foreground">
-                      <Icon className="size-4 text-gold" />
-                      {s.title}
-                    </p>
-                    <p className="mt-0.5 text-sm text-brand-foreground/70">{s.text}</p>
-                  </div>
-                </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
+        {/* The steps really are a sequence, so they are numbered. */}
+        {cta.steps.length ? (
+          <RevealGroup as="ol" className="mt-12 grid gap-8 md:grid-cols-3 lg:mt-14">
+            {cta.steps.map((s, i) => (
+              <RevealItem as="li" key={s.title} className="border-t border-white/25 pt-6">
+                <span className="font-heading text-5xl font-bold leading-none text-gold">{i + 1}</span>
+                <p className="mt-4 font-heading text-xl font-semibold text-white">{s.title}</p>
+                <p className="mt-1.5 text-[17px] leading-relaxed text-white/75">{s.text}</p>
+              </RevealItem>
+            ))}
+          </RevealGroup>
+        ) : null}
+
+        <Reveal className="mt-12 flex flex-wrap gap-3">
+          <Button
+            size="lg"
+            className="h-12 rounded-md bg-gold px-7 text-base font-semibold text-gold-foreground hover:bg-gold/90 [&_svg:not([class*='size-'])]:size-[18px]"
+            asChild
+          >
+            <Link href="/admission-enquiry">
+              <GraduationCap />
+              Start an enquiry
+            </Link>
+          </Button>
+          <Button
+            size="lg"
+            variant="outline"
+            className="h-12 rounded-md border-2 border-white/60 bg-transparent px-7 text-base font-semibold text-white hover:bg-white hover:text-brand [&_svg:not([class*='size-'])]:size-[18px]"
+            asChild
+          >
+            <a href={telHref(info.admissionsPhone)}>
+              <Phone />
+              Call {info.admissionsPhone}
+            </a>
+          </Button>
+        </Reveal>
       </div>
     </section>
   );

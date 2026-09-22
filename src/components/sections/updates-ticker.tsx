@@ -1,24 +1,23 @@
 import Link from "next/link";
-import { Megaphone } from "lucide-react";
 import { getNotices } from "@/lib/content";
 import type { Notice } from "@/db/schema";
+import { noticePath } from "@/lib/permalinks";
 
-function TickerItems({ items }: { items: Pick<Notice, "id" | "tag" | "title">[] }) {
+function TickerItems({ items, hidden }: { items: Notice[]; hidden?: boolean }) {
   return (
     <>
       {items.map((n) => (
         <Link
           key={n.id}
-          href="/notices"
-          className="group flex shrink-0 items-center gap-3 whitespace-nowrap px-6 py-3.5 text-sm"
+          href={noticePath(n)}
+          tabIndex={hidden ? -1 : undefined}
+          aria-hidden={hidden}
+          className="group flex shrink-0 items-center gap-3 whitespace-nowrap px-6 py-3 text-[15px]"
         >
-          <span className="rounded-full bg-gold/20 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-gold">
-            {n.tag}
-          </span>
-          <span className="font-medium text-brand-foreground/90 transition-colors group-hover:text-gold">
+          <span className="font-semibold text-gold-ink">{n.tag}</span>
+          <span className="text-foreground transition-colors group-hover:text-brand group-hover:underline group-hover:underline-offset-4">
             {n.title}
           </span>
-          <span className="text-brand-foreground/30">•</span>
         </Link>
       ))}
     </>
@@ -30,24 +29,18 @@ export async function UpdatesTicker() {
   if (!items.length) return null;
 
   return (
-    <section aria-label="Latest updates" className="border-b bg-brand text-brand-foreground">
-      <div className="flex items-stretch">
-        {/* Label */}
-        <div className="z-10 flex shrink-0 items-center gap-2 bg-gold px-4 text-gold-foreground shadow-md sm:px-5">
-          <span className="relative flex size-2.5">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-gold-foreground/70 opacity-75" />
-            <span className="relative inline-flex size-2.5 rounded-full bg-gold-foreground" />
-          </span>
-          <Megaphone className="hidden size-4 sm:block" />
-          <span className="text-xs font-bold uppercase tracking-[0.14em]">Latest Updates</span>
-        </div>
-
-        {/* Scrolling track */}
+    <section aria-label="Latest updates" className="container-edge mt-8 lg:mt-10">
+      <div className="flex items-stretch overflow-hidden rounded-lg border bg-card">
+        <p className="z-10 flex shrink-0 items-center bg-vermilion px-4 font-heading text-[15px] font-semibold text-white sm:px-5">
+          Latest
+        </p>
+        {/* The list is doubled so the scroll loops without a gap; the copy is
+            hidden from screen readers and the keyboard. */}
         <div className="marquee-group relative flex-1 overflow-hidden">
-          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-linear-to-l from-brand to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-linear-to-l from-card to-transparent" />
           <div className="flex w-max animate-marquee">
             <TickerItems items={items} />
-            <TickerItems items={items} />
+            <TickerItems items={items} hidden />
           </div>
         </div>
       </div>

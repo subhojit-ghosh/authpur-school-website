@@ -1,62 +1,52 @@
+import { useId } from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * Academic crest for the school — a shield holding a lamp of knowledge
- * rising over an open book. Uses the brand navy + gold.
+ * The school's crest: a maroon ring carrying the school's name in gold, around
+ * a lamp of learning, a green candle whose flame burns inside an orange
+ * cogwheel. Redrawn as a vector from the 60px badge on the school's previous
+ * website, so it stays sharp at any size; the small Bengali line inside the
+ * original was too small to read there and is left out until the school
+ * supplies its artwork. src/app/icon.svg is the same drawing for the favicon.
  */
 export function Crest({ className }: { className?: string }) {
+  // Each crest on the page needs its own id for the circle the name follows.
+  const ring = `crest-ring-${useId().replace(/[^a-zA-Z0-9-]/g, "")}`;
   return (
-    <svg
-      viewBox="0 0 64 64"
-      className={cn("h-10 w-10", className)}
-      role="img"
-      aria-label="School crest"
-    >
-      <defs>
-        <linearGradient id="crest-shield" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="oklch(0.4 0.1 264)" />
-          <stop offset="100%" stopColor="oklch(0.3 0.085 264)" />
-        </linearGradient>
-        <linearGradient id="crest-gold" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="oklch(0.86 0.11 88)" />
-          <stop offset="100%" stopColor="oklch(0.74 0.13 74)" />
-        </linearGradient>
-      </defs>
+    <svg viewBox="0 0 100 100" className={cn("h-10 w-10", className)} role="img" aria-label="School crest">
+      <circle cx="50" cy="50" r="49" fill="#6e1d17" />
+      <circle cx="50" cy="50" r="47.2" fill="none" stroke="#e8b84a" strokeWidth="1" />
+      <circle cx="50" cy="50" r="33.5" fill="#fffaf0" stroke="#e8b84a" strokeWidth="1.2" />
 
-      {/* Shield */}
-      <path
-        d="M32 3.5 58 11.5V31c0 15.2-10.4 25.4-26 29.5C16.4 56.4 6 46.2 6 31V11.5L32 3.5Z"
-        fill="url(#crest-shield)"
-        stroke="url(#crest-gold)"
-        strokeWidth="1.6"
-      />
+      {/* The name, running clockwise from the lower left over the top */}
+      <path id={ring} d="M50,90.6 a40.6,40.6 0 1,1 0,-81.2 a40.6,40.6 0 1,1 0,81.2" fill="none" />
+      <text
+        fill="#f2c55a"
+        fontSize="7.4"
+        fontWeight="700"
+        letterSpacing="0.3"
+        style={{ fontFamily: "var(--font-outfit), Arial, sans-serif" }}
+      >
+        <textPath href={`#${ring}`} startOffset="7%" textLength="220" lengthAdjust="spacingAndGlyphs">
+          AUTHPUR NATIONAL MODEL HIGHER SECONDARY SCHOOL
+        </textPath>
+      </text>
+      <path d="M50,86.8 l1.1,2.3 2.5,.3 -1.8,1.7 .5,2.5 -2.3,-1.2 -2.3,1.2 .5,-2.5 -1.8,-1.7 2.5,-.3z" fill="#f2c55a" />
 
-      {/* Lamp flame */}
-      <path
-        d="M32 15c2.6 3 4 5.4 4 7.8a4 4 0 1 1-8 0c0-2.4 1.4-4.8 4-7.8Z"
-        fill="url(#crest-gold)"
-      />
-
-      {/* Rays */}
-      <g stroke="url(#crest-gold)" strokeWidth="1.4" strokeLinecap="round" opacity="0.85">
-        <line x1="22" y1="24" x2="18.5" y2="22" />
-        <line x1="42" y1="24" x2="45.5" y2="22" />
-        <line x1="23" y1="30" x2="19" y2="30" />
-        <line x1="41" y1="30" x2="45" y2="30" />
+      {/* Cogwheel */}
+      <g fill="#e4572e">
+        <circle cx="50" cy="40" r="11" />
+        {Array.from({ length: 10 }, (_, i) => (
+          <rect key={i} x="47.8" y="26.4" width="4.4" height="5" rx="0.8" transform={`rotate(${i * 36} 50 40)`} />
+        ))}
       </g>
+      <circle cx="50" cy="40" r="7.4" fill="#fffaf0" />
 
-      {/* Open book */}
-      <path
-        d="M15 38c5-2.6 11-2.6 17 0 6-2.6 12-2.6 17 0v9c-5-2.4-11-2.4-17 0-6-2.4-12-2.4-17 0v-9Z"
-        fill="oklch(0.98 0.008 85)"
-      />
-      <line x1="32" y1="39" x2="32" y2="47" stroke="oklch(0.4 0.1 264)" strokeWidth="1.3" />
-      <g stroke="oklch(0.55 0.06 264)" strokeWidth="0.9" opacity="0.7">
-        <line x1="19" y1="40.5" x2="29" y2="41.5" />
-        <line x1="19" y1="43.5" x2="29" y2="44.5" />
-        <line x1="35" y1="41.5" x2="45" y2="40.5" />
-        <line x1="35" y1="44.5" x2="45" y2="43.5" />
-      </g>
+      {/* Candle and flame */}
+      <rect x="45.8" y="49" width="8.4" height="27" rx="1" fill="#1f7a3e" stroke="#123f22" strokeWidth="1" />
+      <rect x="42.5" y="75.5" width="15" height="3.2" rx="1" fill="#123f22" />
+      <path d="M50,30.5 C54.2,35.8 55,39.6 50,46.5 C45,39.6 45.8,35.8 50,30.5Z" fill="#e1322a" />
+      <path d="M50,35.2 C52.2,38.2 52.6,40.4 50,44 C47.4,40.4 47.8,38.2 50,35.2Z" fill="#f7c948" />
     </svg>
   );
 }

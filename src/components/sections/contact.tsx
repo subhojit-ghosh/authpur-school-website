@@ -1,82 +1,75 @@
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
 import { ContactForm } from "@/components/sections/contact-form";
+import { SectionIntro } from "@/components/section-intro";
 import { getSchoolInfo } from "@/lib/settings";
-import { getHomeContent } from "@/lib/page-content";
+import { getHomeContent, getIdentity } from "@/lib/page-content";
 import { fullAddress, mapQuery, telHref } from "@/lib/settings-types";
-import { getIdentity } from "@/lib/page-content";
+import { Reveal } from "@/components/motion";
 
 export async function Contact() {
   const [info, home, id] = await Promise.all([getSchoolInfo(), getHomeContent(), getIdentity()]);
   const copy = home.contact;
 
   const details = [
-    { icon: MapPin, label: "Visit us", value: fullAddress(info) },
-    { icon: Phone, label: "Call us", value: info.phone, href: telHref(info.phone) },
-    { icon: Mail, label: "Email us", value: info.email, href: `mailto:${info.email}` },
+    { icon: MapPin, label: "Address", value: fullAddress(info) },
+    { icon: Phone, label: "Phone", value: info.phone, href: telHref(info.phone) },
+    { icon: Mail, label: "Email", value: info.email, href: `mailto:${info.email}` },
     { icon: Clock, label: "Office hours", value: info.officeHours },
   ];
 
   const mapSrc = `https://maps.google.com/maps?q=${encodeURIComponent(mapQuery(info))}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
 
   return (
-    <section id="contact" className="scroll-mt-24 bg-secondary py-20 lg:py-28">
-      <div className="container-edge">
-        <div className="mx-auto max-w-2xl text-center">
-          <span className="eyebrow justify-center">{copy.eyebrow}</span>
-          <h2 className="mt-4 text-balance font-heading text-3xl font-semibold text-brand sm:text-4xl">
-            {copy.heading}
-          </h2>
-          {copy.blurb ? (
-            <p className="mt-4 text-pretty leading-relaxed text-muted-foreground">{copy.blurb}</p>
-          ) : null}
-        </div>
+    <section id="contact" className="scroll-mt-28 py-20 lg:py-28">
+      <div className="container-edge grid gap-12 lg:grid-cols-12 lg:gap-16">
+        <div className="lg:col-span-5">
+          <SectionIntro kicker={copy.eyebrow} heading={copy.heading} blurb={copy.blurb} />
 
-        <div className="mt-14 grid gap-8 lg:grid-cols-2">
-          {/* Left: details + map */}
-          <div className="flex flex-col gap-6">
-            <div className="grid gap-4 sm:grid-cols-2">
-              {details.map((d) => (
-                <div key={d.label} className="rounded-2xl border bg-card p-5">
-                  <span className="grid size-10 place-items-center rounded-xl bg-accent text-brand">
-                    <d.icon className="size-5" />
-                  </span>
-                  <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    {d.label}
-                  </p>
-                  {d.href ? (
-                    <a
-                      href={d.href}
-                      className="mt-1 block text-sm font-medium text-foreground hover:text-brand"
-                    >
-                      {d.value}
-                    </a>
-                  ) : (
-                    <p className="mt-1 text-sm font-medium text-foreground">{d.value}</p>
-                  )}
+          <Reveal>
+          <dl className="mt-10 space-y-6">
+            {details.map((d) => (
+              <div key={d.label} className="flex gap-4">
+                <d.icon className="mt-1 size-5 shrink-0 text-gold-ink" />
+                <div>
+                  <dt className="text-[15px] text-muted-foreground">{d.label}</dt>
+                  <dd className="text-lg font-medium text-foreground">
+                    {d.href ? (
+                      <a href={d.href} className="break-words hover:text-brand hover:underline hover:underline-offset-4">
+                        {d.value}
+                      </a>
+                    ) : (
+                      d.value
+                    )}
+                  </dd>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
+          </dl>
 
-            <div className="overflow-hidden rounded-2xl border shadow-sm">
-              <iframe
-                title={`Map to ${id.name}`}
-                src={mapSrc}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                className="h-64 w-full grayscale-[0.2]"
-              />
-            </div>
+          <div className="mt-10 overflow-hidden rounded-lg border">
+            <iframe
+              title={`Map to ${id.name}`}
+              src={mapSrc}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="h-64 w-full"
+            />
           </div>
-
-          {/* Right: form */}
-          <div className="rounded-2xl border bg-card p-7 shadow-sm sm:p-8">
-            <h3 className="font-heading text-xl font-semibold text-brand">Send us an enquiry</h3>
-            <p className="mt-1 mb-6 text-sm text-muted-foreground">
-              Fill in the form and we&apos;ll get back to you soon.
-            </p>
-            <ContactForm admissionsPhone={info.admissionsPhone} />
-          </div>
+          </Reveal>
         </div>
+
+        <Reveal className="lg:col-span-7" delay={0.1}>
+          <div className="overflow-hidden rounded-lg bg-mist">
+            <div className="school-stripe h-1.5" />
+            <div className="p-6 sm:p-10">
+              <h3 className="font-heading text-2xl font-semibold text-brand">Send us an enquiry</h3>
+              <p className="mb-8 mt-2 text-[17px] text-muted-foreground">
+                Fill in the form and the school office will get back to you.
+              </p>
+              <ContactForm admissionsPhone={info.admissionsPhone} />
+            </div>
+          </div>
+        </Reveal>
       </div>
     </section>
   );

@@ -2,6 +2,13 @@ import { toRichHtml } from "@/lib/rich-text";
 import { cn } from "@/lib/utils";
 
 /**
+ * Classes for long wording on a public page: a comfortable reading size and
+ * measure. Pass as `className`; being utilities, they win over the defaults
+ * below where a component-layer class would lose.
+ */
+export const READING_TEXT = "max-w-[68ch] text-[17px] leading-relaxed text-foreground/85 [&_p]:my-4";
+
+/**
  * Renders wording written in the admin panel. The HTML is sanitised when it is
  * saved and again here, so a stored value can never inject markup. A value that
  * is still plain text from before the field became rich text renders as

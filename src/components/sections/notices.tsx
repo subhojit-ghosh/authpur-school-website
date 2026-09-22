@@ -1,109 +1,63 @@
 import Link from "next/link";
-import { Bell, CalendarDays, ArrowRight, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { getNotices, getUpcomingEvents } from "@/lib/content";
 import { getHomeContent } from "@/lib/page-content";
-import { noticeTagClass } from "@/lib/content-types";
-import { eventPath, noticePath } from "@/lib/permalinks";
-import { dayMonth, formatDate } from "@/lib/format";
+import { EventList, NoticeList } from "@/components/notice-list";
+
+function MoreLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <Link href={href} className="text-link shrink-0 text-[15px]">
+      {children}
+    </Link>
+  );
+}
 
 export async function Notices() {
   const [noticeList, eventList, home] = await Promise.all([
-    getNotices({ limit: 4 }),
+    getNotices({ limit: 5 }),
     getUpcomingEvents({ limit: 3 }),
     getHomeContent(),
   ]);
   const copy = home.notices;
 
   return (
-    <section id="notices" className="scroll-mt-24 py-20 lg:py-28">
-      <div className="container-edge grid gap-10 lg:grid-cols-[1.4fr_1fr]">
+    <section id="notices" className="scroll-mt-28 py-20 lg:py-28">
+      <div className="container-edge grid gap-14 lg:grid-cols-12 lg:gap-16">
         {/* Notice board */}
-        <div>
-          <div className="flex items-center justify-between">
-            <div>
-              <span className="eyebrow">{copy.eyebrow}</span>
-              <h2 className="mt-3 flex items-center gap-2.5 font-heading text-3xl font-semibold text-brand">
-                <Bell className="size-6 text-gold" />
-                {copy.heading}
-              </h2>
-            </div>
+        <div className="lg:col-span-7">
+          {copy.eyebrow ? <p className="kicker">{copy.eyebrow}</p> : null}
+          <div className="mt-3 flex items-end justify-between gap-4">
+            <h2 className="section-title">{copy.heading}</h2>
+            <MoreLink href="/notices">All notices</MoreLink>
           </div>
 
           {noticeList.length ? (
-            <ul className="mt-8 divide-y rounded-2xl border bg-card">
-              {noticeList.map((n) => (
-                <li key={n.id}>
-                  <Link
-                    href={noticePath(n)}
-                    className="group flex flex-col gap-2 p-5 transition-colors hover:bg-accent/40 sm:flex-row sm:items-center sm:gap-5"
-                  >
-                    <span className="w-24 shrink-0 text-xs font-medium text-muted-foreground">
-                      {formatDate(n.date)}
-                    </span>
-                    <span
-                      className={`inline-flex w-fit shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ${noticeTagClass(n.tag)}`}
-                    >
-                      {n.tag}
-                    </span>
-                    <span className="flex-1 text-sm font-medium text-foreground transition-colors group-hover:text-brand">
-                      {n.title}
-                    </span>
-                    <ChevronRight className="hidden size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-brand sm:block" />
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <div className="mt-8">
+              <NoticeList notices={noticeList} />
+            </div>
           ) : (
-            <p className="mt-8 rounded-2xl border bg-card p-6 text-sm text-muted-foreground">
+            <p className="mt-8 border-t-2 border-brand pt-6 text-lg text-muted-foreground">
               No notices have been published yet.
             </p>
           )}
-
-          <Button variant="ghost" className="mt-5 text-brand hover:text-brand" asChild>
-            <Link href="/notices">
-              View all notices
-              <ArrowRight className="size-4" />
-            </Link>
-          </Button>
         </div>
 
         {/* Upcoming events */}
-        <div>
-          <span className="eyebrow">{copy.eventsEyebrow}</span>
-          <h2 className="mt-3 flex items-center gap-2.5 font-heading text-3xl font-semibold text-brand">
-            <CalendarDays className="size-6 text-gold" />
-            {copy.eventsHeading}
-          </h2>
-
-          <div className="mt-8 space-y-4">
-            {eventList.length ? (
-              eventList.map((e) => {
-                const { day, month } = dayMonth(e.date);
-                return (
-                  <Link
-                    key={e.id}
-                    href={eventPath(e)}
-                    className="group flex items-center gap-4 rounded-2xl border bg-card p-4 transition-all hover:-translate-y-0.5 hover:border-brand/30 hover:shadow-md"
-                  >
-                    <div className="grid size-16 shrink-0 flex-col place-items-center rounded-xl bg-brand text-brand-foreground">
-                      <span className="font-heading text-xl font-semibold leading-none">{day}</span>
-                      <span className="text-[11px] uppercase tracking-wide text-brand-foreground/70">{month}</span>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-brand">{e.title}</p>
-                      <p className="text-sm text-muted-foreground">{e.venue}</p>
-                    </div>
-                    <ChevronRight className="ml-auto size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-brand" />
-                  </Link>
-                );
-              })
-            ) : (
-              <p className="rounded-2xl border bg-card p-6 text-sm text-muted-foreground">
-                No upcoming events at the moment. Please check back soon.
-              </p>
-            )}
+        <div className="lg:col-span-5">
+          {copy.eventsEyebrow ? <p className="kicker">{copy.eventsEyebrow}</p> : null}
+          <div className="mt-3 flex items-end justify-between gap-4">
+            <h2 className="section-title">{copy.eventsHeading}</h2>
+            <MoreLink href="/notices#events">All events</MoreLink>
           </div>
+
+          {eventList.length ? (
+            <div className="mt-8">
+              <EventList events={eventList} />
+            </div>
+          ) : (
+            <p className="mt-8 rounded-lg bg-mist p-6 text-lg text-muted-foreground">
+              No events are coming up. New ones appear here as soon as they are announced.
+            </p>
+          )}
         </div>
       </div>
     </section>

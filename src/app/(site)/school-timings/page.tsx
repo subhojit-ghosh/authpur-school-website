@@ -1,15 +1,19 @@
 import type { Metadata } from "next";
-import { Clock, Sun, Building2, Info } from "lucide-react";
+import { Reveal, RevealGroup, RevealItem } from "@/components/motion";
 import { PageBanner } from "@/components/page-banner";
 import { RichText } from "@/components/rich-text";
 import { getPageBanners } from "@/lib/page-content";
 import { getSchoolInfo, getTimings } from "@/lib/settings";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/school-timings" },
   title: "School Timings",
   description:
     "Daily schedule, section-wise class hours and office timings at Authpur National Model Higher Secondary School.",
 };
+
+/** Timeline dots take the school colours in turn, in the order of the stripe. */
+const dotColours = ["bg-vermilion", "bg-gold", "bg-leaf", "bg-sky"];
 
 /** Re-rendered on demand when staff save changes in the admin panel. */
 export const revalidate = 3600;
@@ -24,85 +28,79 @@ export default async function SchoolTimingsPage() {
       <PageBanner eyebrow={banner.eyebrow} title={banner.title} subtitle={banner.subtitle} />
 
       <section className="py-16 lg:py-24">
-        <div className="container-edge grid gap-8 lg:grid-cols-2">
-          {/* Daily schedule */}
-          <div className="rounded-2xl border bg-card p-7 shadow-sm">
-            <h2 className="flex items-center gap-2.5 font-heading text-2xl font-semibold text-brand">
-              <Sun className="size-6 text-gold" />
-              A day at school
-            </h2>
-            <ul className="mt-6 space-y-1">
+        <div className="container-edge grid gap-14 lg:grid-cols-12 lg:gap-16">
+          {/* The day in order, as a timeline */}
+          <div className="lg:col-span-7">
+            <Reveal>
+              <h2 className="page-heading">A day at school</h2>
+            </Reveal>
+            <RevealGroup as="ol" className="relative mt-8">
               {dailySchedule.map((item, i) => (
-                <li
+                <RevealItem
+                  as="li"
                   key={item.label}
-                  className="flex items-center justify-between gap-4 rounded-lg px-3 py-3 odd:bg-secondary/60"
+                  className="group/step relative grid grid-cols-[7.5rem_1fr] gap-5 sm:grid-cols-[11rem_1fr] sm:gap-6"
                 >
-                  <span className="flex items-center gap-3 text-sm font-medium text-foreground">
-                    <span className="grid size-7 place-items-center rounded-full bg-brand text-xs font-semibold text-brand-foreground">
-                      {i + 1}
-                    </span>
+                  <span className="pt-0.5 text-right font-heading text-base font-semibold tabular-nums text-brand sm:text-lg">
+                    {item.time}
+                  </span>
+                  {/* The line runs the full height of each step, so it reads as one line down the day. */}
+                  <span className="relative border-l-2 border-brand/15 pb-8 pl-7 text-lg text-foreground group-last/step:border-transparent group-last/step:pb-0">
+                    <span
+                      aria-hidden
+                      className={`absolute -left-[7px] top-2 size-3 rounded-full ring-4 ring-background ${dotColours[i % dotColours.length]}`}
+                    />
                     {item.label}
                   </span>
-                  <span className="font-heading text-sm font-semibold text-brand">{item.time}</span>
-                </li>
+                </RevealItem>
               ))}
-            </ul>
+            </RevealGroup>
           </div>
 
-          {/* Office hours + note */}
-          <div className="flex flex-col gap-6">
-            <div className="rounded-2xl border bg-card p-7 shadow-sm">
-              <h2 className="flex items-center gap-2.5 font-heading text-2xl font-semibold text-brand">
-                <Building2 className="size-6 text-gold" />
-                Office hours
-              </h2>
-              <p className="mt-4 text-lg font-medium text-foreground">{officeHours}</p>
-              <p className="mt-2 text-sm text-muted-foreground">
-                The school office handles admissions, fee payments and general enquiries during
-                these hours.
-              </p>
+          <Reveal className="space-y-8 lg:col-span-5" delay={0.1}>
+            <div className="overflow-hidden rounded-lg bg-brand text-brand-foreground">
+              <div className="school-stripe h-1.5" />
+              <div className="p-7 sm:p-8">
+                <h2 className="font-heading text-2xl font-semibold text-white">Office hours</h2>
+                <p className="mt-3 font-heading text-xl text-gold">{officeHours}</p>
+                <p className="mt-3 text-[17px] leading-relaxed text-white/75">
+                  The school office handles admissions, fee payments and general enquiries during these hours.
+                </p>
+              </div>
             </div>
-
-            <div className="flex gap-4 rounded-2xl border border-gold/30 bg-gold-soft/40 p-6">
-              <Info className="size-5 shrink-0 text-gold-foreground" />
-              <RichText html={timingsNote} className="text-sm leading-relaxed text-foreground" />
-            </div>
-          </div>
+            <RichText
+              html={timingsNote}
+              className="border-l-4 border-gold pl-5 text-[17px] leading-relaxed text-foreground/85"
+            />
+          </Reveal>
         </div>
+      </section>
 
-        {/* Section-wise timings */}
-        <div className="container-edge mt-8">
-          <div className="overflow-hidden rounded-2xl border bg-card shadow-sm">
-            <div className="flex items-center gap-2.5 border-b bg-secondary/50 px-7 py-5">
-              <Clock className="size-5 text-gold-foreground" />
-              <h2 className="font-heading text-xl font-semibold text-brand">
-                Section-wise class hours
-              </h2>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
-                <thead>
-                  <tr className="border-b text-xs uppercase tracking-wide text-muted-foreground">
-                    <th className="px-7 py-4 font-semibold">Section</th>
-                    <th className="px-7 py-4 font-semibold">Days</th>
-                    <th className="px-7 py-4 font-semibold">Timing</th>
+      {/* Section-wise timings */}
+      <section className="bg-mist py-16 lg:py-24">
+        <Reveal className="container-edge">
+          <h2 className="page-heading">Class hours by section</h2>
+          <div className="mt-8 overflow-x-auto">
+            <table className="w-full min-w-[34rem] text-left text-[17px]">
+              <thead>
+                <tr className="border-b-2 border-brand text-[15px] text-muted-foreground">
+                  <th className="py-3 pr-6 font-semibold">Section</th>
+                  <th className="py-3 pr-6 font-semibold">Days</th>
+                  <th className="py-3 font-semibold">Timing</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sectionTimings.map((row) => (
+                  <tr key={row.section} className="border-b border-brand/10">
+                    <td className="py-4 pr-6 font-heading text-lg font-semibold text-brand">{row.section}</td>
+                    <td className="py-4 pr-6 text-foreground/80">{row.days}</td>
+                    <td className="py-4 font-heading text-lg font-semibold tabular-nums text-foreground">{row.time}</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {sectionTimings.map((row) => (
-                    <tr key={row.section} className="border-b last:border-0 hover:bg-accent/40">
-                      <td className="px-7 py-4 font-medium text-brand">{row.section}</td>
-                      <td className="px-7 py-4 text-muted-foreground">{row.days}</td>
-                      <td className="px-7 py-4 font-heading font-semibold text-foreground">
-                        {row.time}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
           </div>
-        </div>
+        </Reveal>
       </section>
     </>
   );

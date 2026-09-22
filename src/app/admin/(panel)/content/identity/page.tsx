@@ -8,7 +8,7 @@ import { getIdentity } from "@/lib/page-content";
 import { saveIdentity } from "../actions";
 import { ContentForm, Field, RichField, Section } from "@/components/admin/content-form";
 import { toRichHtml } from "@/lib/rich-text";
-import { SOCIAL_ICONS } from "@/lib/page-content-types";
+import { SOCIAL_ICON_LABELS, SOCIAL_ICONS } from "@/lib/page-content-types";
 
 export const metadata: Metadata = { title: "School identity & footer" };
 
@@ -107,13 +107,18 @@ export default async function IdentityContentPage() {
           <div className="grid gap-2">
             <p className="text-sm font-medium">Round buttons at the bottom</p>
             <p className="text-xs text-muted-foreground">
-              Icon choices: {SOCIAL_ICONS.join(", ")}. Paste the full address of the school&rsquo;s page, for example
-              https://facebook.com/yourschool or https://wa.me/919830000000. Remove every row to hide the buttons.
+              Paste the full address of the school&rsquo;s page, for example https://facebook.com/yourschool, or
+              https://wa.me/91 followed by the ten-digit number for WhatsApp. Remove every row to hide the buttons.
             </p>
             <RowsEditor
               name="social"
               columns={[
-                { key: "icon", label: "Icon", placeholder: SOCIAL_ICONS[0] },
+                {
+                  key: "icon",
+                  label: "Icon",
+                  options: SOCIAL_ICONS.map((icon) => ({ value: icon, label: SOCIAL_ICON_LABELS[icon] })),
+                  blankLabel: "Choose an icon",
+                },
                 { key: "label", label: "Name", placeholder: "e.g. Facebook" },
                 { key: "href", label: "Address", placeholder: "https://facebook.com/yourschool" },
               ]}

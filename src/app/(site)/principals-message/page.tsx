@@ -4,6 +4,7 @@ import { LeadershipMessage } from "@/components/leadership-message";
 import { getIdentity, getLeadership, getPageBanners } from "@/lib/page-content";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/principals-message" },
   title: "Principal's Message",
   description:
     "A message from the Principal of Authpur National Model Higher Secondary School.",

@@ -1,23 +1,47 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import {
-  ClipboardList,
-  CalendarDays,
-  IndianRupee,
-  FileText,
-  Check,
-  GraduationCap,
-  Phone,
-} from "lucide-react";
+import { Check } from "lucide-react";
 import { PageBanner } from "@/components/page-banner";
 import { RichText } from "@/components/rich-text";
+import { CtaBand } from "@/components/cta-band";
+import { Reveal, RevealGroup, RevealItem } from "@/components/motion";
 import { getPageBanners } from "@/lib/page-content";
-import { Button } from "@/components/ui/button";
-
 import { getAdmissionsContent, getSchoolInfo } from "@/lib/settings";
-import { telHref } from "@/lib/settings-types";
+
+/** The steps take the school colours in turn, in the order of the stripe. */
+const stepColours = [
+  { rule: "border-vermilion", num: "text-vermilion" },
+  { rule: "border-gold", num: "text-gold-ink" },
+  { rule: "border-leaf", num: "text-leaf" },
+  { rule: "border-sky", num: "text-sky" },
+];
+
+/** A heading and a ruled two-column list, the shape of every table on this page. */
+function RuledList({
+  heading,
+  rows,
+  className,
+}: {
+  heading: string;
+  rows: { left: string; right: string }[];
+  className?: string;
+}) {
+  return (
+    <Reveal className={className}>
+      <h2 className="page-heading">{heading}</h2>
+      <dl className="mt-6 border-t-2 border-brand">
+        {rows.map((r) => (
+          <div key={`${r.left}-${r.right}`} className="flex items-baseline justify-between gap-6 border-b py-4">
+            <dt className="text-[17px] text-foreground">{r.left}</dt>
+            <dd className="text-right font-heading text-lg font-semibold text-brand">{r.right}</dd>
+          </div>
+        ))}
+      </dl>
+    </Reveal>
+  );
+}
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/admissions" },
   title: "Admission",
   description:
     "Admission process, important dates, eligibility, fee structure and required documents for Authpur National Model Higher Secondary School.",
@@ -34,146 +58,68 @@ export default async function AdmissionsPage() {
     <>
       <PageBanner eyebrow={banner.eyebrow} title={banner.title} subtitle={banner.subtitle} />
 
+      {/* How to apply. The steps really are a sequence, so they are numbered. */}
       <section className="py-16 lg:py-24">
-        <div className="container-edge space-y-16">
-          {/* Process */}
-          <div>
-            <h2 className="flex items-center gap-2.5 font-heading text-2xl font-semibold text-brand">
-              <ClipboardList className="size-6 text-gold" />
-              How to apply
-            </h2>
-            <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {admissionSteps.map((step, i) => (
-                <div key={step.title} className="relative rounded-2xl border bg-card p-6 shadow-sm">
-                  <span className="grid size-11 place-items-center rounded-xl bg-brand font-heading text-lg font-semibold text-brand-foreground">
-                    {i + 1}
-                  </span>
-                  <h3 className="mt-4 font-heading text-base font-semibold text-brand">
-                    {step.title}
-                  </h3>
-                  <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-                    {step.text}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="grid gap-8 lg:grid-cols-2">
-            {/* Important dates */}
-            <div className="rounded-2xl border bg-card p-7 shadow-sm">
-              <h2 className="flex items-center gap-2.5 font-heading text-2xl font-semibold text-brand">
-                <CalendarDays className="size-6 text-gold" />
-                Important dates
-              </h2>
-              <ul className="mt-6 divide-y">
-                {admissionDates.map((d) => (
-                  <li key={d.event} className="flex items-center justify-between gap-4 py-3.5">
-                    <span className="text-sm font-medium text-foreground">{d.event}</span>
-                    <span className="font-heading text-sm font-semibold text-gold-foreground">
-                      {d.date}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Eligibility */}
-            <div className="rounded-2xl border bg-card p-7 shadow-sm">
-              <h2 className="flex items-center gap-2.5 font-heading text-2xl font-semibold text-brand">
-                <GraduationCap className="size-6 text-gold" />
-                Eligibility
-              </h2>
-              <ul className="mt-6 divide-y">
-                {eligibility.map((e) => (
-                  <li key={e.level} className="flex items-center justify-between gap-4 py-3.5">
-                    <span className="text-sm font-semibold text-brand">{e.level}</span>
-                    <span className="text-right text-sm text-muted-foreground">{e.criteria}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          <div className="grid gap-8 lg:grid-cols-2">
-            {/* Fees */}
-            <div className="rounded-2xl border bg-card p-7 shadow-sm">
-              <h2 className="flex items-center gap-2.5 font-heading text-2xl font-semibold text-brand">
-                <IndianRupee className="size-6 text-gold" />
-                Fee structure
-              </h2>
-              <ul className="mt-6 divide-y">
-                {feeStructure.map((f) => (
-                  <li key={f.head} className="flex items-center justify-between gap-4 py-3.5">
-                    <span className="text-sm font-medium text-foreground">{f.head}</span>
-                    <span className="font-heading text-sm font-semibold text-brand">{f.amount}</span>
-                  </li>
-                ))}
-              </ul>
-              <RichText
-                html={feeNote}
-                className="mt-5 rounded-lg bg-secondary/60 p-3 text-xs leading-relaxed"
-              />
-            </div>
-
-            {/* Documents */}
-            <div className="rounded-2xl border bg-card p-7 shadow-sm">
-              <h2 className="flex items-center gap-2.5 font-heading text-2xl font-semibold text-brand">
-                <FileText className="size-6 text-gold" />
-                Documents required
-              </h2>
-              <ul className="mt-6 space-y-3">
-                {documents.map(({ item: doc }) => (
-                  <li key={doc} className="flex items-start gap-3 text-sm text-foreground">
-                    <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-gold-soft text-gold-foreground">
-                      <Check className="size-3" />
-                    </span>
-                    {doc}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          {/* CTA */}
-          <div className="relative overflow-hidden rounded-3xl bg-brand px-6 py-12 text-center shadow-xl shadow-brand/20 sm:px-12">
-            <div className="bg-grid absolute inset-0 opacity-[0.08]" />
-            <div className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-gold/25 blur-3xl" />
-            <div className="relative">
-              <h2 className="text-balance font-heading text-2xl font-semibold text-brand-foreground sm:text-3xl">
-                Ready to take the next step?
-              </h2>
-              <p className="mx-auto mt-3 max-w-lg text-pretty text-brand-foreground/75">
-                Send us an enquiry or call the school office — our admissions team will guide you
-                through every step.
-              </p>
-              <div className="mt-7 flex flex-wrap justify-center gap-3">
-                <Button
-                  asChild
-                  size="lg"
-                  className="h-12 bg-gold px-7 text-[15px] font-semibold text-gold-foreground hover:bg-gold/90 [&_svg:not([class*='size-'])]:size-[18px]"
-                >
-                  <Link href="/admission-enquiry">
-                    <ClipboardList />
-                    Admission Enquiry
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  size="lg"
-                  variant="outline"
-                  className="h-12 border-white/25 bg-transparent px-7 text-[15px] text-brand-foreground hover:bg-white/10 hover:text-brand-foreground [&_svg:not([class*='size-'])]:size-[18px]"
-                >
-                  <a href={telHref(info.admissionsPhone)}>
-                    <Phone />
-                    {info.admissionsPhone}
-                  </a>
-                </Button>
-              </div>
-            </div>
-          </div>
+        <div className="container-edge">
+          <Reveal>
+            <h2 className="page-heading">How to apply</h2>
+          </Reveal>
+          <RevealGroup as="ol" className="mt-10 grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+            {admissionSteps.map((step, i) => {
+              const colour = stepColours[i % stepColours.length];
+              return (
+                <RevealItem as="li" key={step.title} className={`border-t-4 pt-6 ${colour.rule}`}>
+                  <span className={`font-heading text-5xl font-bold leading-none ${colour.num}`}>{i + 1}</span>
+                  <h3 className="mt-4 font-heading text-xl font-semibold text-brand">{step.title}</h3>
+                  <p className="mt-2 text-pretty text-[17px] leading-relaxed text-foreground/80">{step.text}</p>
+                </RevealItem>
+              );
+            })}
+          </RevealGroup>
         </div>
       </section>
+
+      <section className="bg-mist py-16 lg:py-24">
+        <div className="container-edge grid gap-14 lg:grid-cols-2 lg:gap-16">
+          <RuledList heading="Important dates" rows={admissionDates.map((d) => ({ left: d.event, right: d.date }))} />
+          <Reveal>
+            <h2 className="page-heading">Eligibility</h2>
+            <dl className="mt-6 border-t-2 border-brand">
+              {eligibility.map((e) => (
+                <div key={e.level} className="grid gap-1 border-b py-4 sm:grid-cols-[10rem_1fr] sm:gap-6">
+                  <dt className="font-heading text-lg font-semibold text-brand">{e.level}</dt>
+                  <dd className="text-[17px] text-foreground/85">{e.criteria}</dd>
+                </div>
+              ))}
+            </dl>
+          </Reveal>
+        </div>
+      </section>
+
+      <section className="py-16 lg:py-24">
+        <div className="container-edge grid gap-14 lg:grid-cols-2 lg:gap-16">
+          <div>
+            <RuledList heading="Fee structure" rows={feeStructure.map((f) => ({ left: f.head, right: f.amount }))} />
+            <RichText
+              html={feeNote}
+              className="mt-6 border-l-4 border-gold pl-5 text-[15px] leading-relaxed text-muted-foreground"
+            />
+          </div>
+          <Reveal>
+            <h2 className="page-heading">Documents required</h2>
+            <ul className="mt-6 grid gap-x-8 border-t-2 border-brand pt-2 sm:grid-cols-2">
+              {documents.map(({ item: doc }) => (
+                <li key={doc} className="flex items-start gap-3 border-b py-3.5 text-[17px] text-foreground">
+                  <Check className="mt-1 size-4 shrink-0 text-leaf" strokeWidth={3} />
+                  {doc}
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+        </div>
+      </section>
+
+      <CtaBand phone={info.admissionsPhone} />
     </>
   );
 }

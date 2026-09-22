@@ -9,6 +9,7 @@ export type AdminIcon =
   | "panel"
   | "images"
   | "graduation"
+  | "clipboard"
   | "building"
   | "text"
   | "users"
@@ -80,6 +81,14 @@ export const adminNav: AdminNavItem[] = [
     short: "Admissions",
     description: "Edit admission dates, fee structure and eligibility.",
     icon: "graduation",
+    phase: 3,
+  },
+  {
+    href: "/admin/exam-pattern",
+    label: "Examination Pattern",
+    short: "Exams",
+    description: "Edit the tests, marks and pass criteria for each group of classes.",
+    icon: "clipboard",
     phase: 3,
   },
   {

@@ -14,6 +14,7 @@ export const AUDIT_SECTIONS = [
   "Hero Banner",
   "Photo Gallery",
   "Admissions Content",
+  "Examination Pattern",
   "School Info",
   "Staff Accounts",
   "Website Text",

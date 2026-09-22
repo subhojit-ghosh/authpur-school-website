@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
-import { Crest } from "@/components/crest";
 
 export function PageBanner({
   title,
@@ -12,33 +11,24 @@ export function PageBanner({
   eyebrow?: string;
 }) {
   return (
-    <section className="relative overflow-hidden bg-brand text-brand-foreground">
-      <div className="bg-grid absolute inset-0 opacity-[0.1]" />
-      <div className="absolute -right-24 -top-24 h-80 w-80 rounded-full bg-gold/20 blur-3xl" />
-      <div className="absolute -bottom-32 left-1/4 h-72 w-72 rounded-full bg-white/5 blur-3xl" />
-      <div className="pointer-events-none absolute right-6 top-1/2 hidden -translate-y-1/2 opacity-10 lg:block">
-        <Crest className="h-48 w-48" />
-      </div>
-
-      <div className="container-edge relative py-14 lg:py-20">
-        <nav className="flex items-center gap-1.5 text-sm text-brand-foreground/60">
-          <Link href="/" className="transition-colors hover:text-gold">
+    <section className="bg-brand text-brand-foreground">
+      <div className="container-edge py-14 lg:py-20">
+        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-[15px] text-brand-foreground/65">
+          <Link href="/" className="transition-colors hover:text-white hover:underline hover:underline-offset-4">
             Home
           </Link>
           <ChevronRight className="size-4" />
           <span className="text-brand-foreground/90">{title}</span>
         </nav>
 
-        {eyebrow ? (
-          <p className="eyebrow mt-6 text-gold">{eyebrow}</p>
-        ) : null}
-        <h1 className="mt-3 max-w-3xl text-balance font-heading text-3xl font-semibold sm:text-4xl lg:text-5xl">
+        {eyebrow ? <p className="kicker mt-8 text-gold">{eyebrow}</p> : null}
+        <h1
+          className={`max-w-4xl text-balance font-heading text-4xl font-bold leading-[1.05] sm:text-5xl lg:text-6xl ${eyebrow ? "mt-3" : "mt-8"}`}
+        >
           {title}
         </h1>
         {subtitle ? (
-          <p className="mt-4 max-w-2xl text-pretty leading-relaxed text-brand-foreground/75">
-            {subtitle}
-          </p>
+          <p className="mt-5 max-w-2xl text-pretty text-lg leading-relaxed text-brand-foreground/80">{subtitle}</p>
         ) : null}
       </div>
     </section>

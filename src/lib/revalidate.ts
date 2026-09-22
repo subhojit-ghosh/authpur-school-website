@@ -20,6 +20,10 @@ export function revalidateGallery() {
   revalidatePath("/gallery");
 }
 
+export function revalidateExamPattern() {
+  revalidatePath("/examination-pattern");
+}
+
 export function revalidateAdmissions() {
   revalidatePath("/admissions");
   revalidatePath("/");

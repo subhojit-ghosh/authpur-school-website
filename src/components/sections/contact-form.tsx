@@ -9,7 +9,7 @@ import { defaultSchoolInfo, telHref } from "@/lib/settings-types";
 import { cn } from "@/lib/utils";
 
 const fieldClass =
-  "w-full rounded-lg border border-input bg-background px-4 py-2.5 text-sm shadow-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-brand focus:ring-2 focus:ring-brand/20 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20";
+  "w-full rounded-md border border-input bg-background px-4 py-3 text-base outline-none transition-colors placeholder:text-muted-foreground focus:border-brand focus:ring-2 focus:ring-brand/20 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -18,7 +18,7 @@ function SubmitButton() {
       type="submit"
       size="lg"
       disabled={pending}
-      className="mt-1 h-12 bg-gold text-[15px] font-semibold text-gold-foreground hover:bg-gold/90"
+      className="mt-1 h-12 rounded-md bg-gold text-base font-semibold text-gold-foreground hover:bg-gold/90"
     >
       <Send className="size-4" />
       {pending ? "Sending…" : "Send Enquiry"}
@@ -37,7 +37,7 @@ export function ContactForm({ admissionsPhone = defaultSchoolInfo.admissionsPhon
 
   if (state.ok) {
     return (
-      <div role="status" className="rounded-2xl border border-[oklch(0.8_0.1_150)] bg-[oklch(0.96_0.03_150)] p-6 text-center">
+      <div role="status" className="rounded-lg border border-[oklch(0.8_0.1_150)] bg-[oklch(0.96_0.03_150)] p-6 text-center">
         <CheckCircle2 className="mx-auto size-10 text-[oklch(0.45_0.12_150)]" />
         <h3 className="mt-3 font-heading text-lg font-semibold text-brand">Thank you — we have received your enquiry.</h3>
         <p className="mt-2 text-sm text-muted-foreground">
@@ -61,7 +61,7 @@ export function ContactForm({ admissionsPhone = defaultSchoolInfo.admissionsPhon
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-foreground">
+          <label htmlFor="name" className="mb-1.5 block text-[15px] font-semibold text-foreground">
             Full name <span className="text-destructive">*</span>
           </label>
           <input
@@ -76,7 +76,7 @@ export function ContactForm({ admissionsPhone = defaultSchoolInfo.admissionsPhon
           <FieldError message={fe.name} />
         </div>
         <div>
-          <label htmlFor="phone" className="mb-1.5 block text-sm font-medium text-foreground">
+          <label htmlFor="phone" className="mb-1.5 block text-[15px] font-semibold text-foreground">
             Phone <span className="text-destructive">*</span>
           </label>
           <input
@@ -95,7 +95,7 @@ export function ContactForm({ admissionsPhone = defaultSchoolInfo.admissionsPhon
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-foreground">
+          <label htmlFor="email" className="mb-1.5 block text-[15px] font-semibold text-foreground">
             Email <span className="text-muted-foreground">(optional)</span>
           </label>
           <input
@@ -110,7 +110,7 @@ export function ContactForm({ admissionsPhone = defaultSchoolInfo.admissionsPhon
           <FieldError message={fe.email} />
         </div>
         <div>
-          <label htmlFor="grade" className="mb-1.5 block text-sm font-medium text-foreground">
+          <label htmlFor="grade" className="mb-1.5 block text-[15px] font-semibold text-foreground">
             Class of interest
           </label>
           <input id="grade" name="grade" placeholder="e.g. Class VI, or Class XI – Science" className={fieldClass} />
@@ -118,7 +118,7 @@ export function ContactForm({ admissionsPhone = defaultSchoolInfo.admissionsPhon
       </div>
 
       <div>
-        <label htmlFor="message" className="mb-1.5 block text-sm font-medium text-foreground">
+        <label htmlFor="message" className="mb-1.5 block text-[15px] font-semibold text-foreground">
           Message
         </label>
         <textarea
@@ -138,7 +138,7 @@ export function ContactForm({ admissionsPhone = defaultSchoolInfo.admissionsPhon
       ) : null}
 
       <SubmitButton />
-      <p className="text-xs text-muted-foreground">
+      <p className="text-sm text-muted-foreground">
         Your enquiry goes directly to the school office. You can also call us on{" "}
         <a href={telHref(admissionsPhone)} className="font-medium text-brand hover:underline">
           {admissionsPhone}

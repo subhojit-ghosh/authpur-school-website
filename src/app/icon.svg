@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- The school crest simplified for a browser tab: at 16 to 32 pixels the
+       lettering on the ring cannot be read, so the ring is plain and the lamp
+       is drawn larger. The full crest is in src/components/crest.tsx. -->
+  <circle cx="50" cy="50" r="49" fill="#6e1d17"/>
+  <circle cx="50" cy="50" r="40" fill="#fffaf0" stroke="#e8b84a" stroke-width="3"/>
+  <g transform="translate(50 53) scale(1.28) translate(-50 -53)">
+  <g fill="#e4572e"><circle cx="50" cy="40" r="11"/><rect x="47.8" y="26.4" width="4.4" height="5" rx="0.8" transform="rotate(0 50 40)"/><rect x="47.8" y="26.4" width="4.4" height="5" rx="0.8" transform="rotate(36 50 40)"/><rect x="47.8" y="26.4" width="4.4" height="5" rx="0.8" transform="rotate(72 50 40)"/><rect x="47.8" y="26.4" width="4.4" height="5" rx="0.8" transform="rotate(108 50 40)"/><rect x="47.8" y="26.4" width="4.4" height="5" rx="0.8" transform="rotate(144 50 40)"/><rect x="47.8" y="26.4" width="4.4" height="5" rx="0.8" transform="rotate(180 50 40)"/><rect x="47.8" y="26.4" width="4.4" height="5" rx="0.8" transform="rotate(216 50 40)"/><rect x="47.8" y="26.4" width="4.4" height="5" rx="0.8" transform="rotate(252 50 40)"/><rect x="47.8" y="26.4" width="4.4" height="5" rx="0.8" transform="rotate(288 50 40)"/><rect x="47.8" y="26.4" width="4.4" height="5" rx="0.8" transform="rotate(324 50 40)"/></g>
+  <circle cx="50" cy="40" r="7.4" fill="#fffaf0"/>
+  <rect x="45.8" y="49" width="8.4" height="27" rx="1" fill="#1f7a3e" stroke="#123f22" stroke-width="1"/>
+  <rect x="42.5" y="75.5" width="15" height="3.2" rx="1" fill="#123f22"/>
+  <path d="M50,30.5 C54.2,35.8 55,39.6 50,46.5 C45,39.6 45.8,35.8 50,30.5Z" fill="#e1322a"/>
+  <path d="M50,35.2 C52.2,38.2 52.6,40.4 50,44 C47.4,40.4 47.8,38.2 50,35.2Z" fill="#f7c948"/>
+  </g>
+</svg>

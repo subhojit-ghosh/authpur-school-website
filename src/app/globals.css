@@ -8,9 +8,9 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
-  --font-sans: var(--font-inter);
-  --font-mono: var(--font-inter);
-  --font-heading: var(--font-fraunces);
+  --font-sans: var(--font-source-sans);
+  --font-mono: var(--font-source-sans);
+  --font-heading: var(--font-outfit);
 
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -49,6 +49,11 @@
   --color-gold: var(--gold);
   --color-gold-foreground: var(--gold-foreground);
   --color-gold-soft: var(--gold-soft);
+  --color-gold-ink: var(--gold-ink);
+  --color-vermilion: var(--vermilion);
+  --color-leaf: var(--leaf);
+  --color-sky: var(--sky);
+  --color-mist: var(--mist);
 
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
@@ -60,58 +65,68 @@
 }
 
 :root {
-  --radius: 0.75rem;
+  --radius: 0.5rem;
 
-  /* Warm ivory surface, deep slate ink */
-  --background: oklch(0.988 0.006 85);
-  --foreground: oklch(0.23 0.024 264);
+  /*
+   * White paper and a deep ink navy, with four school colours — vermilion,
+   * marigold, leaf and sky. The four colour-code the quick links and the
+   * school stages, and together they make the stripe that runs under the
+   * header and over the footer.
+   */
+  --background: #ffffff;
+  --foreground: #1c2a3d;
 
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.23 0.024 264);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.23 0.024 264);
+  --card: #ffffff;
+  --card-foreground: #1c2a3d;
+  --popover: #ffffff;
+  --popover-foreground: #1c2a3d;
 
-  /* Primary = scholarly navy */
-  --primary: oklch(0.36 0.093 264);
-  --primary-foreground: oklch(0.98 0.008 85);
+  --primary: #0b2545;
+  --primary-foreground: #ffffff;
 
-  --secondary: oklch(0.955 0.012 85);
-  --secondary-foreground: oklch(0.32 0.05 264);
+  --secondary: #f1f4f8;
+  --secondary-foreground: #0b2545;
 
-  --muted: oklch(0.962 0.008 85);
-  --muted-foreground: oklch(0.5 0.022 264);
+  --muted: #f1f4f8;
+  --muted-foreground: #5a6778;
 
-  --accent: oklch(0.955 0.03 84);
-  --accent-foreground: oklch(0.36 0.06 264);
+  --accent: #fdf3dc;
+  --accent-foreground: #0b2545;
 
   --destructive: oklch(0.577 0.245 27.325);
 
-  --border: oklch(0.906 0.012 85);
-  --input: oklch(0.906 0.012 85);
-  --ring: oklch(0.36 0.093 264);
+  --border: #dfe4eb;
+  --input: #d3d9e2;
+  --ring: #1d6fb8;
 
   /* Brand palette */
-  --brand: oklch(0.36 0.093 264);
-  --brand-foreground: oklch(0.98 0.008 85);
-  --brand-muted: oklch(0.29 0.08 264);
-  --gold: oklch(0.78 0.126 79);
-  --gold-foreground: oklch(0.3 0.06 66);
-  --gold-soft: oklch(0.93 0.05 82);
+  --brand: #0b2545;
+  --brand-foreground: #ffffff;
+  --brand-muted: #13335a;
+  --gold: #f2a516;
+  --gold-foreground: #2b1d00;
+  --gold-soft: #fdf3dc;
+  /* Marigold is too light for text on white; this darker amber is for words. */
+  --gold-ink: #95600a;
+  --vermilion: #d23a2e;
+  --leaf: #1f7a4c;
+  --sky: #1d6fb8;
+  --mist: #f1f4f8;
 
-  --chart-1: oklch(0.78 0.126 79);
-  --chart-2: oklch(0.36 0.093 264);
-  --chart-3: oklch(0.55 0.11 200);
-  --chart-4: oklch(0.62 0.13 30);
-  --chart-5: oklch(0.5 0.12 150);
+  --chart-1: #f2a516;
+  --chart-2: #0b2545;
+  --chart-3: #1d6fb8;
+  --chart-4: #d23a2e;
+  --chart-5: #1f7a4c;
 
-  --sidebar: oklch(0.985 0.006 85);
-  --sidebar-foreground: oklch(0.23 0.024 264);
-  --sidebar-primary: oklch(0.36 0.093 264);
-  --sidebar-primary-foreground: oklch(0.98 0.008 85);
-  --sidebar-accent: oklch(0.955 0.03 84);
-  --sidebar-accent-foreground: oklch(0.36 0.06 264);
-  --sidebar-border: oklch(0.906 0.012 85);
-  --sidebar-ring: oklch(0.36 0.093 264);
+  --sidebar: #f8fafc;
+  --sidebar-foreground: #1c2a3d;
+  --sidebar-primary: #0b2545;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #fdf3dc;
+  --sidebar-accent-foreground: #0b2545;
+  --sidebar-border: #dfe4eb;
+  --sidebar-ring: #1d6fb8;
 }
 
 .dark {
@@ -139,6 +154,11 @@
   --gold: oklch(0.8 0.13 79);
   --gold-foreground: oklch(0.24 0.05 264);
   --gold-soft: oklch(0.4 0.07 79);
+  --gold-ink: oklch(0.8 0.13 79);
+  --vermilion: #e5584c;
+  --leaf: #3a9a68;
+  --sky: #4a92d4;
+  --mist: oklch(0.24 0.035 264);
   --sidebar: oklch(0.24 0.035 264);
   --sidebar-foreground: oklch(0.96 0.008 85);
   --sidebar-primary: oklch(0.78 0.126 79);
@@ -155,8 +175,30 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     -webkit-font-smoothing: antialiased;
+  }
+  /*
+   * Tailwind's reset gives buttons the plain arrow cursor. Everything a
+   * visitor or staff member can click shows the hand instead, and anything
+   * switched off says so.
+   */
+  button,
+  [role="button"],
+  [role="tab"],
+  [type="button"],
+  [type="submit"],
+  [type="reset"],
+  [type="checkbox"],
+  [type="radio"],
+  [type="file"],
+  select,
+  summary,
+  label[for] {
+    cursor: pointer;
+  }
+  :disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
   }
   html {
     @apply font-sans;
@@ -164,8 +206,7 @@
   }
   h1, h2, h3, h4, .font-heading {
     @apply font-heading;
-    font-optical-sizing: auto;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.02em;
   }
 }
 
@@ -181,6 +222,31 @@
   }
   .eyebrow {
     @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-gold-foreground;
+  }
+  /* A short line above a section heading: sentence case, in the text amber. */
+  .kicker {
+    @apply block text-base font-semibold text-gold-ink;
+  }
+  .section-title {
+    @apply text-balance font-heading text-[2rem] font-semibold leading-[1.1] text-brand sm:text-[2.6rem];
+  }
+  /* A heading inside an inner page, one step below the section title. */
+  .page-heading {
+    @apply text-balance font-heading text-2xl font-semibold leading-tight text-brand sm:text-3xl;
+  }
+  /* A plain link that reads as a link: underlined in marigold. */
+  .text-link {
+    @apply font-semibold text-brand underline decoration-gold decoration-2 underline-offset-4 transition-colors hover:decoration-brand;
+  }
+  /* The four school colours side by side. Give it a height where it is used. */
+  .school-stripe {
+    background: linear-gradient(
+      90deg,
+      var(--vermilion) 0 25%,
+      var(--gold) 25% 50%,
+      var(--leaf) 50% 75%,
+      var(--sky) 75% 100%
+    );
   }
   .text-gradient-gold {
     background: linear-gradient(100deg, var(--gold) 0%, oklch(0.86 0.11 88) 55%, var(--gold) 100%);
@@ -214,4 +280,10 @@
     linear-gradient(to right, color-mix(in oklch, var(--foreground) 6%, transparent) 1px, transparent 1px),
     linear-gradient(to bottom, color-mix(in oklch, var(--foreground) 6%, transparent) 1px, transparent 1px);
   background-size: 64px 64px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
+  }
 }

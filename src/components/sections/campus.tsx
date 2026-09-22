@@ -1,59 +1,68 @@
-import { Building2, FlaskConical, Library, Medal, Music, type LucideIcon } from "lucide-react";
+import Link from "next/link";
 import { getHomeContent } from "@/lib/page-content";
+import { SectionIntro } from "@/components/section-intro";
+import type { HeroImage } from "@/components/sections/hero-carousel";
+import { cn } from "@/lib/utils";
+import { RevealGroup, RevealItem } from "@/components/motion";
 
-const iconMap: Record<string, LucideIcon> = {
-  building: Building2,
-  flask: FlaskConical,
-  library: Library,
-  medal: Medal,
-  music: Music,
-};
-
-const gradients = [
-  "from-brand via-brand-muted to-brand",
-  "from-[oklch(0.55_0.11_200)] to-[oklch(0.42_0.1_220)]",
-  "from-[oklch(0.62_0.13_30)] to-[oklch(0.5_0.12_20)]",
-  "from-[oklch(0.5_0.12_150)] to-[oklch(0.42_0.1_160)]",
-  "from-gold to-[oklch(0.62_0.13_60)]",
-];
-
-export async function Campus() {
+/**
+ * Campus life as a mosaic of captioned photographs. Staff set each tile's
+ * label and photo in the admin panel; the home page resolves the photos.
+ */
+export async function Campus({ tiles }: { tiles: { label: string; photo?: HeroImage }[] }) {
   const { campus } = await getHomeContent();
+  // The first tile is the large one. Five fill the mosaic exactly; more wrap
+  // onto further rows.
+  if (!tiles.length) return null;
 
   return (
-    <section id="campus" className="scroll-mt-24 bg-secondary py-20 lg:py-28">
+    <section id="campus" className="scroll-mt-28 pb-20 lg:pb-28">
       <div className="container-edge">
-        <div className="mx-auto max-w-2xl text-center">
-          <span className="eyebrow justify-center">{campus.eyebrow}</span>
-          <h2 className="mt-4 text-balance font-heading text-3xl font-semibold text-brand sm:text-4xl">
-            {campus.heading}
-          </h2>
-          {campus.blurb ? (
-            <p className="mt-4 text-pretty leading-relaxed text-muted-foreground">{campus.blurb}</p>
-          ) : null}
-        </div>
+        <SectionIntro split kicker={campus.eyebrow} heading={campus.heading} blurb={campus.blurb} />
 
-        <div className="mt-12 grid auto-rows-[10rem] grid-cols-2 gap-4 sm:grid-cols-4">
-          {campus.tiles.map((t, i) => {
-            const Icon = iconMap[t.icon] ?? Building2;
-            const large = i === 0;
+        <RevealGroup className="mt-12 grid auto-rows-[11rem] grid-cols-2 gap-3 sm:auto-rows-[13rem] sm:gap-4 lg:mt-14 lg:grid-cols-4">
+          {tiles.map((t, i) => {
+            const photo = t.photo;
             return (
-              <figure
-                key={t.label}
-                className={`group relative overflow-hidden rounded-2xl bg-linear-to-br ${gradients[i % gradients.length]} ${
-                  large ? "sm:col-span-2 sm:row-span-2 min-h-64 sm:min-h-full" : "min-h-40"
-                } shadow-md ring-1 ring-black/5`}
+              <RevealItem
+                as="figure"
+                key={`${t.label}-${i}`}
+                className={cn(
+                  "group relative overflow-hidden rounded-lg bg-brand",
+                  i === 0 && "col-span-2 row-span-2",
+                )}
               >
-                <div className="bg-grid absolute inset-0 opacity-10" />
-                <div className="absolute inset-0 bg-linear-to-t from-black/45 to-transparent" />
-                <Icon className="absolute right-4 top-4 size-6 text-white/80 transition-transform duration-300 group-hover:scale-110" />
-                <figcaption className="absolute bottom-4 left-4 font-heading text-lg font-semibold text-white drop-shadow">
+                {photo ? (
+                  // oxlint-disable-next-line nextjs/no-img-element -- already resized on upload
+                  <img
+                    src={photo.src}
+                    alt={photo.alt}
+                    loading="lazy"
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105 motion-reduce:transition-none"
+                  />
+                ) : null}
+                <div className="absolute inset-0 bg-linear-to-t from-brand/85 via-brand/10 to-transparent" />
+                <figcaption
+                  className={cn(
+                    "absolute bottom-0 left-0 p-4 font-heading font-semibold text-white sm:p-5",
+                    i === 0 ? "text-2xl sm:text-3xl" : "text-lg sm:text-xl",
+                  )}
+                >
                   {t.label}
                 </figcaption>
-              </figure>
+              </RevealItem>
             );
           })}
-        </div>
+        </RevealGroup>
+
+        <p className="mt-10">
+          <Link
+            href="/gallery"
+            className="text-link text-lg"
+          >
+            See more in the photo gallery
+          </Link>
+        </p>
       </div>
     </section>
   );

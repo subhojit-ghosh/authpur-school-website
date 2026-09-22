@@ -1,6 +1,7 @@
 import {
   Bell,
   Building2,
+  ClipboardList,
   CalendarDays,
   GraduationCap,
   History,
@@ -23,6 +24,7 @@ const icons = {
   panel: PanelTop,
   images: Images,
   graduation: GraduationCap,
+  clipboard: ClipboardList,
   building: Building2,
   text: Type,
   users: UsersRound,

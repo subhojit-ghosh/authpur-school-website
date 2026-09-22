@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ArrowDown, ArrowUp, CornerDownRight, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,8 +26,12 @@ import {
 
 type Row = { id: number; value: MenuItem };
 
-let nextId = 1;
-const withIds = (items: MenuItem[]): Row[] => items.map((value) => ({ id: nextId++, value }));
+/**
+ * Ids also name the inputs, so the saved menu is numbered from 1 on every
+ * render; a counter kept at module level would carry on counting on the server
+ * across requests and the ids would not match in the browser.
+ */
+const withIds = (items: MenuItem[]): Row[] => items.map((value, i) => ({ id: i + 1, value }));
 
 const blankItem = (): MenuItem => ({ label: "", href: "/", children: [] });
 const blankChild = (): MenuChild => ({ label: "", href: "/", desc: "" });
@@ -84,6 +88,7 @@ function MoveButtons({
 
 export function MenuEditor({ name, initial }: { name: string; initial: MenuItem[] }) {
   const [rows, setRows] = useState<Row[]>(() => withIds(initial));
+  const nextId = useRef(initial.length + 1);
 
   const setItem = (id: number, patch: Partial<MenuItem>) =>
     setRows((list) => list.map((row) => (row.id === id ? { ...row, value: { ...row.value, ...patch } } : row)));
@@ -215,7 +220,7 @@ export function MenuEditor({ name, initial }: { name: string; initial: MenuItem[
           variant="outline"
           size="sm"
           disabled={rows.length >= MAX_MENU_ITEMS}
-          onClick={() => setRows((list) => [...list, { id: nextId++, value: blankItem() }])}
+          onClick={() => setRows((list) => [...list, { id: nextId.current++, value: blankItem() }])}
         >
           <Plus className="size-3.5" />
           Add menu item

@@ -8,12 +8,17 @@ import {
   ShieldCheck,
   Check,
 } from "lucide-react";
+import { RevealGroup, RevealItem } from "@/components/motion";
+import { CtaBand } from "@/components/cta-band";
+import { getSchoolInfo } from "@/lib/settings";
 import { PageBanner } from "@/components/page-banner";
-import { RichText } from "@/components/rich-text";
+import { READING_TEXT, RichText } from "@/components/rich-text";
+import { cn } from "@/lib/utils";
 import { getLabsContent, getPageBanners } from "@/lib/page-content";
 import { toLines } from "@/lib/page-content-types";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/labs" },
   title: "School Laboratories",
   description:
     "Modern Physics, Chemistry, Biology, Computer and Language laboratories at Authpur National Model Higher Secondary School.",
@@ -31,10 +36,18 @@ const iconMap: Record<string, typeof Atom> = {
   shield: ShieldCheck,
 };
 
+/** Each laboratory takes a school colour in turn, in the order of the stripe. */
+const labColours = [
+  { rule: "border-vermilion", icon: "text-vermilion" },
+  { rule: "border-gold", icon: "text-gold-ink" },
+  { rule: "border-leaf", icon: "text-leaf" },
+  { rule: "border-sky", icon: "text-sky" },
+];
+
 export const revalidate = 3600;
 
 export default async function LabsPage() {
-  const [{ items }, banners] = await Promise.all([getLabsContent(), getPageBanners()]);
+  const [{ items }, banners, info] = await Promise.all([getLabsContent(), getPageBanners(), getSchoolInfo()]);
   const banner = banners.labs;
 
   return (
@@ -42,34 +55,38 @@ export default async function LabsPage() {
       <PageBanner eyebrow={banner.eyebrow} title={banner.title} subtitle={banner.subtitle} />
 
       <section className="py-16 lg:py-24">
-        <div className="container-edge grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((lab) => {
+        <RevealGroup className="container-edge grid gap-x-12 gap-y-14 md:grid-cols-2">
+          {items.map((lab, i) => {
             const Icon = iconMap[lab.icon] ?? Atom;
+            const colour = labColours[i % labColours.length];
             return (
-              <div
-                key={lab.name}
-                className="group flex flex-col rounded-2xl border bg-card p-7 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-brand/5"
-              >
-                <span className="grid size-13 place-items-center rounded-2xl bg-accent text-brand transition-colors group-hover:bg-brand group-hover:text-brand-foreground">
-                  <Icon className="size-6" />
-                </span>
-                <h2 className="mt-5 font-heading text-lg font-semibold text-brand">{lab.name}</h2>
-                <RichText html={lab.blurb} className="mt-2 flex-1" />
-                <ul className="mt-5 space-y-2 border-t pt-4">
-                  {toLines(lab.points).map((h) => (
-                    <li key={h} className="flex items-center gap-2.5 text-sm text-foreground">
-                      <span className="grid size-5 shrink-0 place-items-center rounded-full bg-gold-soft text-gold-foreground">
-                        <Check className="size-3" />
-                      </span>
-                      {h}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <RevealItem as="article" key={lab.name} className={`border-t-4 pt-7 ${colour.rule}`}>
+                <h2 className="flex items-center gap-3 font-heading text-2xl font-semibold text-brand">
+                  <Icon className={`size-7 shrink-0 ${colour.icon}`} strokeWidth={1.6} />
+                  {lab.name}
+                </h2>
+                <RichText html={lab.blurb} className={cn(READING_TEXT, "mt-4")} />
+                {toLines(lab.points).length ? (
+                  <ul className="mt-6 grid gap-x-6 gap-y-2.5 sm:grid-cols-2">
+                    {toLines(lab.points).map((h) => (
+                      <li key={h} className="flex items-start gap-2.5 text-[17px] text-foreground">
+                        <Check className={`mt-1 size-4 shrink-0 ${colour.icon}`} strokeWidth={3} />
+                        {h}
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+              </RevealItem>
             );
           })}
-        </div>
+        </RevealGroup>
       </section>
+
+      <CtaBand
+        heading="See the laboratories for yourself"
+        text="Families are welcome to visit during office hours. Send an enquiry or call the office to arrange a time."
+        phone={info.admissionsPhone}
+      />
     </>
   );
 }

@@ -5,15 +5,29 @@ import { AdminPageHeader } from "@/components/admin/page-header";
 import { RowsEditor } from "@/components/admin/rows-editor";
 import { Button } from "@/components/ui/button";
 import { getHomeContent } from "@/lib/page-content";
-import { CAMPUS_ICONS, FEATURE_ICONS, PILLAR_ICONS } from "@/lib/page-content-types";
+import { FEATURE_ICONS, MAX_QUICK_LINKS, PILLAR_ICONS, QUICK_LINK_ICONS } from "@/lib/page-content-types";
+import { getPhotoChoices } from "@/lib/photo-choices";
 import { saveHome } from "../actions";
 import { ContentForm, Field, HeadingFields, RichField, Section, TextField } from "@/components/admin/content-form";
 import { toRichHtml } from "@/lib/rich-text";
 
 export const metadata: Metadata = { title: "Home page sections" };
 
+const quickIconLabels: Record<(typeof QUICK_LINK_ICONS)[number], string> = {
+  apply: "Graduation cap",
+  notices: "Megaphone",
+  timings: "Clock and calendar",
+  gallery: "Photos",
+  events: "Calendar",
+  phone: "Telephone",
+  book: "Open book",
+  map: "Map pin",
+};
+
 export default async function HomeContentPage() {
-  const home = await getHomeContent();
+  const [home, photos] = await Promise.all([getHomeContent(), getPhotoChoices()]);
+  const photoOptions = photos.map((p) => ({ value: p.ref, label: p.label, thumbUrl: p.thumbUrl }));
+  const iconOptions = QUICK_LINK_ICONS.map((icon) => ({ value: icon, label: quickIconLabels[icon] }));
 
   return (
     <div className="space-y-6">
@@ -40,7 +54,24 @@ export default async function HomeContentPage() {
       />
 
       <ContentForm action={saveHome}>
-        <Section title="Statistics band" description="The four figures shown under the banner photos.">
+        <Section
+          title="Quick links"
+          description={`The coloured boxes over the foot of the banner photos, in order from left to right. There is room for ${MAX_QUICK_LINKS}. An address can be a page on this site, such as /notices, or a full web address.`}
+        >
+          <RowsEditor
+            name="quickLinks"
+            columns={[
+              { key: "icon", label: "Icon", options: iconOptions, blankLabel: "Choose an icon" },
+              { key: "label", label: "Title", placeholder: "e.g. Notice board" },
+              { key: "text", label: "Short line", placeholder: "e.g. Circulars, results and holidays." },
+              { key: "href", label: "Address", placeholder: "e.g. /notices" },
+            ]}
+            initial={home.quickLinks}
+            addLabel="Add quick link"
+          />
+        </Section>
+
+        <Section title="Figures" description="The four large figures under the vision, mission and values.">
           <RowsEditor
             name="stats"
             columns={[
@@ -53,7 +84,7 @@ export default async function HomeContentPage() {
           />
         </Section>
 
-        <Section title="About" description="The welcome section with the quote and the three pillars.">
+        <Section title="About" description="The welcome section with the photo and the quote, then the navy band with the vision, mission and values.">
           <div className="grid gap-4 sm:grid-cols-2">
             <Field name="about.eyebrow" label="Small label" defaultValue={home.about.eyebrow} />
             <Field name="about.heading" label="Heading" defaultValue={home.about.heading} />
@@ -86,7 +117,7 @@ export default async function HomeContentPage() {
           </div>
         </Section>
 
-        <Section title="Academics" description="The dark blue section with the three programme cards.">
+        <Section title="Academics" description="The school stages, each in its own colour with the classes set large.">
           <HeadingFields prefix="academics" value={home.academics} />
           <RowsEditor
             name="programmes"
@@ -115,15 +146,18 @@ export default async function HomeContentPage() {
           />
         </Section>
 
-        <Section title="Campus life">
+        <Section
+          title="Campus life"
+          description="The photo tiles; the first one is shown large. Pick a photo from the gallery or the banners for each tile. Left on automatic, a tile takes the next gallery photo not already used."
+        >
           <HeadingFields prefix="campus" value={home.campus} />
           <RowsEditor
             name="tiles"
             columns={[
-              { key: "icon", label: `Icon (${CAMPUS_ICONS.join(" / ")})`, placeholder: CAMPUS_ICONS[0] },
               { key: "label", label: "Tile label", placeholder: "e.g. Green Campus" },
+              { key: "photo", label: "Photo", options: photoOptions, blankLabel: "Automatic" },
             ]}
-            initial={home.campus.tiles}
+            initial={home.campus.tiles.map((t) => ({ label: t.label, photo: t.photo ?? "" }))}
             addLabel="Add tile"
           />
         </Section>
@@ -151,7 +185,7 @@ export default async function HomeContentPage() {
           />
         </Section>
 
-        <Section title="Admissions call to action" description="The gold-and-navy panel near the bottom of the home page.">
+        <Section title="Admissions call to action" description="The navy band over a photo near the bottom of the home page, with its numbered steps.">
           <HeadingFields prefix="admissionsCta" value={home.admissionsCta} />
           <RowsEditor
             name="steps"

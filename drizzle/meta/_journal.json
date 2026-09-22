@@ -43,6 +43,27 @@
       "when": 1789574556532,
       "tag": "0005_real_clea",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1790109255801,
+      "tag": "0006_cisce_wording",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1790110075825,
+      "tag": "0007_real_school_details",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1790110759176,
+      "tag": "0008_exam_pattern_links",
+      "breakpoints": true
     }
   ]
 }

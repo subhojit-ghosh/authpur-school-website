@@ -1,44 +1,55 @@
 import type { Metadata } from "next";
-import { Inter, Fraunces } from "next/font/google";
+import { Outfit, Source_Sans_3 } from "next/font/google";
 import "./globals.css";
+import { siteUrl } from "@/lib/site-url";
 
-const inter = Inter({
-  variable: "--font-inter",
+// Outfit sets the headings: a sturdy geometric face that reads clearly at
+// banner sizes. Source Sans 3 is the text face; being humanist rather than
+// geometric it stays distinct from the headings and comfortable in long prose.
+const outfit = Outfit({
+  variable: "--font-outfit",
   subsets: ["latin"],
   display: "swap",
 });
 
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
+const sourceSans = Source_Sans_3({
+  variable: "--font-source-sans",
   subsets: ["latin"],
   display: "swap",
-  axes: ["opsz"],
 });
 
 const SCHOOL_NAME = "Authpur National Model Higher Secondary School";
+const SHORT_NAME = "Authpur National Model School";
+const DESCRIPTION =
+  "Co-educational, English-medium CISCE school in Authpur, Shyamnagar, North 24 Parganas, from Lower Nursery to Class XII (ICSE & ISC). Admissions open for 2026–27.";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://authpurnationalmodel.edu.in"),
+  metadataBase: new URL(siteUrl),
+  applicationName: SHORT_NAME,
   title: {
-    default: `${SCHOOL_NAME} | Shyamnagar, West Bengal`,
-    template: `%s | ${SCHOOL_NAME}`,
+    default: `${SHORT_NAME} | ICSE & ISC School in Shyamnagar`,
+    template: `%s | ${SHORT_NAME}`,
   },
-  description:
-    "A co-educational higher secondary school in Authpur, Shyamnagar, nurturing curious minds from primary through Class 12 with academic excellence, strong values and holistic growth.",
+  description: DESCRIPTION,
   keywords: [
     "Authpur National Model School",
-    "Higher Secondary School Shyamnagar",
-    "school in Authpur",
-    "West Bengal school",
-    "admission 2026",
+    "Authpur National Model Higher Secondary School",
+    "ANMS Shyamnagar",
+    "ICSE school Shyamnagar",
+    "ISC school North 24 Parganas",
+    "CISCE school Bhatpara",
+    "English medium school Shyamnagar",
+    "school admission 2026-27",
   ],
   openGraph: {
-    title: `${SCHOOL_NAME}`,
-    description:
-      "Academic excellence, strong values and holistic growth for every child — from primary through Class 12.",
     type: "website",
     locale: "en_IN",
+    siteName: SCHOOL_NAME,
+    title: SCHOOL_NAME,
+    description: DESCRIPTION,
   },
+  twitter: { card: "summary_large_image", title: SCHOOL_NAME, description: DESCRIPTION },
+  formatDetection: { telephone: true, email: true, address: true },
 };
 
 export default function RootLayout({
@@ -49,7 +60,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${fraunces.variable} h-full antialiased`}
+      className={`${outfit.variable} ${sourceSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

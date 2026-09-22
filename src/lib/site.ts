@@ -13,10 +13,10 @@ export const school = {
     state: "West Bengal",
     pin: "743128",
   },
-  phone: "+91 33 2588 0000",
-  phoneHref: "tel:+913325880000",
-  admissionsPhone: "+91 98300 00000",
-  email: "office@authpurnationalmodel.edu.in",
+  // Contact details as published on the school's previous website, anms2u.com.
+  phone: "+91 33 2581 4044",
+  admissionsPhone: "+91 82748 87550",
+  email: "anms2u@gmail.com",
   mapQuery:
     "Authpur National Model Higher Secondary School, Ghosh Para Rd, Authpur, Shyamnagar, West Bengal 743128",
 } as const;
@@ -32,9 +32,10 @@ export const navLinks = [
 
 export const stats = [
   { value: "1982", label: "Established", hint: "Four decades of learning" },
-  { value: "2,400+", label: "Students", hint: "Pre-primary to Class 12" },
-  { value: "95+", label: "Faculty", hint: "Qualified & caring" },
-  { value: "98%", label: "Board Results", hint: "Class 10 & 12 pass rate" },
+  // The three figures below are the ones on the school's previous website.
+  { value: "2,200", label: "Students", hint: "Lower Nursery to Class XII" },
+  { value: "100", label: "Teachers", hint: "All certified" },
+  { value: "1,000+", label: "Graduates", hint: "And counting" },
 ] as const;
 
 export const programmes = [
@@ -51,7 +52,7 @@ export const programmes = [
     title: "Secondary School",
     grades: "Class VI – X",
     blurb:
-      "A rigorous, concept-first programme aligned to the WBBSE curriculum that prepares students for the Madhyamik examination.",
+      "A rigorous, concept-first programme following the ICSE curriculum that prepares students for the Class X ICSE examination.",
     points: ["Science & maths labs", "Language & humanities", "Board exam readiness"],
   },
   {
@@ -59,7 +60,7 @@ export const programmes = [
     title: "Higher Secondary",
     grades: "Class XI – XII",
     blurb:
-      "Specialised streams under WBCHSE guiding students toward university, competitive exams and confident careers.",
+      "Science, Commerce and Arts streams under the ISC curriculum, guiding students toward university, competitive exams and confident careers.",
     points: ["Science stream", "Commerce stream", "Humanities stream"],
   },
 ] as const;
@@ -108,7 +109,7 @@ export const notices = [
   {
     date: "2026-07-10",
     tag: "Result",
-    title: "Class XII students achieve 98% pass rate in WBCHSE examinations",
+    title: "Class XII students achieve 98% pass rate in ISC examinations",
   },
   {
     date: "2026-06-28",
@@ -128,33 +129,26 @@ export const events = [
   { day: "12", month: "Sep", title: "Inter-house Sports Meet", place: "Athletics Field" },
 ] as const;
 
+/** From the school's previous website, lightly corrected for spelling. */
 export const testimonials = [
   {
     quote:
-      "The teachers here treat every child as their own. My daughter grew not just in marks, but in confidence and kindness.",
-    name: "Mrs. Ananya Sen",
-    role: "Parent, Class VIII",
+      "My daughter studies at this school and she loves it here. It is a great school with caring, loving teachers and very supportive staff.",
+    name: "Debopriya Dey",
+    role: "Parent",
   },
   {
     quote:
-      "From the science labs to the debate club, Authpur gave me the space to find what I love. I am now studying engineering.",
-    name: "Rohan Das",
-    role: "Alumnus, Batch of 2023",
+      "I studied here for two years, in Classes XI and XII. The school taught me not only academics but also the values of life, and I'm sure its lessons will help me through life.",
+    name: "Shounak Mallick",
+    role: "Student, Classes XI and XII",
   },
   {
     quote:
-      "A school that balances discipline with warmth. The values my son learned here will stay with him for life.",
-    name: "Mr. Sameer Chatterjee",
-    role: "Parent, Class XI",
+      "The best place to study around Authpur. The teachers are cooperative, and their way of teaching is the best of any school in this locality.",
+    name: "Srijit Barui",
+    role: "Student",
   },
-] as const;
-
-export const galleryTiles = [
-  { label: "Campus", span: "row-span-2" },
-  { label: "Science Lab", span: "" },
-  { label: "Library", span: "" },
-  { label: "Sports Day", span: "" },
-  { label: "Cultural Fest", span: "" },
 ] as const;
 
 /* ------------------------------------------------------------------ */
@@ -180,6 +174,7 @@ export const mainNav: NavItem[] = [
       { label: "Programmes", href: "/#academics", desc: "Primary to Higher Secondary" },
       { label: "School Labs", href: "/labs", desc: "Science & computer labs" },
       { label: "School Timings", href: "/school-timings", desc: "Daily & section-wise hours" },
+      { label: "Examination Pattern", href: "/examination-pattern", desc: "Tests, marks & pass criteria" },
     ],
   },
   {
@@ -198,6 +193,7 @@ export const footerExplore = [
   { label: "Admission", href: "/admissions" },
   { label: "Admission Enquiry", href: "/admission-enquiry" },
   { label: "School Timings", href: "/school-timings" },
+  { label: "Examination Pattern", href: "/examination-pattern" },
   { label: "School Labs", href: "/labs" },
   { label: "Gallery", href: "/gallery" },
   { label: "Notice Board", href: "/notices" },
@@ -327,18 +323,6 @@ export const labs = [
 /*  Gallery                                                             */
 /* ------------------------------------------------------------------ */
 
-export const gallery = [
-  { label: "Main Building", category: "Campus", gradient: "from-brand via-brand-muted to-brand" },
-  { label: "Morning Assembly", category: "Campus", gradient: "from-[oklch(0.5_0.12_150)] to-[oklch(0.4_0.1_165)]" },
-  { label: "Physics Practical", category: "Academics", gradient: "from-[oklch(0.55_0.11_200)] to-[oklch(0.42_0.1_220)]" },
-  { label: "Reading in the Library", category: "Academics", gradient: "from-[oklch(0.62_0.13_30)] to-[oklch(0.5_0.12_20)]" },
-  { label: "Annual Sports Meet", category: "Sports", gradient: "from-[oklch(0.6_0.14_45)] to-[oklch(0.48_0.12_35)]" },
-  { label: "Football Team", category: "Sports", gradient: "from-[oklch(0.5_0.12_150)] to-[oklch(0.42_0.1_160)]" },
-  { label: "Cultural Evening", category: "Events", gradient: "from-gold to-[oklch(0.62_0.13_60)]" },
-  { label: "Independence Day", category: "Events", gradient: "from-[oklch(0.55_0.14_25)] to-[oklch(0.45_0.12_15)]" },
-  { label: "Science Fair", category: "Events", gradient: "from-[oklch(0.52_0.12_260)] to-[oklch(0.4_0.1_270)]" },
-] as const;
-
 export const galleryCategories = ["All", "Campus", "Academics", "Sports", "Events"] as const;
 
 /* ------------------------------------------------------------------ */
@@ -363,7 +347,7 @@ export const eligibility = [
   { level: "Nursery", criteria: "3+ years as on 1st April" },
   { level: "Class I", criteria: "5+ years as on 1st April" },
   { level: "Class VI", criteria: "Passed Class V from a recognised school" },
-  { level: "Class XI", criteria: "Passed Class X (Madhyamik) — stream as per marks" },
+  { level: "Class XI", criteria: "Passed Class X (ICSE or equivalent) — stream as per marks" },
 ] as const;
 
 export const feeStructure = [

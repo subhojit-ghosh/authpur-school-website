@@ -19,6 +19,7 @@ import {
   isAllowedHref,
   MAX_MENU_CHILDREN,
   MAX_MENU_ITEMS,
+  MAX_QUICK_LINKS,
   PAGE_BANNER_LABELS,
   type HomeContent,
   type Identity,
@@ -181,6 +182,7 @@ export async function saveHome(_prev: ContentState, formData: FormData): Promise
   });
 
   const value: HomeContent = {
+    quickLinks: parseRows(formData, "quickLinks", ["icon", "label", "text", "href"]),
     stats: parseRows(formData, "stats", ["value", "label", "hint"]),
     about: {
       ...heading("about"),
@@ -195,7 +197,7 @@ export async function saveHome(_prev: ContentState, formData: FormData): Promise
       programmes: parseRows(formData, "programmes", ["title", "grades", "blurb", "points"], 1200),
     },
     whyUs: { ...heading("whyUs"), features: parseRows(formData, "features", ["icon", "title", "text"], 600) },
-    campus: { ...heading("campus"), tiles: parseRows(formData, "tiles", ["icon", "label"]) },
+    campus: { ...heading("campus"), tiles: parseRows(formData, "tiles", ["label", "photo"]) },
     testimonials: {
       ...heading("testimonials"),
       items: parseRows(formData, "testimonials", ["quote", "name", "role"], 800),
@@ -211,6 +213,17 @@ export async function saveHome(_prev: ContentState, formData: FormData): Promise
   };
 
   if (!value.about.heading || !value.academics.heading) return { error: "Section headings cannot be empty." };
+  if (value.quickLinks.length > MAX_QUICK_LINKS) {
+    return { error: `The banner has room for ${MAX_QUICK_LINKS} quick links. Remove one before saving.` };
+  }
+  if (value.quickLinks.some((q) => !q.label || !q.href)) return { error: "Every quick link needs a title and an address." };
+  const badLink = value.quickLinks.find((q) => !isAllowedHref(q.href));
+  if (badLink) {
+    return {
+      error: `The address for “${badLink.label}” is not one the site can link to. Use a page such as /notices, or a full address starting with https://.`,
+    };
+  }
+  if (value.campus.tiles.some((t) => !t.label)) return { error: "Every campus tile needs a label." };
   if (value.stats.some((s) => !s.value || !s.label)) return { error: "Every statistic needs a number and a label." };
   if (value.testimonials.items.some((t) => !t.quote || !t.name)) {
     return { error: "Every testimonial needs a quote and a name." };

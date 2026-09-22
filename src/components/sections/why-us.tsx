@@ -8,6 +8,8 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { getHomeContent } from "@/lib/page-content";
+import { SectionIntro } from "@/components/section-intro";
+import { RevealGroup, RevealItem } from "@/components/motion";
 
 const iconMap: Record<string, LucideIcon> = {
   flask: FlaskConical,
@@ -18,43 +20,33 @@ const iconMap: Record<string, LucideIcon> = {
   bus: Bus,
 };
 
+/** Icons take the school colours in turn, in the order of the stripe. */
+const iconColours = ["text-vermilion", "text-gold-ink", "text-leaf", "text-sky"];
+
 export async function WhyUs() {
   const { whyUs } = await getHomeContent();
 
   return (
-    <section className="py-20 lg:py-28">
-      <div className="container-edge">
-        <div className="flex flex-col items-end justify-between gap-6 md:flex-row">
-          <div className="max-w-2xl">
-            <span className="eyebrow">{whyUs.eyebrow}</span>
-            <h2 className="mt-4 text-balance font-heading text-3xl font-semibold text-brand sm:text-4xl">
-              {whyUs.heading}
-            </h2>
+    <section className="bg-mist py-20 lg:py-28">
+      <div className="container-edge grid gap-12 lg:grid-cols-12 lg:gap-16">
+        <div className="lg:col-span-4">
+          <div className="lg:sticky lg:top-36">
+            <SectionIntro kicker={whyUs.eyebrow} heading={whyUs.heading} blurb={whyUs.blurb} />
           </div>
-          {whyUs.blurb ? (
-            <p className="max-w-sm text-pretty text-sm leading-relaxed text-muted-foreground md:text-right">
-              {whyUs.blurb}
-            </p>
-          ) : null}
         </div>
 
-        <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {whyUs.features.map((f) => {
+        <RevealGroup as="ul" className="grid gap-x-10 gap-y-10 sm:grid-cols-2 lg:col-span-8">
+          {whyUs.features.map((f, i) => {
             const Icon = iconMap[f.icon] ?? FlaskConical;
             return (
-              <div
-                key={f.title}
-                className="group rounded-2xl border bg-card p-7 transition-all hover:-translate-y-1 hover:border-brand/20 hover:shadow-xl hover:shadow-brand/5"
-              >
-                <span className="grid size-12 place-items-center rounded-xl bg-accent text-brand transition-colors group-hover:bg-brand group-hover:text-brand-foreground">
-                  <Icon className="size-6" />
-                </span>
-                <h3 className="mt-5 font-heading text-lg font-semibold text-brand">{f.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.text}</p>
-              </div>
+              <RevealItem as="li" key={f.title} className="border-t border-brand/15 pt-6">
+                <Icon className={`size-8 ${iconColours[i % iconColours.length]}`} strokeWidth={1.6} />
+                <h3 className="mt-4 font-heading text-xl font-semibold text-brand">{f.title}</h3>
+                <p className="mt-2 text-pretty text-[17px] leading-relaxed text-foreground/80">{f.text}</p>
+              </RevealItem>
             );
           })}
-        </div>
+        </RevealGroup>
       </div>
     </section>
   );

@@ -13,6 +13,7 @@ import {
   type SchoolInfo,
   type Timings,
 } from "@/lib/settings-types";
+import { defaultExamPattern, type ExamPattern } from "@/lib/exam-pattern-types";
 
 /** Reads one JSON settings row, merged over the supplied defaults. */
 export async function getSetting<T extends object>(key: string, defaults: T): Promise<T> {
@@ -39,6 +40,9 @@ export async function saveSetting<T extends object>(key: string, value: T) {
 export const getSchoolInfo = cache(() => getSetting<SchoolInfo>(SETTING_KEYS.schoolInfo, defaultSchoolInfo));
 
 export const getTimings = cache(() => getSetting<Timings>(SETTING_KEYS.timings, defaultTimings));
+
+/** The examination pattern for every group of classes. */
+export const getExamPattern = cache(() => getSetting<ExamPattern>(SETTING_KEYS.examPattern, defaultExamPattern));
 
 export const getAdmissionsContent = cache(() =>
   getSetting<AdmissionsContent>(SETTING_KEYS.admissions, defaultAdmissions),

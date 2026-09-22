@@ -41,6 +41,7 @@ export const SETTING_KEYS = {
   schoolInfo: "school_info",
   timings: "timings",
   admissions: "admissions",
+  examPattern: "exam_pattern",
 } as const;
 
 /** Defaults come from the content the site shipped with, so nothing is blank before staff edit it. */
