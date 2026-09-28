@@ -2,9 +2,18 @@
 
 import { useActionState, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
-import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, ChevronDown, Plus, Save, Trash2 } from "lucide-react";
-import { FormError } from "@/components/admin/form-message";
-import { Flash } from "@/components/admin/flash";
+import {
+  AlertCircle,
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUp,
+  CheckCircle2,
+  ChevronDown,
+  Plus,
+  Save,
+  Trash2,
+} from "lucide-react";
 import { RichTextEditor } from "@/components/admin/rich-text-editor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -109,7 +118,11 @@ function rowSummary(row: ExamRow): string {
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" disabled={pending} className="h-10 bg-brand px-5 font-semibold text-brand-foreground hover:bg-brand-muted">
+    <Button
+      type="submit"
+      disabled={pending}
+      className="h-10 bg-gold px-5 font-semibold text-gold-foreground shadow-sm hover:bg-gold/90"
+    >
       <Save className="size-4" />
       {pending ? "Saving…" : "Save & publish"}
     </Button>
@@ -173,16 +186,29 @@ export function ExamPatternForm({ initial }: { initial: ExamPattern }) {
       {/*
         The form runs to several screens, so the save button follows it down the
         page rather than sitting at the very bottom. It stops below the panel's
-        own top bar, which is 4rem tall.
+        own top bar, which is 4rem tall. The bar is deliberately the brand navy:
+        the cards it slides over are white, and a white bar read as part of them.
       */}
-      <div className="sticky top-16 z-30 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border bg-background/90 px-4 py-3 shadow-sm backdrop-blur-md sm:px-5">
+      <div className="sticky top-16 z-30 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border-l-4 border-gold bg-brand px-4 py-3 shadow-lg shadow-brand/25 ring-1 ring-brand/20 sm:px-5">
         <SubmitButton />
         {state.error ? (
-          <FormError message={state.error} />
+          <p
+            role="alert"
+            className="flex items-center gap-2 rounded-lg bg-background px-3 py-1.5 text-sm font-medium text-destructive"
+          >
+            <AlertCircle className="size-4 shrink-0" />
+            {state.error}
+          </p>
         ) : state.success ? (
-          <Flash text={state.success} />
+          <p
+            role="status"
+            className="flex items-center gap-2 rounded-lg bg-[oklch(0.95_0.05_150)] px-3 py-1.5 text-sm font-medium text-[oklch(0.33_0.1_150)]"
+          >
+            <CheckCircle2 className="size-4 shrink-0" />
+            {state.success}
+          </p>
         ) : (
-          <p className="text-xs text-muted-foreground">Changes appear on the website as soon as you save.</p>
+          <p className="text-xs text-brand-foreground/75">Changes appear on the website as soon as you save.</p>
         )}
       </div>
 
