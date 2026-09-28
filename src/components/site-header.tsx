@@ -68,13 +68,18 @@ export function SiteHeader({
       {/* Main nav */}
       <div className={cn("bg-background transition-shadow duration-300", scrolled && "shadow-md shadow-brand/8")}>
         <nav className="container-edge flex h-20 items-center justify-between gap-4">
-          <Link href="/" className="flex shrink-0 items-center gap-3">
-            <Crest className="h-14 w-14 shrink-0" />
-            <span className="flex flex-col leading-none">
-              <span className="font-heading text-base font-semibold tracking-tight text-brand sm:text-lg">
+          {/*
+            The name has to give way on a very narrow phone: kept at its natural
+            width the crest and the two buttons no longer fitted across 320px
+            and the buttons were pushed off the screen.
+          */}
+          <Link href="/" className="flex min-w-0 items-center gap-2.5 sm:gap-3">
+            <Crest className="h-11 w-11 shrink-0 sm:h-14 sm:w-14" />
+            <span className="flex min-w-0 flex-col leading-none">
+              <span className="truncate font-heading text-[15px] font-semibold tracking-tight text-brand sm:text-lg">
                 {identity.shortName}
               </span>
-              <span className="mt-1.5 text-[13px] text-muted-foreground">
+              <span className="mt-1.5 truncate text-[11px] text-muted-foreground sm:text-[13px]">
                 Higher Secondary School, since {identity.established}
               </span>
             </span>

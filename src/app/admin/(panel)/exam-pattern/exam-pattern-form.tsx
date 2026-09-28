@@ -131,7 +131,7 @@ function SubmitButton() {
 
 function Card({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-2xl border bg-card p-5 sm:p-6">
+    <section className="rounded-2xl border bg-card p-4 sm:p-6">
       <h3 className="font-heading text-base font-semibold text-brand">{title}</h3>
       {description ? <p className="mt-1 text-xs text-muted-foreground">{description}</p> : null}
       <div className="mt-4 grid gap-4">{children}</div>
@@ -180,7 +180,7 @@ export function ExamPatternForm({ initial }: { initial: ExamPattern }) {
   const json = JSON.stringify(groups.map((g) => ({ ...g.value, rows: g.value.rows.map((r) => r.value) })));
 
   return (
-    <form action={action} className="grid gap-6">
+    <form action={action} className="grid grid-cols-[minmax(0,1fr)] gap-6">
       <input type="hidden" name="groups" value={json} />
 
       {/*
@@ -189,7 +189,7 @@ export function ExamPatternForm({ initial }: { initial: ExamPattern }) {
         own top bar, which is 4rem tall. The bar is deliberately the brand navy:
         the cards it slides over are white, and a white bar read as part of them.
       */}
-      <div className="sticky top-16 z-30 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border-l-4 border-gold bg-brand px-4 py-3 shadow-lg shadow-brand/25 ring-1 ring-brand/20 sm:px-5">
+      <div className="sticky top-16 z-30 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border-l-4 border-gold bg-brand px-3 py-3 shadow-lg shadow-brand/25 ring-1 ring-brand/20 sm:px-5">
         <SubmitButton />
         {state.error ? (
           <p
@@ -264,7 +264,7 @@ export function ExamPatternForm({ initial }: { initial: ExamPattern }) {
         </div>
 
         {current ? (
-          <div className="grid gap-5 rounded-xl border bg-background/60 p-4 sm:p-5">
+          <div className="grid gap-5 rounded-xl border bg-background/60 p-3 sm:p-5">
             <div className="flex items-center gap-3">
               <Disclosure
                 open={isOpen(current.key)}
@@ -349,7 +349,7 @@ export function ExamPatternForm({ initial }: { initial: ExamPattern }) {
             {/* Examinations */}
             <div className="grid gap-4">
               {current.value.rows.map((r, i) => (
-                <div key={r.key} className="rounded-xl border bg-card p-4">
+                <div key={r.key} className="rounded-xl border bg-card p-3 sm:p-4">
                   <div className="flex items-center gap-3">
                     <Disclosure
                       open={isOpen(r.key)}
