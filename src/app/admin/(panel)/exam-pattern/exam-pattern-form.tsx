@@ -170,6 +170,22 @@ export function ExamPatternForm({ initial }: { initial: ExamPattern }) {
     <form action={action} className="grid gap-6">
       <input type="hidden" name="groups" value={json} />
 
+      {/*
+        The form runs to several screens, so the save button follows it down the
+        page rather than sitting at the very bottom. It stops below the panel's
+        own top bar, which is 4rem tall.
+      */}
+      <div className="sticky top-16 z-30 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border bg-background/90 px-4 py-3 shadow-sm backdrop-blur-md sm:px-5">
+        <SubmitButton />
+        {state.error ? (
+          <FormError message={state.error} />
+        ) : state.success ? (
+          <Flash text={state.success} />
+        ) : (
+          <p className="text-xs text-muted-foreground">Changes appear on the website as soon as you save.</p>
+        )}
+      </div>
+
       <Card title="Session and introduction" description="Shown above the tables on the Examination Pattern page.">
         <div className="grid gap-2 sm:max-w-xs">
           <Label htmlFor="session">Session</Label>
@@ -461,12 +477,6 @@ export function ExamPatternForm({ initial }: { initial: ExamPattern }) {
         ) : null}
       </Card>
 
-      <FormError message={state.error} />
-      {state.success ? <Flash text={state.success} /> : null}
-
-      <div>
-        <SubmitButton />
-      </div>
     </form>
   );
 }
