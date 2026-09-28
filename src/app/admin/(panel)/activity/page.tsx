@@ -170,8 +170,32 @@ export default async function ActivityPage({
         />
       ) : (
         <>
-          <div className="overflow-x-auto rounded-2xl border bg-card">
-            <table className="w-full min-w-[760px] text-sm">
+          {/* Below md each entry is a card; the table needs 760px, which no phone has. */}
+          <ul className="grid gap-3 md:hidden">
+            {entries.map((e) => (
+              <li key={e.id} className="rounded-2xl border bg-card p-4">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span
+                    className={cn(
+                      "inline-flex shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold",
+                      actionStyles[e.action] ?? "bg-secondary text-secondary-foreground",
+                    )}
+                  >
+                    {e.action}
+                  </span>
+                  <span className="text-xs text-muted-foreground">{e.section}</span>
+                </div>
+                <p className="mt-2 text-sm">{e.summary}</p>
+                <p className="mt-1.5 text-xs text-muted-foreground">
+                  <span className="font-medium text-foreground">{e.userName}</span> · {formatDateTime(e.at)}
+                </p>
+                {e.details ? <Changes json={e.details} /> : null}
+              </li>
+            ))}
+          </ul>
+
+          <div className="hidden overflow-x-auto rounded-2xl border bg-card md:block">
+            <table className="w-full min-w-[660px] text-sm">
               <thead className="bg-muted/60 text-left text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
                 <tr>
                   <th className="w-48 px-4 py-3">When</th>

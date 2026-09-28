@@ -46,8 +46,55 @@ export default async function StaffUsersPage({ searchParams }: { searchParams: P
       <Flash text={saved ? messages[saved] : undefined} />
       <FormError message={error ? errors[error] : undefined} />
 
-      <div className="overflow-x-auto rounded-2xl border bg-card">
-        <table className="w-full min-w-[680px] text-sm">
+      {/* Below md the accounts are cards; the table needs 680px and a phone has not got it. */}
+      <ul className="grid gap-3 md:hidden">
+        {list.map((u) => (
+          <li key={u.id} className="rounded-2xl border bg-card p-4">
+            <div className="flex items-start gap-2">
+              <span className="grid size-8 shrink-0 place-items-center rounded-full bg-accent text-brand">
+                <UsersRound className="size-4" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="flex flex-wrap items-center gap-2 font-medium">
+                  {u.displayName}
+                  {u.id === me.id ? (
+                    <span className="rounded-full bg-gold-soft px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-gold-foreground">
+                      You
+                    </span>
+                  ) : null}
+                </p>
+                <p className="text-sm text-muted-foreground">@{u.username}</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Last signed in: {u.lastLoginAt ? formatDateTime(u.lastLoginAt) : "Never"}
+                </p>
+              </div>
+            </div>
+            <div className="mt-3 flex items-center justify-end gap-0.5 border-t pt-3">
+              <Button asChild size="icon-sm" variant="ghost" aria-label={`Edit ${u.displayName}`}>
+                <Link href={`/admin/users/${u.id}`}>
+                  <Pencil className="size-4" />
+                </Link>
+              </Button>
+              <form action={deleteStaffUser}>
+                <input type="hidden" name="id" value={u.id} />
+                <ConfirmButton
+                  size="icon-sm"
+                  variant="ghost"
+                  disabled={u.id === me.id || list.length <= 1}
+                  className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                  aria-label={`Remove ${u.displayName}`}
+                  message={`Remove the account for ${u.displayName} (@${u.username})?\n\nThey will no longer be able to sign in.`}
+                >
+                  <Trash2 className="size-4" />
+                </ConfirmButton>
+              </form>
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      <div className="hidden overflow-x-auto rounded-2xl border bg-card md:block">
+        <table className="w-full min-w-[620px] text-sm">
           <thead className="bg-muted/60 text-left text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
             <tr>
               <th className="px-4 py-3">Name</th>

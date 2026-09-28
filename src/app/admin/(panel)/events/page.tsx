@@ -59,7 +59,74 @@ export default async function EventsAdminPage({ searchParams }: { searchParams: 
           }
         />
       ) : (
-        <div className="overflow-x-auto rounded-2xl border bg-card">
+        <>
+        {/* Below md the same events are shown as cards; a squeezed table is unusable on a phone. */}
+        <ul className="grid gap-3 md:hidden">
+          {list.map((e) => {
+            const past = e.date < today;
+            return (
+              <li key={e.id} className={cn("rounded-2xl border bg-card p-4", past && "text-muted-foreground")}>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-xs tabular-nums text-muted-foreground">{formatDate(e.date, "long")}</p>
+                    <p className={cn("mt-1 font-medium", !past && "text-foreground")}>{e.title}</p>
+                    <p className="mt-0.5 text-sm text-muted-foreground">{e.venue}</p>
+                    {e.description ? (
+                      <span className="mt-1 flex items-start gap-1 text-xs text-muted-foreground">
+                        <FileText className="mt-0.5 size-3 shrink-0" />
+                        {richTextToPlain(e.description, 90)}
+                      </span>
+                    ) : null}
+                  </div>
+                  {past ? (
+                    <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[11px] font-semibold text-muted-foreground">
+                      Past
+                    </span>
+                  ) : null}
+                </div>
+
+                <div className="mt-3 flex flex-wrap items-center gap-1.5 border-t pt-3">
+                  <form action={toggleEventActive}>
+                    <input type="hidden" name="id" value={e.id} />
+                    <button
+                      type="submit"
+                      className={cn(
+                        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold transition-colors",
+                        e.active
+                          ? "bg-[oklch(0.92_0.05_150)] text-[oklch(0.35_0.1_150)]"
+                          : "bg-muted text-muted-foreground",
+                      )}
+                    >
+                      {e.active ? <Eye className="size-3.5" /> : <EyeOff className="size-3.5" />}
+                      {e.active ? "Active" : "Inactive"}
+                    </button>
+                  </form>
+                  <span className="ml-auto flex items-center gap-0.5">
+                    <Button asChild size="icon-sm" variant="ghost" aria-label={`Edit "${e.title}"`}>
+                      <Link href={`/admin/events/${e.id}`}>
+                        <Pencil className="size-4" />
+                      </Link>
+                    </Button>
+                    <form action={deleteEvent}>
+                      <input type="hidden" name="id" value={e.id} />
+                      <ConfirmButton
+                        size="icon-sm"
+                        variant="ghost"
+                        className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                        aria-label={`Delete "${e.title}"`}
+                        message={`Delete the event "${e.title}"?\n\nIt will be removed from the website immediately.`}
+                      >
+                        <Trash2 className="size-4" />
+                      </ConfirmButton>
+                    </form>
+                  </span>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+
+        <div className="hidden overflow-x-auto rounded-2xl border bg-card md:block">
           <table className="w-full min-w-[640px] text-sm">
             <thead className="bg-muted/60 text-left text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
               <tr>
@@ -136,6 +203,7 @@ export default async function EventsAdminPage({ searchParams }: { searchParams: 
             </tbody>
           </table>
         </div>
+        </>
       )}
     </div>
   );
