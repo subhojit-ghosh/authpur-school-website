@@ -2,7 +2,7 @@
 
 import { useActionState, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
-import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Plus, Save, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, ChevronDown, Plus, Save, Trash2 } from "lucide-react";
 import { FormError } from "@/components/admin/form-message";
 import { Flash } from "@/components/admin/flash";
 import { RichTextEditor } from "@/components/admin/rich-text-editor";
@@ -28,6 +28,10 @@ import { saveExamPattern, type SaveState } from "./actions";
  * cannot express, so the groups are held in state and posted as one JSON
  * field; the server checks everything again before saving. One group is shown
  * at a time, chosen from the tabs along the top.
+ *
+ * A filled-in examination is a tall block, so the group and every examination
+ * fold up. Everything starts open, which is how the form behaved before, and
+ * what is folded is remembered while the page stays open.
  */
 
 type Keyed<T> = { key: number; value: T };
@@ -64,6 +68,44 @@ const rowFields: { key: keyof ExamRow; label: string; placeholder: string; lines
   { key: "passMarks", label: "Pass marks", placeholder: "50\n40", lines: true },
 ];
 
+/** The little triangle that opens and closes a block. */
+function Disclosure({
+  open,
+  onClick,
+  controls,
+  label,
+  children,
+}: {
+  open: boolean;
+  onClick: () => void;
+  controls: string;
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-expanded={open}
+      aria-controls={controls}
+      aria-label={`${open ? "Collapse" : "Expand"} ${label}`}
+      className="flex min-w-0 flex-1 items-center gap-2 rounded-md py-1 text-left transition-colors hover:text-brand"
+    >
+      <ChevronDown
+        className={cn("size-4 shrink-0 text-muted-foreground transition-transform", !open && "-rotate-90")}
+      />
+      {children}
+    </button>
+  );
+}
+
+/** A short reminder of what an examination holds while it is folded up. */
+function rowSummary(row: ExamRow): string {
+  const firstLine = (value: string) => value.split("\n")[0]?.trim() ?? "";
+  const parts = [firstLine(row.marks), firstLine(row.when)].filter(Boolean);
+  return parts.join(" · ");
+}
+
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
@@ -89,6 +131,10 @@ export function ExamPatternForm({ initial }: { initial: ExamPattern }) {
   const [start] = useState(() => toState(initial.groups));
   const [groups, setGroups] = useState(start.groups);
   const [active, setActive] = useState(0);
+  /** Keys that are folded up. Anything not listed here is open. */
+  const [folded, setFolded] = useState<Record<number, boolean>>({});
+  const isOpen = (key: number) => !folded[key];
+  const toggle = (key: number) => setFolded((f) => ({ ...f, [key]: !f[key] }));
   const nextKey = useRef(start.next);
   const keyed = <T,>(value: T): Keyed<T> => ({ key: nextKey.current++, value });
   const blankGroup = (): GroupState => ({
@@ -177,26 +223,21 @@ export function ExamPatternForm({ initial }: { initial: ExamPattern }) {
 
         {current ? (
           <div className="grid gap-5 rounded-xl border bg-background/60 p-4 sm:p-5">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-              <div className="grid flex-1 gap-2">
-                <Label htmlFor={`g-title-${current.key}`}>Group title</Label>
-                <Input
-                  id={`g-title-${current.key}`}
-                  value={current.value.title}
-                  placeholder="e.g. Class I – V"
-                  onChange={(e) => setGroup(current.key, { title: e.target.value })}
-                />
-              </div>
-              <div className="grid flex-1 gap-2">
-                <Label htmlFor={`g-sub-${current.key}`}>Line under the title (optional)</Label>
-                <Input
-                  id={`g-sub-${current.key}`}
-                  value={current.value.subtitle}
-                  placeholder="e.g. Science, Commerce & Arts"
-                  onChange={(e) => setGroup(current.key, { subtitle: e.target.value })}
-                />
-              </div>
-              <div className="flex items-center gap-0.5">
+            <div className="flex items-center gap-3">
+              <Disclosure
+                open={isOpen(current.key)}
+                onClick={() => toggle(current.key)}
+                controls={`group-body-${current.key}`}
+                label={current.value.title || "this class group"}
+              >
+                <span className="truncate font-heading text-sm font-semibold text-brand">
+                  {current.value.title || "Untitled group"}
+                </span>
+                <span className="shrink-0 text-xs text-muted-foreground">
+                  {current.value.rows.length} examination{current.value.rows.length === 1 ? "" : "s"}
+                </span>
+              </Disclosure>
+              <div className="flex shrink-0 items-center gap-0.5">
                 <Button
                   type="button"
                   size="icon-sm"
@@ -241,23 +282,50 @@ export function ExamPatternForm({ initial }: { initial: ExamPattern }) {
               </div>
             </div>
 
+            <div id={`group-body-${current.key}`} className={cn("grid gap-5", !isOpen(current.key) && "hidden")}>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+              <div className="grid flex-1 gap-2">
+                <Label htmlFor={`g-title-${current.key}`}>Group title</Label>
+                <Input
+                  id={`g-title-${current.key}`}
+                  value={current.value.title}
+                  placeholder="e.g. Class I – V"
+                  onChange={(e) => setGroup(current.key, { title: e.target.value })}
+                />
+              </div>
+              <div className="grid flex-1 gap-2">
+                <Label htmlFor={`g-sub-${current.key}`}>Line under the title (optional)</Label>
+                <Input
+                  id={`g-sub-${current.key}`}
+                  value={current.value.subtitle}
+                  placeholder="e.g. Science, Commerce & Arts"
+                  onChange={(e) => setGroup(current.key, { subtitle: e.target.value })}
+                />
+              </div>
+            </div>
+
             {/* Examinations */}
             <div className="grid gap-4">
               {current.value.rows.map((r, i) => (
                 <div key={r.key} className="rounded-xl border bg-card p-4">
-                  <div className="flex items-end gap-3">
-                    <div className="grid flex-1 gap-2">
-                      <Label htmlFor={`r-name-${r.key}`}>
-                        Examination {i + 1}
-                      </Label>
-                      <Input
-                        id={`r-name-${r.key}`}
-                        value={r.value.name}
-                        placeholder="e.g. Half Yearly Examination"
-                        onChange={(e) => setRow(current.key, r.key, { name: e.target.value })}
-                      />
-                    </div>
-                    <div className="flex items-center gap-0.5">
+                  <div className="flex items-center gap-3">
+                    <Disclosure
+                      open={isOpen(r.key)}
+                      onClick={() => toggle(r.key)}
+                      controls={`row-body-${r.key}`}
+                      label={`examination ${i + 1}`}
+                    >
+                      <span className="shrink-0 text-xs font-medium text-muted-foreground">Examination {i + 1}</span>
+                      {isOpen(r.key) ? null : (
+                        <span className="min-w-0 flex-1 truncate text-sm">
+                          <span className="font-medium text-foreground">{r.value.name || "Untitled"}</span>
+                          {rowSummary(r.value) ? (
+                            <span className="text-muted-foreground"> — {rowSummary(r.value)}</span>
+                          ) : null}
+                        </span>
+                      )}
+                    </Disclosure>
+                    <div className="flex shrink-0 items-center gap-0.5">
                       <Button
                         type="button"
                         size="icon-sm"
@@ -291,6 +359,17 @@ export function ExamPatternForm({ initial }: { initial: ExamPattern }) {
                     </div>
                   </div>
 
+                  <div id={`row-body-${r.key}`} className={cn(!isOpen(r.key) && "hidden")}>
+                  <div className="mt-3 grid gap-2">
+                    <Label htmlFor={`r-name-${r.key}`}>Name of the examination</Label>
+                    <Input
+                      id={`r-name-${r.key}`}
+                      value={r.value.name}
+                      placeholder="e.g. Half Yearly Examination"
+                      onChange={(e) => setRow(current.key, r.key, { name: e.target.value })}
+                    />
+                  </div>
+
                   <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                     {rowFields.map((f) => (
                       <div key={f.key} className={cn("grid content-start gap-1.5", f.key === "classes" && "sm:col-span-2 lg:col-span-3")}>
@@ -315,20 +394,41 @@ export function ExamPatternForm({ initial }: { initial: ExamPattern }) {
                       </div>
                     ))}
                   </div>
+                  </div>
                 </div>
               ))}
 
-              <div>
+              <div className="flex flex-wrap items-center gap-2">
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
                   disabled={current.value.rows.length >= MAX_EXAM_ROWS}
-                  onClick={() => setGroup(current.key, { rows: [...current.value.rows, keyed(blankExamRow())] })}
+                  onClick={() => {
+                    const row = keyed(blankExamRow());
+                    setGroup(current.key, { rows: [...current.value.rows, row] });
+                    setFolded((f) => ({ ...f, [row.key]: false }));
+                  }}
                 >
                   <Plus className="size-3.5" />
                   Add examination
                 </Button>
+                {current.value.rows.length > 1 ? (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      const anyOpen = current.value.rows.some((row) => isOpen(row.key));
+                      setFolded((f) => ({
+                        ...f,
+                        ...Object.fromEntries(current.value.rows.map((row) => [row.key, anyOpen])),
+                      }));
+                    }}
+                  >
+                    {current.value.rows.some((row) => isOpen(row.key)) ? "Collapse all" : "Expand all"}
+                  </Button>
+                ) : null}
               </div>
             </div>
 
@@ -355,6 +455,7 @@ export function ExamPatternForm({ initial }: { initial: ExamPattern }) {
                 />
                 <p className="text-xs text-muted-foreground">One per line.</p>
               </div>
+            </div>
             </div>
           </div>
         ) : null}
