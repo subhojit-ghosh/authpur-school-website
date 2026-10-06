@@ -13,10 +13,11 @@ import {
 } from "lucide-react";
 import { FacebookIcon, WhatsAppIcon, YouTubeIcon } from "@/components/brand-icons";
 import { cn } from "@/lib/utils";
+import { PhoneLinks } from "@/components/phone-links";
 import { RichText } from "@/components/rich-text";
 import { Crest } from "@/components/crest";
 import { defaultIdentity, type Identity } from "@/lib/page-content-types";
-import { defaultSchoolInfo, telHref, type SchoolInfo } from "@/lib/settings-types";
+import { defaultSchoolInfo, type SchoolInfo } from "@/lib/settings-types";
 
 /** Icon names offered in the admin panel, mapped to the icons themselves. */
 const socialIcons: Record<string, (props: { className?: string }) => React.ReactNode> = {
@@ -127,9 +128,7 @@ export function SiteFooter({
             </li>
             <li className="flex gap-3">
               <Phone className="mt-0.5 size-4 shrink-0 text-gold" />
-              <a href={telHref(info.phone)} className="hover:text-gold">
-                {info.phone}
-              </a>
+              <PhoneLinks value={info.phone} linkClassName="hover:text-gold" />
             </li>
             <li className="flex gap-3">
               <Mail className="mt-0.5 size-4 shrink-0 text-gold" />

@@ -14,6 +14,7 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import { defaultIdentity, defaultNavigation, type Identity, type Navigation } from "@/lib/page-content-types";
+import { PhoneLinks } from "@/components/phone-links";
 import { defaultSchoolInfo, telHref, type SchoolInfo } from "@/lib/settings-types";
 import { cn } from "@/lib/utils";
 
@@ -54,14 +55,17 @@ export function SiteHeader({
               {info.address.line1}, {info.address.line2}, {info.address.pin}
             </span>
           </p>
-          <a
-            href={telHref(info.phone)}
-            className="flex shrink-0 items-center gap-1.5 font-semibold transition-colors hover:text-gold"
-          >
+          <span className="flex shrink-0 items-center gap-1.5 font-semibold">
             <Phone className="size-3.5" />
-            <span className="hidden sm:inline">{info.phone}</span>
-            <span className="sm:hidden">Call</span>
-          </a>
+            <PhoneLinks
+              value={info.phone}
+              className="hidden sm:inline"
+              linkClassName="transition-colors hover:text-gold"
+            />
+            <a href={telHref(info.phone)} className="transition-colors hover:text-gold sm:hidden">
+              Call
+            </a>
+          </span>
         </div>
       </div>
 

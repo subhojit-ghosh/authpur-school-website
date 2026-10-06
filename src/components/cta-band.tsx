@@ -2,7 +2,7 @@ import Link from "next/link";
 import { GraduationCap, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/motion";
-import { telHref } from "@/lib/settings-types";
+import { phoneEntries } from "@/lib/settings-types";
 
 /**
  * The navy closing band on inner pages: a line of encouragement, the enquiry
@@ -36,17 +36,21 @@ export function CtaBand({
               Start an enquiry
             </Link>
           </Button>
-          <Button
-            asChild
-            size="lg"
-            variant="outline"
-            className="h-12 rounded-md border-2 border-white/60 bg-transparent px-7 text-base font-semibold text-white hover:bg-white hover:text-brand [&_svg:not([class*='size-'])]:size-[18px]"
-          >
-            <a href={telHref(phone)}>
-              <Phone />
-              Call {phone}
-            </a>
-          </Button>
+          {/* One button per number, so a visitor rings the line they picked. */}
+          {phoneEntries(phone).map((number) => (
+            <Button
+              key={number.display}
+              asChild
+              size="lg"
+              variant="outline"
+              className="h-12 rounded-md border-2 border-white/60 bg-transparent px-7 text-base font-semibold text-white hover:bg-white hover:text-brand [&_svg:not([class*='size-'])]:size-[18px]"
+            >
+              <a href={`tel:${number.dial}`}>
+                <Phone />
+                Call {number.display}
+              </a>
+            </Button>
+          ))}
         </div>
       </Reveal>
     </section>

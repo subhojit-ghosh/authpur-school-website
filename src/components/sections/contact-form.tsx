@@ -5,7 +5,8 @@ import { useFormStatus } from "react-dom";
 import { AlertCircle, CheckCircle2, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { submitEnquiry, type EnquiryState } from "@/lib/actions/enquiry";
-import { defaultSchoolInfo, telHref } from "@/lib/settings-types";
+import { PhoneLinks } from "@/components/phone-links";
+import { defaultSchoolInfo } from "@/lib/settings-types";
 import { cn } from "@/lib/utils";
 
 const fieldClass =
@@ -42,9 +43,7 @@ export function ContactForm({ admissionsPhone = defaultSchoolInfo.admissionsPhon
         <h3 className="mt-3 font-heading text-lg font-semibold text-brand">Thank you — we have received your enquiry.</h3>
         <p className="mt-2 text-sm text-muted-foreground">
           A member of our admissions team will contact you shortly. For anything urgent, call{" "}
-          <a href={telHref(admissionsPhone)} className="font-medium text-brand hover:underline">
-            {admissionsPhone}
-          </a>
+          <PhoneLinks value={admissionsPhone} linkClassName="font-medium text-brand hover:underline" />
           .
         </p>
       </div>
@@ -140,9 +139,7 @@ export function ContactForm({ admissionsPhone = defaultSchoolInfo.admissionsPhon
       <SubmitButton />
       <p className="text-sm text-muted-foreground">
         Your enquiry goes directly to the school office. You can also call us on{" "}
-        <a href={telHref(admissionsPhone)} className="font-medium text-brand hover:underline">
-          {admissionsPhone}
-        </a>
+        <PhoneLinks value={admissionsPhone} linkClassName="font-medium text-brand hover:underline" />
         .
       </p>
     </form>

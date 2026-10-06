@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { getSchoolInfo } from "@/lib/settings";
 import { getHomeContent } from "@/lib/page-content";
-import { telHref } from "@/lib/settings-types";
+import { phoneEntries } from "@/lib/settings-types";
 import type { HeroImage } from "@/components/sections/hero-carousel";
 import { Parallax, Reveal, RevealGroup, RevealItem } from "@/components/motion";
 
@@ -54,17 +54,21 @@ export async function Admissions({ photo }: { photo?: HeroImage }) {
               Start an enquiry
             </Link>
           </Button>
-          <Button
-            size="lg"
-            variant="outline"
-            className="h-12 rounded-md border-2 border-white/60 bg-transparent px-7 text-base font-semibold text-white hover:bg-white hover:text-brand [&_svg:not([class*='size-'])]:size-[18px]"
-            asChild
-          >
-            <a href={telHref(info.admissionsPhone)}>
-              <Phone />
-              Call {info.admissionsPhone}
-            </a>
-          </Button>
+          {/* One button per number, so a visitor rings the line they picked. */}
+          {phoneEntries(info.admissionsPhone).map((number) => (
+            <Button
+              key={number.display}
+              size="lg"
+              variant="outline"
+              className="h-12 rounded-md border-2 border-white/60 bg-transparent px-7 text-base font-semibold text-white hover:bg-white hover:text-brand [&_svg:not([class*='size-'])]:size-[18px]"
+              asChild
+            >
+              <a href={`tel:${number.dial}`}>
+                <Phone />
+                Call {number.display}
+              </a>
+            </Button>
+          ))}
         </Reveal>
       </div>
     </section>

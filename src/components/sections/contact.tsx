@@ -3,16 +3,17 @@ import { ContactForm } from "@/components/sections/contact-form";
 import { SectionIntro } from "@/components/section-intro";
 import { getSchoolInfo } from "@/lib/settings";
 import { getHomeContent, getIdentity } from "@/lib/page-content";
-import { fullAddress, mapQuery, telHref } from "@/lib/settings-types";
+import { PhoneLinks } from "@/components/phone-links";
+import { fullAddress, mapQuery } from "@/lib/settings-types";
 import { Reveal } from "@/components/motion";
 
 export async function Contact() {
   const [info, home, id] = await Promise.all([getSchoolInfo(), getHomeContent(), getIdentity()]);
   const copy = home.contact;
 
-  const details = [
+  const details: { icon: typeof Phone; label: string; value: string; href?: string; phones?: boolean }[] = [
     { icon: MapPin, label: "Address", value: fullAddress(info) },
-    { icon: Phone, label: "Phone", value: info.phone, href: telHref(info.phone) },
+    { icon: Phone, label: "Phone", value: info.phone, phones: true },
     { icon: Mail, label: "Email", value: info.email, href: `mailto:${info.email}` },
     { icon: Clock, label: "Office hours", value: info.officeHours },
   ];
@@ -33,7 +34,12 @@ export async function Contact() {
                 <div>
                   <dt className="text-[15px] text-muted-foreground">{d.label}</dt>
                   <dd className="text-lg font-medium text-foreground">
-                    {d.href ? (
+                    {d.phones ? (
+                      <PhoneLinks
+                        value={d.value}
+                        linkClassName="break-words hover:text-brand hover:underline hover:underline-offset-4"
+                      />
+                    ) : d.href ? (
                       <a href={d.href} className="break-words hover:text-brand hover:underline hover:underline-offset-4">
                         {d.value}
                       </a>

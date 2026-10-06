@@ -5,7 +5,7 @@ import { PageBanner } from "@/components/page-banner";
 import { getPageBanners } from "@/lib/page-content";
 import { ContactForm } from "@/components/sections/contact-form";
 import { getSchoolInfo } from "@/lib/settings";
-import { telHref } from "@/lib/settings-types";
+import { PhoneLinks } from "@/components/phone-links";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/admission-enquiry" },
@@ -24,8 +24,8 @@ const reasons = [
 export default async function AdmissionEnquiryPage() {
   const [info, banners] = await Promise.all([getSchoolInfo(), getPageBanners()]);
   const banner = banners.admissionEnquiry;
-  const details = [
-    { icon: Phone, label: "Admissions helpline", value: info.admissionsPhone, href: telHref(info.admissionsPhone) },
+  const details: { icon: typeof Phone; label: string; value: string; href?: string; phones?: boolean }[] = [
+    { icon: Phone, label: "Admissions helpline", value: info.admissionsPhone, phones: true },
     { icon: Mail, label: "Email", value: info.email, href: `mailto:${info.email}` },
     { icon: MapPin, label: "Address", value: `${info.address.line1}, ${info.address.line2} – ${info.address.pin}` },
     { icon: Clock, label: "Office hours", value: info.officeHours },
@@ -60,7 +60,12 @@ export default async function AdmissionEnquiryPage() {
                   <div>
                     <dt className="text-[15px] text-muted-foreground">{d.label}</dt>
                     <dd className="text-lg font-medium text-foreground">
-                      {d.href ? (
+                      {d.phones ? (
+                        <PhoneLinks
+                          value={d.value}
+                          linkClassName="break-words hover:text-brand hover:underline hover:underline-offset-4"
+                        />
+                      ) : d.href ? (
                         <a href={d.href} className="break-words hover:text-brand hover:underline hover:underline-offset-4">
                           {d.value}
                         </a>

@@ -88,10 +88,33 @@ export function phoneParts(phone: string): string[] {
     .filter(Boolean);
 }
 
+/**
+ * Each number with the digits a phone should actually dial.
+ *
+ * A school writes its lines the way they appear on a letterhead, sharing the
+ * area code: "033 2581 4044 / 2580 1092". Dialling the second as written fails
+ * from a mobile. How many digits are missing is simply the difference in
+ * length, so those are taken from the front of the first number. A number that
+ * already carries its own code, starting with 0 or +, and a pair of equal
+ * length such as two mobiles, are left exactly as written.
+ */
+export function phoneEntries(phone: string): { display: string; dial: string }[] {
+  const parts = phoneParts(phone);
+  const digitsOf = (value: string) => value.replace(/[^\d+]/g, "");
+  const first = digitsOf(parts[0] ?? "");
+
+  return parts.map((part, index) => {
+    const digits = digitsOf(part);
+    const missing = first.length - digits.length;
+    const bare = !digits.startsWith("+") && !digits.startsWith("0");
+    const shareCode = index > 0 && missing > 0 && digits.length >= 6 && bare;
+    return { display: part, dial: shareCode ? first.slice(0, missing) + digits : digits };
+  });
+}
+
 /** A phone can ring only one number, so a tap-to-call link uses the first. */
 export function telHref(phone: string) {
-  const first = phoneParts(phone)[0] ?? phone;
-  return `tel:${first.replace(/[^\d+]/g, "")}`;
+  return `tel:${phoneEntries(phone)[0]?.dial ?? phone.replace(/[^\d+]/g, "")}`;
 }
 
 export function fullAddress(info: SchoolInfo) {
