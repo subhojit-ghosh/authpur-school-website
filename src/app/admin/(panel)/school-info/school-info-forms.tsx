@@ -1,8 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
-import { Building2, Clock, Save } from "lucide-react";
+import { Building2, Clock, Plus, Save, Trash2 } from "lucide-react";
 import { FieldError, FormError } from "@/components/admin/form-message";
 import { Flash } from "@/components/admin/flash";
 import { RichTextEditor } from "@/components/admin/rich-text-editor";
@@ -10,7 +10,7 @@ import { RowsEditor } from "@/components/admin/rows-editor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import type { SchoolInfo, Timings } from "@/lib/settings-types";
+import { phoneParts, type SchoolInfo, type Timings } from "@/lib/settings-types";
 import { saveSchoolInfo, saveTimings, type SaveState } from "./actions";
 
 function SubmitButton({ label }: { label: string }) {
@@ -39,6 +39,87 @@ function Field({
   );
 }
 
+/**
+ * One or more telephone numbers for a single field.
+ *
+ * A school usually publishes several lines, so numbers can be added and
+ * removed here. They are posted as one field joined with " / ", which is how
+ * the website shows them, and a tap-to-call link uses the first.
+ */
+function PhoneField({
+  id,
+  label,
+  defaultValue,
+  error,
+}: {
+  id: string;
+  label: string;
+  defaultValue: string;
+  error?: string;
+}) {
+  const [numbers, setNumbers] = useState<string[]>(() => {
+    const parts = phoneParts(defaultValue);
+    return parts.length ? parts : [""];
+  });
+
+  const update = (index: number, value: string) =>
+    setNumbers((list) => list.map((n, i) => (i === index ? value : n)));
+
+  return (
+    <div className="grid content-start gap-2">
+      <Label htmlFor={`${id}-0`}>{label}</Label>
+      <input type="hidden" name={id} value={numbers.map((n) => n.trim()).filter(Boolean).join(" / ")} />
+
+      <div className="grid gap-2">
+        {numbers.map((number, index) => (
+          <div key={index} className="flex items-center gap-1.5">
+            <Input
+              id={`${id}-${index}`}
+              value={number}
+              type="tel"
+              placeholder={index === 0 ? "033 2581 4044" : "Another number"}
+              aria-label={index === 0 ? label : `${label}, number ${index + 1}`}
+              aria-invalid={error ? true : undefined}
+              onChange={(e) => update(index, e.target.value)}
+            />
+            {index === numbers.length - 1 ? (
+              <Button
+                type="button"
+                size="icon-sm"
+                variant="outline"
+                aria-label={`Add another number to ${label}`}
+                title="Add another number"
+                onClick={() => setNumbers((list) => [...list, ""])}
+              >
+                <Plus className="size-4" />
+              </Button>
+            ) : null}
+            {numbers.length > 1 ? (
+              <Button
+                type="button"
+                size="icon-sm"
+                variant="ghost"
+                className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                aria-label={`Remove number ${index + 1} from ${label}`}
+                onClick={() => setNumbers((list) => list.filter((_, i) => i !== index))}
+              >
+                <Trash2 className="size-4" />
+              </Button>
+            ) : null}
+          </div>
+        ))}
+      </div>
+
+      <p className="text-xs text-muted-foreground">
+        {numbers.filter((n) => n.trim()).length > 1
+          ? "Shown on the website separated by a slash. Tapping it calls the first."
+          : "Press + to add another line."}
+      </p>
+      <FieldError message={error} />
+    </div>
+  );
+}
+
 export function SchoolInfoForm({ initial }: { initial: SchoolInfo }) {
   const [state, action] = useActionState<SaveState, FormData>(saveSchoolInfo, {});
   const fe = state.fieldErrors ?? {};
@@ -54,8 +135,8 @@ export function SchoolInfoForm({ initial }: { initial: SchoolInfo }) {
       </p>
 
       <div className="mt-5 grid gap-4 sm:grid-cols-2">
-        <Field id="phone" label="School office phone" defaultValue={initial.phone} error={fe.phone} type="tel" />
-        <Field id="admissionsPhone" label="Admissions helpline" defaultValue={initial.admissionsPhone} error={fe.admissionsPhone} type="tel" />
+        <PhoneField id="phone" label="School office phone" defaultValue={initial.phone} error={fe.phone} />
+        <PhoneField id="admissionsPhone" label="Admissions helpline" defaultValue={initial.admissionsPhone} error={fe.admissionsPhone} />
         <div className="sm:col-span-2">
           <Field id="email" label="Email address" defaultValue={initial.email} error={fe.email} type="email" />
         </div>

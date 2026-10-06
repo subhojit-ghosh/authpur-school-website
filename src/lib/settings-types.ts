@@ -74,8 +74,24 @@ export function isGalleryCategory(v: string): v is GalleryCategory {
   return (GALLERY_CATEGORIES as readonly string[]).includes(v);
 }
 
+/**
+ * The separate numbers inside one field.
+ *
+ * A school often publishes two or three lines. They are kept in one field,
+ * written as "033 2581 4044 / 2580 1092", and shown on the site exactly like
+ * that; this splits them apart where only one will do.
+ */
+export function phoneParts(phone: string): string[] {
+  return phone
+    .split(/\s*(?:\/|,| or )\s*/i)
+    .map((part) => part.trim())
+    .filter(Boolean);
+}
+
+/** A phone can ring only one number, so a tap-to-call link uses the first. */
 export function telHref(phone: string) {
-  return `tel:${phone.replace(/[^\d+]/g, "")}`;
+  const first = phoneParts(phone)[0] ?? phone;
+  return `tel:${first.replace(/[^\d+]/g, "")}`;
 }
 
 export function fullAddress(info: SchoolInfo) {
