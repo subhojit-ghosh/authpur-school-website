@@ -106,8 +106,11 @@ export function phoneEntries(phone: string): { display: string; dial: string }[]
   return parts.map((part, index) => {
     const digits = digitsOf(part);
     const missing = first.length - digits.length;
+    // Only a local subscriber number, six to eight digits, borrows the code.
+    // Ten digits is already a complete number and must be left alone.
     const bare = !digits.startsWith("+") && !digits.startsWith("0");
-    const shareCode = index > 0 && missing > 0 && digits.length >= 6 && bare;
+    const localLength = digits.length >= 6 && digits.length <= 8;
+    const shareCode = index > 0 && missing > 0 && localLength && bare;
     return { display: part, dial: shareCode ? first.slice(0, missing) + digits : digits };
   });
 }
