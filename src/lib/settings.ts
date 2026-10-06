@@ -28,6 +28,17 @@ export async function getSetting<T extends object>(key: string, defaults: T): Pr
   }
 }
 
+/** Reads one JSON settings row without defaults; null when the row is absent or unreadable. */
+export async function getSettingOrNull<T extends object>(key: string): Promise<T | null> {
+  const [row] = await db.select().from(siteSettings).where(eq(siteSettings.key, key)).limit(1);
+  if (!row) return null;
+  try {
+    return JSON.parse(row.value) as T;
+  } catch {
+    return null;
+  }
+}
+
 export async function saveSetting<T extends object>(key: string, value: T) {
   const updatedAt = new Date().toISOString();
   await db

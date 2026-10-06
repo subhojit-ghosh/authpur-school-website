@@ -164,8 +164,9 @@ export const mainNav: NavItem[] = [
     label: "About",
     children: [
       { label: "Our School", href: "/#about", desc: "Vision, mission & values" },
-      { label: "Chairman's Message", href: "/chairmans-message", desc: "From our governing body" },
-      { label: "Principal's Message", href: "/principals-message", desc: "A note from the head" },
+      { label: "Founder's Message", href: "/leadership/founder", desc: "How the school began" },
+      { label: "Secretary's Message", href: "/leadership/secretary", desc: "From our governing body" },
+      { label: "Principal's Message", href: "/leadership/principal", desc: "A note from the head" },
     ],
   },
   {
@@ -200,8 +201,9 @@ export const footerExplore = [
 ];
 
 export const footerNavigate = [
-  { label: "Chairman's Message", href: "/chairmans-message" },
-  { label: "Principal's Message", href: "/principals-message" },
+  { label: "Founder's Message", href: "/leadership/founder" },
+  { label: "Secretary's Message", href: "/leadership/secretary" },
+  { label: "Principal's Message", href: "/leadership/principal" },
   { label: "Programmes", href: "/#academics" },
   { label: "Campus Life", href: "/#campus" },
   { label: "Contact", href: "/#contact" },

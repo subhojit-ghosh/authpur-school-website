@@ -7,6 +7,8 @@ export const MAX_STORED_BYTES = 6 * 1024 * 1024;
 export const IMAGE_PRESETS = {
   banner: { maxWidth: 1920, thumbWidth: 480, quality: 0.82 },
   gallery: { maxWidth: 1600, thumbWidth: 640, quality: 0.82 },
+  /** A portrait on a leadership page: shown about 480px wide at most. */
+  portrait: { maxWidth: 900, thumbWidth: 360, quality: 0.85 },
 } as const;
 
 export type ImageKind = keyof typeof IMAGE_PRESETS;

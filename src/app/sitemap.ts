@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getAllEvents, getNotices } from "@/lib/content";
+import { getLeaders } from "@/lib/page-content";
 import { eventPath, noticePath } from "@/lib/permalinks";
 import { siteUrl } from "@/lib/site-url";
 
@@ -8,7 +9,7 @@ export const revalidate = 86400;
 
 /** Every public page, plus each published notice and event. */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [notices, events] = await Promise.all([getNotices(), getAllEvents()]);
+  const [notices, events, { people }] = await Promise.all([getNotices(), getAllEvents(), getLeaders()]);
 
   const pages: { path: string; priority: number; changeFrequency: "weekly" | "monthly" | "yearly" }[] = [
     { path: "/", priority: 1, changeFrequency: "weekly" },
@@ -19,12 +20,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/school-timings", priority: 0.6, changeFrequency: "yearly" },
     { path: "/labs", priority: 0.6, changeFrequency: "yearly" },
     { path: "/gallery", priority: 0.6, changeFrequency: "monthly" },
-    { path: "/chairmans-message", priority: 0.5, changeFrequency: "yearly" },
-    { path: "/principals-message", priority: 0.5, changeFrequency: "yearly" },
   ];
 
   return [
     ...pages.map((p) => ({ url: `${siteUrl}${p.path}`, changeFrequency: p.changeFrequency, priority: p.priority })),
+    ...people.map((p) => ({ url: `${siteUrl}/leadership/${p.slug}`, changeFrequency: "yearly" as const, priority: 0.5 })),
     ...notices.map((n) => ({ url: `${siteUrl}${noticePath(n)}`, lastModified: n.date, priority: 0.4 })),
     ...events
       .filter((e) => e.active)

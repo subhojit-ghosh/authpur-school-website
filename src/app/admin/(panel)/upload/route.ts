@@ -49,7 +49,9 @@ async function handleUpload(request: Request) {
   }
 
   const kind = String(form.get("kind") ?? "") as ImageKind;
-  if (kind !== "banner" && kind !== "gallery") return json({ error: "Unknown upload type." }, 400);
+  if (kind !== "banner" && kind !== "gallery" && kind !== "portrait") {
+    return json({ error: "Unknown upload type." }, 400);
+  }
 
   const file = form.get("file");
   const thumbFile = form.get("thumb");
@@ -86,6 +88,15 @@ async function handleUpload(request: Request) {
   } catch (err) {
     console.error("Storing the uploaded image failed", err);
     return json({ error: "The image could not be saved. Please try again in a moment." }, 500);
+  }
+
+  // A portrait belongs to whichever leader the form is editing, so it is simply
+  // stored and its address handed back; the leaders list records where it is.
+  if (kind === "portrait") {
+    await recordAudit("Website Text", "uploaded", `Uploaded the photograph “${text}”`, {
+      details: { width, height, originalName: file.name },
+    });
+    return json({ ok: true, url, thumbUrl });
   }
 
   if (kind === "banner") {

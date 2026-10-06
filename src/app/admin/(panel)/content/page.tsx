@@ -23,8 +23,8 @@ const areas = [
   {
     href: "/admin/content/leadership",
     icon: Quote,
-    title: "Chairman & Principal",
-    description: "Names, roles and the full message shown on each leadership page.",
+    title: "Leadership",
+    description: "The Founder, Secretary and Principal: name, role, photograph and the message on each page.",
   },
   {
     href: "/admin/content/banners",

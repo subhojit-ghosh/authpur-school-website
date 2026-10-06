@@ -27,6 +27,8 @@ export const CONTENT_KEYS = {
   pageBanners: "page_banners",
   labs: "labs_content",
   navigation: "navigation",
+  /** The leaders list. A new key: the old `leadership` row is left untouched. */
+  leaders: "leaders",
 } as const;
 
 /** Icon choices offered in the admin forms. Keys map to lucide icons at render time. */
@@ -313,6 +315,118 @@ export const defaultHome: HomeContent = {
 
 export type Person = { name: string; role: string; initials: string; photoTag: string; message: string };
 export type Leadership = { chairman: Person; principal: Person };
+
+// ---------------------------------------------------------------- leaders
+
+/**
+ * One person on a leadership page.
+ *
+ * `slug` is the last part of the address, so /leadership/principal. It is set
+ * when the person is added and then left alone, because changing it breaks any
+ * link already shared.
+ */
+export type Leader = {
+  slug: string;
+  name: string;
+  /** Shown under the name, e.g. "Founder". */
+  role: string;
+  /** The heading at the top of the page, e.g. "Founder's Message". */
+  pageTitle: string;
+  /** The line under that heading. */
+  pageIntro: string;
+  /** Stands in for the photograph when there is none. */
+  initials: string;
+  /** Address of the uploaded photograph; empty means show the initials. */
+  photoUrl: string;
+  message: string;
+};
+
+export type Leaders = { people: Leader[] };
+
+export const MAX_LEADERS = 8;
+
+export const defaultLeaders: Leaders = {
+  people: [
+    {
+      slug: "founder",
+      name: "",
+      role: "Founder",
+      pageTitle: "Founder's Message",
+      pageIntro: "A few words from the founder of our school.",
+      initials: "",
+      photoUrl: "",
+      message: "",
+    },
+    {
+      slug: "secretary",
+      name: "",
+      role: "Secretary",
+      pageTitle: "Secretary's Message",
+      pageIntro: "A message from the Secretary of our Governing Body.",
+      initials: "",
+      photoUrl: "",
+      message: "",
+    },
+    {
+      slug: "principal",
+      name: principal.name,
+      role: principal.role,
+      pageTitle: "Principal's Message",
+      pageIntro: "A warm welcome from our Principal, on the values and everyday care that shape life at our school.",
+      initials: principal.initials,
+      photoUrl: "",
+      message: principal.message.join("\n\n"),
+    },
+  ],
+};
+
+/** A slug made from a person's role, used when a new person is added. */
+export function leaderSlug(value: string): string {
+  return value
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 40);
+}
+
+/**
+ * Carries the two people from the older shape into the list.
+ *
+ * The site used to hold exactly a chairman and a principal. Their wording is
+ * kept rather than thrown away: each becomes an entry in the list, after the
+ * empty Founder and Secretary slots the school asked for.
+ */
+export function leadersFromLegacy(old: Leadership | undefined): Leaders {
+  if (!old?.principal?.name && !old?.chairman?.name) return defaultLeaders;
+
+  const carried: Leader[] = [];
+  const add = (person: Person | undefined, slug: string) => {
+    if (!person?.name) return;
+    carried.push({
+      slug,
+      name: person.name,
+      role: person.role,
+      pageTitle: `${person.name.split(" ").slice(-1)[0] ?? person.role}'s Message`,
+      pageIntro: "",
+      initials: person.initials,
+      photoUrl: "",
+      message: person.message,
+    });
+  };
+
+  const people = defaultLeaders.people.map((p) => ({ ...p }));
+  const principalSlot = people.find((p) => p.slug === "principal");
+  if (principalSlot && old?.principal?.name) {
+    principalSlot.name = old.principal.name;
+    principalSlot.role = old.principal.role;
+    principalSlot.initials = old.principal.initials;
+    principalSlot.message = old.principal.message;
+  }
+  add(old?.chairman, "chairman");
+  return { people: [...people, ...carried] };
+}
 
 export const defaultLeadership: Leadership = {
   chairman: {

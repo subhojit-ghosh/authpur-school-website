@@ -2,23 +2,23 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { AdminPageHeader } from "@/components/admin/page-header";
+import { ContentForm, Section } from "@/components/admin/content-form";
+import { LeadersEditor } from "@/components/admin/leaders-editor";
 import { Button } from "@/components/ui/button";
-import { getLeadership } from "@/lib/page-content";
-import { toRichHtml } from "@/lib/rich-text";
-import { saveLeadership } from "../actions";
-import { ContentForm, Field, RichField, Section } from "@/components/admin/content-form";
+import { getLeaders } from "@/lib/page-content";
+import { saveLeaders } from "../actions";
 
-export const metadata: Metadata = { title: "Chairman & Principal" };
+export const metadata: Metadata = { title: "Leadership" };
 
 export default async function LeadershipContentPage() {
-  const people = await getLeadership();
+  const { people } = await getLeaders();
 
   return (
     <div className="space-y-6">
       <AdminPageHeader
         eyebrow="Website Text"
-        title="Chairman & Principal"
-        description="Shown on the Chairman's Message and Principal's Message pages, with the formatting you apply here."
+        title="Leadership"
+        description="The people with a message on the website. Each one gets their own page, and appears in the menu where you link to it."
         actions={
           <Button asChild variant="outline" className="h-10">
             <Link href="/admin/content">
@@ -29,30 +29,13 @@ export default async function LeadershipContentPage() {
         }
       />
 
-      <ContentForm action={saveLeadership}>
-        {(["chairman", "principal"] as const).map((who) => (
-          <Section key={who} title={who === "chairman" ? "Chairman" : "Principal"}>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Field name={`${who}.name`} label="Name" defaultValue={people[who].name} />
-              <Field name={`${who}.role`} label="Role" defaultValue={people[who].role} />
-              <Field
-                name={`${who}.initials`}
-                label="Initials"
-                defaultValue={people[who].initials}
-                maxLength={4}
-                hint="Shown in the circle when there is no photograph."
-              />
-              <Field name={`${who}.photoTag`} label="Photo label" defaultValue={people[who].photoTag} />
-            </div>
-            <RichField
-              name={`${who}.message`}
-              label="Message"
-              defaultValue={toRichHtml(people[who].message)}
-              placeholder="Write the message here…"
-              hint="Use the buttons above to make text bold or italic, add bullet points, a quote or a link."
-            />
-          </Section>
-        ))}
+      <ContentForm action={saveLeaders}>
+        <Section
+          title="People"
+          description="Shown in this order wherever the site lists them. The web address is used for that person's page, so leave it alone once the link has been shared."
+        >
+          <LeadersEditor name="leaders" initial={people} />
+        </Section>
       </ContentForm>
     </div>
   );

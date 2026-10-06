@@ -1,28 +1,9 @@
-import type { Metadata } from "next";
-import { PageBanner } from "@/components/page-banner";
-import { LeadershipMessage } from "@/components/leadership-message";
-import { getIdentity, getLeadership, getPageBanners } from "@/lib/page-content";
+import { permanentRedirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  alternates: { canonical: "/principals-message" },
-  title: "Principal's Message",
-  description:
-    "A message from the Principal of Authpur National Model Higher Secondary School.",
-};
-
-export const revalidate = 3600;
-
-export default async function PrincipalsMessagePage() {
-  const [{ principal }, banners, id] = await Promise.all([getLeadership(), getPageBanners(), getIdentity()]);
-  const banner = banners.principalsMessage;
-
-  return (
-    <>
-      <PageBanner eyebrow={banner.eyebrow} title={banner.title} subtitle={banner.subtitle} />
-      <LeadershipMessage
-        person={principal}
-        motto={id.motto ? `${id.motto} — “${id.mottoMeaning}”` : undefined}
-      />
-    </>
-  );
+/**
+ * The leadership pages moved under /leadership/<role>. This address was in the
+ * menu and may be in someone's bookmarks, so it is kept and forwarded.
+ */
+export default function PrincipalsMessageRedirect() {
+  permanentRedirect("/leadership/principal");
 }

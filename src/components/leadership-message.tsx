@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { RichText } from "@/components/rich-text";
 import { Reveal } from "@/components/motion";
 
@@ -5,6 +6,8 @@ type Person = {
   name: string;
   role: string;
   initials: string;
+  /** Uploaded photograph; the initials stand in when there is none. */
+  photoUrl?: string;
   /** Formatted message written in the admin panel. */
   message: string;
 };
@@ -13,15 +16,31 @@ export function LeadershipMessage({ person, motto }: { person: Person; motto?: s
   return (
     <section className="py-16 lg:py-24">
       <div className="container-edge grid gap-12 lg:grid-cols-12 lg:gap-16">
-        {/* Name card. There is no portrait yet, so the initials stand in. */}
+        {/* Name card, with the photograph when one has been uploaded. */}
         <Reveal className="lg:col-span-4 lg:sticky lg:top-28 lg:self-start">
           <div className="overflow-hidden rounded-lg bg-brand text-brand-foreground">
             <div className="school-stripe h-1.5" />
+            {person.photoUrl ? (
+              <div className="relative aspect-4/5 w-full">
+                <Image
+                  src={person.photoUrl}
+                  alt={`${person.name}, ${person.role}`}
+                  fill
+                  sizes="(min-width: 1024px) 32vw, 100vw"
+                  className="object-cover"
+                  unoptimized
+                />
+              </div>
+            ) : null}
             <div className="px-7 pb-8 pt-10">
-              <span aria-hidden className="block font-heading text-8xl font-bold leading-none tracking-tight text-gold">
-                {person.initials}
-              </span>
-              <p className="mt-8 font-heading text-2xl font-semibold text-white">{person.name}</p>
+              {person.photoUrl ? null : (
+                <span aria-hidden className="block font-heading text-8xl font-bold leading-none tracking-tight text-gold">
+                  {person.initials}
+                </span>
+              )}
+              <p className={person.photoUrl ? "font-heading text-2xl font-semibold text-white" : "mt-8 font-heading text-2xl font-semibold text-white"}>
+                {person.name}
+              </p>
               <p className="mt-1 text-[17px] text-white/75">{person.role}</p>
             </div>
           </div>

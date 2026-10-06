@@ -10,6 +10,7 @@ import {
   getHomeContent,
   getIdentity,
   getLabsContent,
+  getLeaders,
   getLeadership,
   getNavigation,
   getPageBanners,
@@ -25,6 +26,10 @@ import {
   type Identity,
   type LabsContent,
   type Leadership,
+  type Leader,
+  type Leaders,
+  MAX_LEADERS,
+  leaderSlug,
   type MenuChild,
   type MenuItem,
   type Navigation,
@@ -320,4 +325,66 @@ export async function saveNavigation(_prev: ContentState, formData: FormData): P
     details: flatDiff(before, value),
   });
   return done("Header menu");
+}
+
+// --------------------------------------------------------------- leaders
+
+/**
+ * Rebuilds the leaders list from the editor.
+ *
+ * The list arrives as JSON with the messages stripped out; each message comes
+ * as its own field named after that person's slug, because the formatting
+ * editor posts HTML the way it does elsewhere. Nothing is trusted: the fields
+ * are taken one at a time, the count is capped and every slug must be unique,
+ * since the slug is the address of that person's page.
+ */
+export async function saveLeaders(_prev: ContentState, formData: FormData): Promise<ContentState> {
+  await requireUser();
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(String(formData.get("leaders") ?? ""));
+  } catch {
+    return { error: "The list could not be read. Please reload the page and try again." };
+  }
+  if (!Array.isArray(parsed) || parsed.length === 0) return { error: "There must be at least one person." };
+  if (parsed.length > MAX_LEADERS) return { error: `You can list at most ${MAX_LEADERS} people.` };
+
+  const people: Leader[] = [];
+  const seen = new Set<string>();
+
+  for (const entry of parsed) {
+    const source = (entry ?? {}) as Record<string, unknown>;
+    const role = String(source.role ?? "").trim().slice(0, 60);
+    const name = String(source.name ?? "").trim().slice(0, 120);
+    if (!role) return { error: "Every person needs a role, such as Founder." };
+    if (!name) return { error: `“${role}” needs a name.` };
+
+    const slug = leaderSlug(String(source.slug ?? "") || role);
+    if (!slug) return { error: `“${role}” needs a web address, such as founder.` };
+    if (seen.has(slug)) return { error: `Two people share the address “${slug}”. Each needs its own.` };
+    seen.add(slug);
+
+    const message = sanitizeRichText(String(formData.get(`message-${slug}`) ?? ""));
+    if (isEmptyRichText(message)) return { error: `“${name}” needs a message.` };
+
+    people.push({
+      slug,
+      name,
+      role,
+      pageTitle: String(source.pageTitle ?? "").trim().slice(0, 120) || `${role}'s Message`,
+      pageIntro: String(source.pageIntro ?? "").trim().slice(0, 300),
+      initials: String(source.initials ?? "").trim().slice(0, 4).toUpperCase(),
+      photoUrl: String(source.photoUrl ?? "").trim().slice(0, 400),
+      message,
+    });
+  }
+
+  const value: Leaders = { people };
+  const before = await getLeaders();
+  await saveSetting(CONTENT_KEYS.leaders, value);
+  await recordAudit("Website Text", "updated", `Updated the leadership pages (${people.length} people)`, {
+    details: flatDiff(before, value),
+  });
+  return done("Leadership pages");
 }

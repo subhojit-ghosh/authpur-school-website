@@ -1,28 +1,13 @@
-import type { Metadata } from "next";
-import { PageBanner } from "@/components/page-banner";
-import { LeadershipMessage } from "@/components/leadership-message";
-import { getIdentity, getLeadership, getPageBanners } from "@/lib/page-content";
+import { permanentRedirect } from "next/navigation";
+import { getLeaders } from "@/lib/page-content";
 
-export const metadata: Metadata = {
-  alternates: { canonical: "/chairmans-message" },
-  title: "Chairman's Message",
-  description:
-    "A message from the Chairman of the Governing Body of Authpur National Model Higher Secondary School.",
-};
-
-export const revalidate = 3600;
-
-export default async function ChairmansMessagePage() {
-  const [{ chairman }, banners, id] = await Promise.all([getLeadership(), getPageBanners(), getIdentity()]);
-  const banner = banners.chairmansMessage;
-
-  return (
-    <>
-      <PageBanner eyebrow={banner.eyebrow} title={banner.title} subtitle={banner.subtitle} />
-      <LeadershipMessage
-        person={chairman}
-        motto={id.motto ? `${id.motto} — “${id.mottoMeaning}”` : undefined}
-      />
-    </>
-  );
+/**
+ * Kept for links already shared. The chairman's entry is carried into the
+ * leaders list, so this forwards to whichever address it now has; if that
+ * person has been removed it falls back to the first person on the list.
+ */
+export default async function ChairmansMessageRedirect() {
+  const { people } = await getLeaders();
+  const target = people.find((p) => p.slug === "chairman") ?? people[0];
+  permanentRedirect(target ? `/leadership/${target.slug}` : "/");
 }
