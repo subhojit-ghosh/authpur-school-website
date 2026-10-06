@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ExternalLink, ArrowLeft } from "lucide-react";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { RowsEditor } from "@/components/admin/rows-editor";
 import { Button } from "@/components/ui/button";
@@ -22,12 +22,20 @@ export default async function IdentityContentPage() {
         title="School identity & footer"
         description="The school's name and motto, and everything written in the footer at the bottom of every page."
         actions={
-          <Button asChild variant="outline" className="h-10">
+          <>
+            <Button asChild variant="outline" className="h-10">
+              <Link href="/" target="_blank">
+                <ExternalLink className="size-4" />
+                View website
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="h-10">
             <Link href="/admin/content">
               <ArrowLeft className="size-4" />
               All text
             </Link>
           </Button>
+          </>
         }
       />
 

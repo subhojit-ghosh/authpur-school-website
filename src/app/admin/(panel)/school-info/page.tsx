@@ -18,12 +18,20 @@ export default async function SchoolInfoPage() {
         title="Contact details, address & timings"
         description="One place to update the details shown across the whole website."
         actions={
-          <Button asChild variant="outline" className="h-10">
-            <Link href="/school-timings" target="_blank">
-              <ExternalLink className="size-4" />
-              View School Timings
-            </Link>
-          </Button>
+          <>
+            <Button asChild variant="outline" className="h-10">
+              <Link href="/#contact" target="_blank">
+                <ExternalLink className="size-4" />
+                View contact details
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="h-10">
+              <Link href="/school-timings" target="_blank">
+                <ExternalLink className="size-4" />
+                View School Timings
+              </Link>
+            </Button>
+          </>
         }
       />
       <div className="grid gap-6 xl:grid-cols-2">

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CheckCheck, Download, Inbox, Mail, MailOpen, Phone, Search, Trash2, X } from "lucide-react";
+import { ExternalLink, CheckCheck, Download, Inbox, Mail, MailOpen, Phone, Search, Trash2, X } from "lucide-react";
 import { ConfirmButton } from "@/components/admin/confirm-button";
 import { EmptyState } from "@/components/admin/empty-state";
 import { AdminPageHeader } from "@/components/admin/page-header";
@@ -26,6 +26,12 @@ export default async function EnquiriesPage({ searchParams }: { searchParams: Pr
         description={`${total} received in total${unread ? `, ${unread} new` : ""}. Every submission of the website's enquiry form lands here.`}
         actions={
           <>
+            <Button asChild variant="outline" className="h-10">
+              <Link href="/admission-enquiry" target="_blank">
+                <ExternalLink className="size-4" />
+                View enquiry form
+              </Link>
+            </Button>
             {unread > 0 ? (
               <form action={markAllEnquiriesRead}>
                 <Button type="submit" variant="outline" className="h-10">

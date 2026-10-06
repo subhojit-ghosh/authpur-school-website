@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import Image from "next/image";
-import { ArrowDown, ArrowUp, ImagePlus, Loader2, Plus, Trash2, UserRound } from "lucide-react";
+import { ArrowDown, ArrowUp, ExternalLink, ImagePlus, Loader2, Plus, Trash2, UserRound } from "lucide-react";
 import { RichTextEditor } from "@/components/admin/rich-text-editor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -134,6 +134,18 @@ export function LeadersEditor({ name, initial }: { name: string; initial: Leader
                 {leader.name ? <span className="font-normal text-muted-foreground"> — {leader.name}</span> : null}
               </span>
               <span className="flex shrink-0 items-center gap-0.5">
+                {leader.slug ? (
+                  <Button asChild size="icon-sm" variant="ghost" title="Open this page on the website">
+                    <a
+                      href={`/leadership/${leader.slug}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={`View the ${leader.role || "person"} page on the website`}
+                    >
+                      <ExternalLink className="size-4" />
+                    </a>
+                  </Button>
+                ) : null}
                 <Button
                   type="button"
                   size="icon-sm"
