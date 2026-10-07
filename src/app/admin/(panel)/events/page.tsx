@@ -5,6 +5,7 @@ import { ConfirmButton } from "@/components/admin/confirm-button";
 import { EmptyState } from "@/components/admin/empty-state";
 import { Flash } from "@/components/admin/flash";
 import { AdminPageHeader } from "@/components/admin/page-header";
+import { PendingIcon } from "@/components/admin/pending";
 import { Button } from "@/components/ui/button";
 import { getAllEvents } from "@/lib/content";
 import { formatDate, todayISO } from "@/lib/format";
@@ -97,7 +98,7 @@ export default async function EventsAdminPage({ searchParams }: { searchParams: 
                           : "bg-muted text-muted-foreground",
                       )}
                     >
-                      {e.active ? <Eye className="size-3.5" /> : <EyeOff className="size-3.5" />}
+                      <PendingIcon>{e.active ? <Eye className="size-3.5" /> : <EyeOff className="size-3.5" />}</PendingIcon>
                       {e.active ? "Active" : "Inactive"}
                     </button>
                   </form>
@@ -110,14 +111,13 @@ export default async function EventsAdminPage({ searchParams }: { searchParams: 
                     <form action={deleteEvent}>
                       <input type="hidden" name="id" value={e.id} />
                       <ConfirmButton
+                        icon={<Trash2 className="size-4" />}
                         size="icon-sm"
                         variant="ghost"
                         className="text-destructive hover:bg-destructive/10 hover:text-destructive"
                         aria-label={`Delete "${e.title}"`}
                         message={`Delete the event "${e.title}"?\n\nIt will be removed from the website immediately.`}
-                      >
-                        <Trash2 className="size-4" />
-                      </ConfirmButton>
+                      />
                     </form>
                   </span>
                 </div>
@@ -167,7 +167,7 @@ export default async function EventsAdminPage({ searchParams }: { searchParams: 
                                 : "bg-muted text-muted-foreground hover:bg-secondary",
                             )}
                           >
-                            {e.active ? <Eye className="size-3.5" /> : <EyeOff className="size-3.5" />}
+                            <PendingIcon>{e.active ? <Eye className="size-3.5" /> : <EyeOff className="size-3.5" />}</PendingIcon>
                             {e.active ? "Active" : "Inactive"}
                           </button>
                         </form>
@@ -186,14 +186,13 @@ export default async function EventsAdminPage({ searchParams }: { searchParams: 
                         <form action={deleteEvent}>
                           <input type="hidden" name="id" value={e.id} />
                           <ConfirmButton
+                            icon={<Trash2 className="size-4" />}
                             size="icon-sm"
                             variant="ghost"
                             className="text-destructive hover:bg-destructive/10 hover:text-destructive"
                             aria-label={`Delete "${e.title}"`}
                             message={`Delete the event "${e.title}"?\n\nIt will be removed from the website immediately.`}
-                          >
-                            <Trash2 className="size-4" />
-                          </ConfirmButton>
+                          />
                         </form>
                       </div>
                     </td>

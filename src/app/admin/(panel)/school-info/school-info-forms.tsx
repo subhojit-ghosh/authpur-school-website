@@ -4,7 +4,7 @@ import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { Building2, Clock, Plus, Save, Trash2 } from "lucide-react";
 import { FieldError, FormError } from "@/components/admin/form-message";
-import { Flash } from "@/components/admin/flash";
+import { SavedNote } from "@/components/admin/pending";
 import { RichTextEditor } from "@/components/admin/rich-text-editor";
 import { RowsEditor } from "@/components/admin/rows-editor";
 import { Button } from "@/components/ui/button";
@@ -156,9 +156,9 @@ export function SchoolInfoForm({ initial }: { initial: SchoolInfo }) {
 
       <div className="mt-5 grid gap-3">
         <FormError message={state.error} />
-        {state.success ? <Flash text={state.success} /> : null}
-        <div>
+        <div className="flex items-center gap-3">
           <SubmitButton label="Save contact details" />
+          <SavedNote trigger={state.success ? state : null} />
         </div>
       </div>
     </form>
@@ -215,9 +215,9 @@ export function TimingsForm({ initial }: { initial: Timings }) {
 
       <div className="mt-5 grid gap-3">
         <FormError message={state.error} />
-        {state.success ? <Flash text={state.success} /> : null}
-        <div>
+        <div className="flex items-center gap-3">
           <SubmitButton label="Save timings" />
+          <SavedNote trigger={state.success ? state : null} />
         </div>
       </div>
     </form>

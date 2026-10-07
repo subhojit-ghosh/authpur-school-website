@@ -4,6 +4,7 @@ import { ExternalLink, CheckCheck, Download, Inbox, Mail, MailOpen, Phone, Searc
 import { ConfirmButton } from "@/components/admin/confirm-button";
 import { EmptyState } from "@/components/admin/empty-state";
 import { AdminPageHeader } from "@/components/admin/page-header";
+import { SubmitButton } from "@/components/admin/pending";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { countEnquiries, getEnquiries } from "@/lib/content";
@@ -34,10 +35,9 @@ export default async function EnquiriesPage({ searchParams }: { searchParams: Pr
             </Button>
             {unread > 0 ? (
               <form action={markAllEnquiriesRead}>
-                <Button type="submit" variant="outline" className="h-10">
-                  <CheckCheck className="size-4" />
+                <SubmitButton icon={<CheckCheck className="size-4" />} variant="outline" className="h-10">
                   Mark all as read
-                </Button>
+                </SubmitButton>
               </form>
             ) : null}
             <Button asChild className="h-10 bg-brand font-semibold text-brand-foreground hover:bg-brand-muted">
@@ -115,22 +115,25 @@ export default async function EnquiriesPage({ searchParams }: { searchParams: Pr
                     <form action={markEnquiryRead}>
                       <input type="hidden" name="id" value={e.id} />
                       {!isNew ? <input type="hidden" name="unread" value="1" /> : null}
-                      <Button type="submit" size="sm" variant="ghost" className="text-muted-foreground">
-                        {isNew ? <MailOpen className="size-4" /> : <Mail className="size-4" />}
+                      <SubmitButton
+                        icon={isNew ? <MailOpen className="size-4" /> : <Mail className="size-4" />}
+                        size="sm"
+                        variant="ghost"
+                        className="text-muted-foreground"
+                      >
                         {isNew ? "Mark as read" : "Mark as new"}
-                      </Button>
+                      </SubmitButton>
                     </form>
                     <form action={deleteEnquiry}>
                       <input type="hidden" name="id" value={e.id} />
                       <ConfirmButton
+                        icon={<Trash2 className="size-4" />}
                         size="icon-sm"
                         variant="ghost"
                         className="text-destructive hover:bg-destructive/10 hover:text-destructive"
                         aria-label={`Delete enquiry from ${e.name}`}
                         message={`Delete the enquiry from ${e.name}?\n\nThis cannot be undone.`}
-                      >
-                        <Trash2 className="size-4" />
-                      </ConfirmButton>
+                      />
                     </form>
                   </div>
                 </div>

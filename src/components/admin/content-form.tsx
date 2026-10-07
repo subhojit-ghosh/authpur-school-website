@@ -3,9 +3,9 @@
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { Save } from "lucide-react";
-import { Flash } from "@/components/admin/flash";
 import { RichTextEditor } from "@/components/admin/rich-text-editor";
 import { FormError } from "@/components/admin/form-message";
+import { SavedNote } from "@/components/admin/pending";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -163,10 +163,10 @@ export function ContentForm({
     <form action={formAction} className="grid gap-5" noValidate>
       {children}
       <FormError message={state.error} />
-      {state.success ? <Flash text={state.success} /> : null}
       <div className="sticky bottom-4 flex justify-start">
-        <div className="rounded-xl bg-background/80 p-1 backdrop-blur">
+        <div className="flex items-center gap-3 rounded-xl bg-background/80 p-1 backdrop-blur">
           <SaveBar label={saveLabel} />
+          <SavedNote trigger={state.success ? state : null} className="pr-2 empty:hidden" />
         </div>
       </div>
     </form>

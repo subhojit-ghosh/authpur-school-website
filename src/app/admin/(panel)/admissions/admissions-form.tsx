@@ -4,7 +4,7 @@ import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { CalendarDays, ClipboardList, FileText, GraduationCap, IndianRupee, Save } from "lucide-react";
 import { FormError } from "@/components/admin/form-message";
-import { Flash } from "@/components/admin/flash";
+import { SavedNote } from "@/components/admin/pending";
 import { RichTextEditor } from "@/components/admin/rich-text-editor";
 import { RowsEditor } from "@/components/admin/rows-editor";
 import { Button } from "@/components/ui/button";
@@ -107,10 +107,10 @@ export function AdmissionsForm({ initial }: { initial: AdmissionsContent }) {
       </Section>
 
       <FormError message={state.error} />
-      {state.success ? <Flash text={state.success} /> : null}
 
-      <div>
+      <div className="flex items-center gap-3">
         <SubmitButton />
+        <SavedNote trigger={state.success ? state : null} />
       </div>
     </form>
   );

@@ -5,6 +5,7 @@ import { ConfirmButton } from "@/components/admin/confirm-button";
 import { EmptyState } from "@/components/admin/empty-state";
 import { Flash } from "@/components/admin/flash";
 import { AdminPageHeader } from "@/components/admin/page-header";
+import { PendingIcon, SubmitButton } from "@/components/admin/pending";
 import { Button } from "@/components/ui/button";
 import { getNotices } from "@/lib/content";
 import { noticeTagClass } from "@/lib/content-types";
@@ -97,7 +98,7 @@ export default async function NoticesAdminPage({ searchParams }: { searchParams:
                         : "bg-muted text-muted-foreground",
                     )}
                   >
-                    {n.active ? <Eye className="size-3.5" /> : <EyeOff className="size-3.5" />}
+                    <PendingIcon>{n.active ? <Eye className="size-3.5" /> : <EyeOff className="size-3.5" />}</PendingIcon>
                     {n.active ? "Active" : "Inactive"}
                   </button>
                 </form>
@@ -106,22 +107,18 @@ export default async function NoticesAdminPage({ searchParams }: { searchParams:
                   <form action={moveNotice}>
                     <input type="hidden" name="id" value={n.id} />
                     <input type="hidden" name="direction" value="up" />
-                    <Button type="submit" size="icon-sm" variant="ghost" disabled={i === 0} aria-label={`Move "${n.title}" up`}>
-                      <ArrowUp className="size-4" />
-                    </Button>
+                    <SubmitButton icon={<ArrowUp className="size-4" />} size="icon-sm" variant="ghost" disabled={i === 0} aria-label={`Move "${n.title}" up`} />
                   </form>
                   <form action={moveNotice}>
                     <input type="hidden" name="id" value={n.id} />
                     <input type="hidden" name="direction" value="down" />
-                    <Button
-                      type="submit"
+                    <SubmitButton
+                      icon={<ArrowDown className="size-4" />}
                       size="icon-sm"
                       variant="ghost"
                       disabled={i === list.length - 1}
                       aria-label={`Move "${n.title}" down`}
-                    >
-                      <ArrowDown className="size-4" />
-                    </Button>
+                    />
                   </form>
                   <Button asChild size="icon-sm" variant="ghost" aria-label={`Edit "${n.title}"`}>
                     <Link href={`/admin/notices/${n.id}`}>
@@ -131,14 +128,13 @@ export default async function NoticesAdminPage({ searchParams }: { searchParams:
                   <form action={deleteNotice}>
                     <input type="hidden" name="id" value={n.id} />
                     <ConfirmButton
+                      icon={<Trash2 className="size-4" />}
                       size="icon-sm"
                       variant="ghost"
                       className="text-destructive hover:bg-destructive/10 hover:text-destructive"
                       aria-label={`Delete "${n.title}"`}
                       message={`Delete the notice "${n.title}"?\n\nIt will be removed from the website immediately.`}
-                    >
-                      <Trash2 className="size-4" />
-                    </ConfirmButton>
+                    />
                   </form>
                 </span>
               </div>
@@ -166,22 +162,18 @@ export default async function NoticesAdminPage({ searchParams }: { searchParams:
                       <form action={moveNotice}>
                         <input type="hidden" name="id" value={n.id} />
                         <input type="hidden" name="direction" value="up" />
-                        <Button type="submit" size="icon-sm" variant="ghost" disabled={i === 0} aria-label={`Move "${n.title}" up`}>
-                          <ArrowUp className="size-4" />
-                        </Button>
+                        <SubmitButton icon={<ArrowUp className="size-4" />} size="icon-sm" variant="ghost" disabled={i === 0} aria-label={`Move "${n.title}" up`} />
                       </form>
                       <form action={moveNotice}>
                         <input type="hidden" name="id" value={n.id} />
                         <input type="hidden" name="direction" value="down" />
-                        <Button
-                          type="submit"
+                        <SubmitButton
+                          icon={<ArrowDown className="size-4" />}
                           size="icon-sm"
                           variant="ghost"
                           disabled={i === list.length - 1}
                           aria-label={`Move "${n.title}" down`}
-                        >
-                          <ArrowDown className="size-4" />
-                        </Button>
+                        />
                       </form>
                       <span className="ml-1 w-5 text-xs tabular-nums text-muted-foreground">{i + 1}</span>
                     </div>
@@ -212,7 +204,7 @@ export default async function NoticesAdminPage({ searchParams }: { searchParams:
                             : "bg-muted text-muted-foreground hover:bg-secondary",
                         )}
                       >
-                        {n.active ? <Eye className="size-3.5" /> : <EyeOff className="size-3.5" />}
+                        <PendingIcon>{n.active ? <Eye className="size-3.5" /> : <EyeOff className="size-3.5" />}</PendingIcon>
                         {n.active ? "Active" : "Inactive"}
                       </button>
                     </form>
@@ -227,14 +219,13 @@ export default async function NoticesAdminPage({ searchParams }: { searchParams:
                       <form action={deleteNotice}>
                         <input type="hidden" name="id" value={n.id} />
                         <ConfirmButton
+                          icon={<Trash2 className="size-4" />}
                           size="icon-sm"
                           variant="ghost"
                           className="text-destructive hover:bg-destructive/10 hover:text-destructive"
                           aria-label={`Delete "${n.title}"`}
                           message={`Delete the notice "${n.title}"?\n\nIt will be removed from the website immediately.`}
-                        >
-                          <Trash2 className="size-4" />
-                        </ConfirmButton>
+                        />
                       </form>
                     </div>
                   </td>

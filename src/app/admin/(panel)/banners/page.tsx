@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowDown, ArrowUp, ExternalLink, PanelTop, Save, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, ExternalLink, PanelTop, Trash2 } from "lucide-react";
 import { ConfirmButton } from "@/components/admin/confirm-button";
 import { EmptyState } from "@/components/admin/empty-state";
 import { ImageUploader } from "@/components/admin/image-uploader";
 import { AdminPageHeader } from "@/components/admin/page-header";
+import { SubmitButton } from "@/components/admin/pending";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { getBanners } from "@/lib/media";
-import { deleteBanner, moveBanner, updateBannerAlt } from "./actions";
+import { deleteBanner, moveBanner } from "./actions";
+import { BannerDescriptionForm } from "./banner-description-form";
 
 export const metadata: Metadata = { title: "Hero Banner" };
 
@@ -52,28 +53,18 @@ export default async function BannersPage() {
                 ) : null}
               </div>
               <div className="space-y-3 p-4">
-                <form action={updateBannerAlt} className="flex items-center gap-2">
-                  <input type="hidden" name="id" value={b.id} />
-                  <Input name="alt" defaultValue={b.alt} placeholder="Short description (for accessibility)" maxLength={160} className="h-9 text-xs" aria-label="Image description" />
-                  <Button type="submit" size="icon-sm" variant="outline" aria-label="Save description">
-                    <Save className="size-4" />
-                  </Button>
-                </form>
+                <BannerDescriptionForm id={b.id} alt={b.alt} />
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1">
                     <form action={moveBanner}>
                       <input type="hidden" name="id" value={b.id} />
                       <input type="hidden" name="direction" value="up" />
-                      <Button type="submit" size="icon-sm" variant="ghost" disabled={i === 0} aria-label="Move earlier">
-                        <ArrowUp className="size-4" />
-                      </Button>
+                      <SubmitButton icon={<ArrowUp className="size-4" />} size="icon-sm" variant="ghost" disabled={i === 0} aria-label="Move earlier" />
                     </form>
                     <form action={moveBanner}>
                       <input type="hidden" name="id" value={b.id} />
                       <input type="hidden" name="direction" value="down" />
-                      <Button type="submit" size="icon-sm" variant="ghost" disabled={i === list.length - 1} aria-label="Move later">
-                        <ArrowDown className="size-4" />
-                      </Button>
+                      <SubmitButton icon={<ArrowDown className="size-4" />} size="icon-sm" variant="ghost" disabled={i === list.length - 1} aria-label="Move later" />
                     </form>
                     {b.width && b.height ? (
                       <span className="ml-1 text-[11px] text-muted-foreground">
@@ -84,12 +75,12 @@ export default async function BannersPage() {
                   <form action={deleteBanner}>
                     <input type="hidden" name="id" value={b.id} />
                     <ConfirmButton
+                      icon={<Trash2 className="size-4" />}
                       size="sm"
                       variant="ghost"
                       className="text-destructive hover:bg-destructive/10 hover:text-destructive"
                       message="Remove this banner from the home page?\n\nThis cannot be undone."
                     >
-                      <Trash2 className="size-4" />
                       Remove
                     </ConfirmButton>
                   </form>

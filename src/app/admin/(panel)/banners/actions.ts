@@ -16,15 +16,17 @@ function refresh() {
   revalidatePath("/admin/banners");
 }
 
-export async function updateBannerAlt(formData: FormData) {
+export type BannerActionResult = { ok: true } | { ok: false; error: string };
+
+export async function updateBannerAlt(formData: FormData): Promise<BannerActionResult> {
   await requireUser();
   const id = Number(formData.get("id"));
   const alt = String(formData.get("alt") ?? "").trim().slice(0, 160);
-  if (Number.isInteger(id)) {
-    await db.update(banners).set({ alt }).where(eq(banners.id, id));
-    await recordAudit("Hero Banner", "updated", `Changed a banner description to “${alt}”`);
-  }
+  if (!Number.isInteger(id) || !(await getBanner(id))) return { ok: false, error: "This banner no longer exists. Refresh the page." };
+  await db.update(banners).set({ alt }).where(eq(banners.id, id));
+  await recordAudit("Hero Banner", "updated", `Changed a banner description to “${alt}”`);
   refresh();
+  return { ok: true };
 }
 
 export async function moveBanner(formData: FormData) {

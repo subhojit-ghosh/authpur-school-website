@@ -14,6 +14,7 @@ import {
   Save,
   Trash2,
 } from "lucide-react";
+import { useJustSaved } from "@/components/admin/pending";
 import { RichTextEditor } from "@/components/admin/rich-text-editor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -121,7 +122,7 @@ function SubmitButton() {
     <Button
       type="submit"
       disabled={pending}
-      className="h-10 bg-gold px-5 font-semibold text-gold-foreground shadow-sm hover:bg-gold/90"
+      className="h-10 bg-gold px-5 font-semibold text-gold-foreground btn-gold"
     >
       <Save className="size-4" />
       {pending ? "Saving…" : "Save & publish"}
@@ -141,6 +142,7 @@ function Card({ title, description, children }: { title: string; description?: s
 
 export function ExamPatternForm({ initial }: { initial: ExamPattern }) {
   const [state, action] = useActionState<SaveState, FormData>(saveExamPattern, {});
+  const justSaved = useJustSaved(state.success ? state : null);
   const [start] = useState(() => toState(initial.groups));
   const [groups, setGroups] = useState(start.groups);
   const [active, setActive] = useState(0);
@@ -208,13 +210,13 @@ export function ExamPatternForm({ initial }: { initial: ExamPattern }) {
             <AlertCircle className="size-4 shrink-0" />
             {state.error}
           </p>
-        ) : state.success ? (
+        ) : justSaved ? (
           <p
             role="status"
             className="flex items-center gap-2 rounded-lg bg-[oklch(0.95_0.05_150)] px-3 py-1.5 text-sm font-medium text-[oklch(0.33_0.1_150)]"
           >
             <CheckCircle2 className="size-4 shrink-0" />
-            {state.success}
+            Saved!
           </p>
         ) : (
           <p className="text-xs text-brand-foreground/75">Changes appear on the website as soon as you save.</p>

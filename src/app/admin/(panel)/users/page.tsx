@@ -78,15 +78,14 @@ export default async function StaffUsersPage({ searchParams }: { searchParams: P
               <form action={deleteStaffUser}>
                 <input type="hidden" name="id" value={u.id} />
                 <ConfirmButton
+                  icon={<Trash2 className="size-4" />}
                   size="icon-sm"
                   variant="ghost"
                   disabled={u.id === me.id || list.length <= 1}
                   className="text-destructive hover:bg-destructive/10 hover:text-destructive"
                   aria-label={`Remove ${u.displayName}`}
                   message={`Remove the account for ${u.displayName} (@${u.username})?\n\nThey will no longer be able to sign in.`}
-                >
-                  <Trash2 className="size-4" />
-                </ConfirmButton>
+                />
               </form>
             </div>
           </li>
@@ -133,15 +132,14 @@ export default async function StaffUsersPage({ searchParams }: { searchParams: P
                     <form action={deleteStaffUser}>
                       <input type="hidden" name="id" value={u.id} />
                       <ConfirmButton
+                        icon={<Trash2 className="size-4" />}
                         size="icon-sm"
                         variant="ghost"
                         disabled={u.id === me.id || list.length <= 1}
                         className="text-destructive hover:bg-destructive/10 hover:text-destructive"
                         aria-label={`Remove ${u.displayName}`}
                         message={`Remove the account for ${u.displayName} (@${u.username})?\n\nThey will no longer be able to sign in.`}
-                      >
-                        <Trash2 className="size-4" />
-                      </ConfirmButton>
+                      />
                     </form>
                   </div>
                 </td>

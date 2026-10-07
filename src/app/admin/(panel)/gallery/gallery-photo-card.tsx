@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { Check, Loader2, Save, Trash2 } from "lucide-react";
+import { SavedNote, useJustSaved } from "@/components/admin/pending";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { NativeSelect } from "@/components/ui/native-select";
@@ -18,13 +19,8 @@ export function GalleryPhotoCard({ photo, categories }: { photo: Photo; categori
   const [busy, setBusy] = useState<"save" | "delete" | null>(null);
   const [status, setStatus] = useState<{ saved: true } | { error: string } | null>(null);
   const [, startTransition] = useTransition();
-
-  // "Saved" fades away on its own; errors stay until the next attempt.
-  useEffect(() => {
-    if (!status || !("saved" in status)) return;
-    const t = setTimeout(() => setStatus(null), 2500);
-    return () => clearTimeout(t);
-  }, [status]);
+  const saved = status && "saved" in status ? status : null;
+  const justSaved = useJustSaved(saved);
 
   function run(kind: "save" | "delete", action: (fd: FormData) => Promise<GalleryActionResult>) {
     const fd = new FormData();
@@ -79,7 +75,7 @@ export function GalleryPhotoCard({ photo, categories }: { photo: Photo; categori
           <Button type="submit" size="icon-sm" variant="outline" disabled={busy !== null} aria-label="Save caption and category" title="Save">
             {busy === "save" ? (
               <Loader2 className="size-4 animate-spin" />
-            ) : status && "saved" in status ? (
+            ) : justSaved ? (
               <Check className="size-4 text-[oklch(0.5_0.13_150)]" />
             ) : (
               <Save className="size-4" />
@@ -101,9 +97,11 @@ export function GalleryPhotoCard({ photo, categories }: { photo: Photo; categori
           >
             {busy === "delete" ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />}
           </Button>
-          <span role="status" className="ml-auto text-xs font-medium text-[oklch(0.45_0.12_150)]">
-            {status && "saved" in status ? "Saved!" : busy === "save" ? <span className="text-muted-foreground">Saving…</span> : null}
-          </span>
+          {busy === "save" ? (
+            <span className="ml-auto text-xs text-muted-foreground">Saving…</span>
+          ) : (
+            <SavedNote trigger={saved} className="ml-auto text-xs" />
+          )}
         </div>
         {status && "error" in status ? (
           <p role="alert" className="text-xs font-medium text-destructive">
