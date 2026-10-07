@@ -24,7 +24,7 @@ export function PhoneLinks({
   return (
     <span className={className}>
       {numbers.map((number, index) => (
-        <span key={number.display}>
+        <span key={`${number.display}-${index}`}>
           {index > 0 ? <span aria-hidden className="px-1.5 opacity-60">/</span> : null}
           <a href={`tel:${number.dial}`} className={cn("whitespace-nowrap", linkClassName)}>
             {number.display}

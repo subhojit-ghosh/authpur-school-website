@@ -62,9 +62,11 @@ async function handleUpload(request: Request) {
   const category = String(form.get("category") ?? "");
   if (kind === "gallery" && !isGalleryCategory(category)) return json({ error: "Please choose a category." }, 400);
 
-  const text =
-    String(form.get("alt") ?? "").trim().slice(0, 160) ||
-    file.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ");
+  const text = (
+    String(form.get("alt") ?? "").trim() || file.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ")
+  )
+    .trim()
+    .slice(0, 160);
 
   let image, thumbImage;
   try {
@@ -77,13 +79,17 @@ async function handleUpload(request: Request) {
   const width = dimension(form, "width");
   const height = dimension(form, "height");
 
-  const { key, thumbKey } = makeStorageKeys(kind, image.extension);
+  // A portrait is shown at one size and its address is kept only in the leaders
+  // settings, so a thumbnail would be stored where nothing could ever reach or
+  // delete it. The key carries each file's own format.
+  const wantsThumb = kind !== "portrait";
+  const { key, thumbKey } = makeStorageKeys(kind, image.extension, thumbImage.extension);
   let url: string;
   let thumbUrl: string;
   try {
     [url, thumbUrl] = await Promise.all([
       storage.put(key, image.bytes, image.type),
-      storage.put(thumbKey, thumbImage.bytes, thumbImage.type),
+      wantsThumb ? storage.put(thumbKey, thumbImage.bytes, thumbImage.type) : Promise.resolve(""),
     ]);
   } catch (err) {
     console.error("Storing the uploaded image failed", err);

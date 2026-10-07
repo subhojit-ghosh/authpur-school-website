@@ -55,9 +55,9 @@ export async function Admissions({ photo }: { photo?: HeroImage }) {
             </Link>
           </Button>
           {/* One button per number, so a visitor rings the line they picked. */}
-          {phoneEntries(info.admissionsPhone).map((number) => (
+          {phoneEntries(info.admissionsPhone).map((number, index) => (
             <Button
-              key={number.display}
+              key={`${number.display}-${index}`}
               size="lg"
               variant="outline"
               className="h-12 rounded-md border-2 border-white/60 bg-transparent px-7 text-base font-semibold text-white hover:bg-white hover:text-brand [&_svg:not([class*='size-'])]:size-[18px]"

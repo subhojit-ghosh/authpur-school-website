@@ -353,7 +353,7 @@ export async function saveLeaders(_prev: ContentState, formData: FormData): Prom
   const people: Leader[] = [];
   const seen = new Set<string>();
 
-  for (const entry of parsed) {
+  for (const [index, entry] of parsed.entries()) {
     const source = (entry ?? {}) as Record<string, unknown>;
     // Only the role is required. A school fills these pages in over several
     // sittings, often uploading a photograph first, and refusing the save for a
@@ -367,7 +367,9 @@ export async function saveLeaders(_prev: ContentState, formData: FormData): Prom
     if (seen.has(slug)) return { error: `Two people share the address “${slug}”. Each needs its own.` };
     seen.add(slug);
 
-    const message = sanitizeRichText(String(formData.get(`message-${slug}`) ?? ""));
+    // Named by position, so clearing or editing the address never detaches a
+    // person from the message they just wrote.
+    const message = sanitizeRichText(String(formData.get(`message-${index}`) ?? ""));
 
     people.push({
       slug,
@@ -376,7 +378,13 @@ export async function saveLeaders(_prev: ContentState, formData: FormData): Prom
       pageTitle: String(source.pageTitle ?? "").trim().slice(0, 120) || `${role}'s Message`,
       pageIntro: String(source.pageIntro ?? "").trim().slice(0, 300),
       initials: String(source.initials ?? "").trim().slice(0, 4).toUpperCase(),
-      photoUrl: String(source.photoUrl ?? "").trim().slice(0, 400),
+      // Only a photograph uploaded through this panel: an outside address would
+      // put a third party's server in front of every visitor to the page.
+      photoUrl: (() => {
+        const url = String(source.photoUrl ?? "").trim().slice(0, 400);
+        const fromBlobStore = /^https:\/\/[a-z0-9-]+\.public\.blob\.vercel-storage\.com\//i.test(url);
+        return url.startsWith("/uploads/") || fromBlobStore ? url : "";
+      })(),
       message,
     });
   }

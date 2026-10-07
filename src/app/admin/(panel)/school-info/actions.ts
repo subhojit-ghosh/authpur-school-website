@@ -17,8 +17,8 @@ export async function saveSchoolInfo(_prev: SaveState, formData: FormData): Prom
   await requireUser();
 
   const value: SchoolInfo = {
-    phone: field(formData, "phone", 120),
-    admissionsPhone: field(formData, "admissionsPhone", 120),
+    phone: field(formData, "phone", 200),
+    admissionsPhone: field(formData, "admissionsPhone", 200),
     email: field(formData, "email", 120),
     address: {
       line1: field(formData, "line1"),
@@ -30,16 +30,23 @@ export async function saveSchoolInfo(_prev: SaveState, formData: FormData): Prom
     officeHours: field(formData, "officeHours", 200),
   };
 
-  // A field may hold several numbers separated by a slash, so each is checked
-  // on its own: a landline written as "033 2581 4044 / 2580 1092" is fine.
-  const phonesLook = (field: string) => {
-    const parts = phoneParts(field);
-    return parts.length > 0 && parts.every((p) => /^[+\d][\d\s\-()]{5,}$/.test(p));
+  /**
+   * A field may hold several numbers separated by a slash, so each is checked
+   * on its own: a landline written as "033 2581 4044 / 2580 1092" is fine, and
+   * so is "(033) 2581-4044". The raw value is checked before it is shortened,
+   * because a cut in the middle of a list would otherwise pass and be saved
+   * half gone.
+   */
+  const phonesLook = (name: string) => {
+    const raw = String(formData.get(name) ?? "").trim();
+    if (raw.length > 200) return false;
+    const parts = phoneParts(raw);
+    return parts.length > 0 && parts.every((p) => /^[+(\d][\d\s\-()]{5,}$/.test(p));
   };
 
   const fieldErrors: Record<string, string> = {};
-  if (!phonesLook(value.phone)) fieldErrors.phone = "Enter a valid phone number.";
-  if (!phonesLook(value.admissionsPhone)) fieldErrors.admissionsPhone = "Enter a valid phone number.";
+  if (!phonesLook("phone")) fieldErrors.phone = "Enter a valid phone number.";
+  if (!phonesLook("admissionsPhone")) fieldErrors.admissionsPhone = "Enter a valid phone number.";
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.email)) fieldErrors.email = "Enter a valid email address.";
   if (!value.address.line1) fieldErrors.line1 = "Address line 1 is required.";
   if (!value.address.city) fieldErrors.city = "City is required.";

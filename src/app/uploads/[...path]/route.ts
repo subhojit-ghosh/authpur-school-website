@@ -26,7 +26,9 @@ const CACHE = "public, max-age=31536000, immutable";
 
 export async function GET(_request: Request, ctx: { params: Promise<{ path: string[] }> }) {
   const { path } = await ctx.params;
-  const key = path.map(decodeURIComponent).join("/");
+  // The segments arrive already decoded; decoding again would turn an escaped
+  // separator into a real one, and a stray percent sign into a thrown error.
+  const key = path.join("/");
   const type = TYPES[extname(key).toLowerCase()];
   if (!type) return new Response("Not found", { status: 404 });
 
@@ -35,7 +37,7 @@ export async function GET(_request: Request, ctx: { params: Promise<{ path: stri
     return new Response(new Uint8Array(stored.data), {
       headers: {
         "Content-Type": stored.contentType || type,
-        "Content-Length": String(stored.size),
+        "Content-Length": String(stored.data.byteLength),
         "Cache-Control": CACHE,
       },
     });

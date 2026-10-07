@@ -37,9 +37,9 @@ export function CtaBand({
             </Link>
           </Button>
           {/* One button per number, so a visitor rings the line they picked. */}
-          {phoneEntries(phone).map((number) => (
+          {phoneEntries(phone).map((number, index) => (
             <Button
-              key={number.display}
+              key={`${number.display}-${index}`}
               asChild
               size="lg"
               variant="outline"

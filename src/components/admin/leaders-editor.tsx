@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ImagePrepareError, prepareImage } from "@/lib/image-client";
-import { leaderSlug, MAX_LEADERS, type Leader } from "@/lib/page-content-types";
+import { MAX_LEADERS, type Leader } from "@/lib/page-content-types";
+import { toRichHtml } from "@/lib/rich-text";
 import { cn } from "@/lib/utils";
 
 /**
@@ -21,7 +22,13 @@ import { cn } from "@/lib/utils";
 
 type Row = { key: number; value: Leader };
 
-let nextKey = 1;
+/**
+ * Keys also name the form fields' ids. A counter at module level keeps
+ * counting on the server from one request to the next, so the ids in the HTML
+ * would not match the ids the browser renders; the saved rows are therefore
+ * numbered from 1 on every render and anything added later counts on from
+ * where they stopped.
+ */
 
 function PhotoField({ leader, onChange }: { leader: Leader; onChange: (url: string) => void }) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -102,7 +109,8 @@ function PhotoField({ leader, onChange }: { leader: Leader; onChange: (url: stri
 }
 
 export function LeadersEditor({ name, initial }: { name: string; initial: Leader[] }) {
-  const [rows, setRows] = useState<Row[]>(() => initial.map((value) => ({ key: nextKey++, value })));
+  const [rows, setRows] = useState<Row[]>(() => initial.map((value, index) => ({ key: index + 1, value })));
+  const nextKey = useRef(initial.length + 1);
 
   const set = (key: number, patch: Partial<Leader>) =>
     setRows((list) => list.map((r) => (r.key === key ? { ...r, value: { ...r.value, ...patch } } : r)));
@@ -116,8 +124,10 @@ export function LeadersEditor({ name, initial }: { name: string; initial: Leader
       return next;
     });
 
-  // The message of each person travels as its own field, keyed by slug, so the
-  // formatting editor can post HTML the way it does everywhere else.
+  // Each message travels as its own field named by the row's position, so the
+  // formatting editor can post HTML the way it does everywhere else. Position
+  // rather than slug: a slug can be edited or cleared while typing, and that
+  // must never detach a message from its person.
   const json = JSON.stringify(rows.map((r) => ({ ...r.value, message: "" })));
 
   return (
@@ -237,7 +247,13 @@ export function LeadersEditor({ name, initial }: { name: string; initial: Leader
                   id={`l-slug-${row.key}`}
                   value={leader.slug}
                   placeholder="founder"
-                  onChange={(e) => set(row.key, { slug: leaderSlug(e.target.value) })}
+                  onChange={(e) =>
+                    set(row.key, {
+                      // Kept loose while typing so "vice-principal" can be
+                      // typed; the server tidies it on save.
+                      slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]+/g, "-").slice(0, 40),
+                    })
+                  }
                 />
                 <p className="text-xs text-muted-foreground">/leadership/{leader.slug || "…"} — changing it breaks old links.</p>
               </div>
@@ -248,8 +264,8 @@ export function LeadersEditor({ name, initial }: { name: string; initial: Leader
             <div className="grid gap-2">
               <Label>Message</Label>
               <RichTextEditor
-                name={`message-${leader.slug}`}
-                defaultValue={leader.message}
+                name={`message-${index}`}
+                defaultValue={toRichHtml(leader.message)}
                 ariaLabel={`Message from the ${leader.role || "person"}`}
                 placeholder="Write the message here…"
               />
@@ -265,12 +281,16 @@ export function LeadersEditor({ name, initial }: { name: string; initial: Leader
           size="sm"
           disabled={rows.length >= MAX_LEADERS}
           onClick={() =>
-            setRows((list) => [
+            setRows((list) => {
+              const taken = new Set(list.map((r) => r.value.slug));
+              let n = list.length + 1;
+              while (taken.has(`person-${n}`)) n += 1;
+              return [
               ...list,
               {
-                key: nextKey++,
+                key: nextKey.current++,
                 value: {
-                  slug: leaderSlug(`person-${list.length + 1}`),
+                  slug: `person-${n}`,
                   name: "",
                   role: "",
                   pageTitle: "",
@@ -280,7 +300,8 @@ export function LeadersEditor({ name, initial }: { name: string; initial: Leader
                   message: "",
                 },
               },
-            ])
+            ];
+            })
           }
         >
           <Plus className="size-3.5" />

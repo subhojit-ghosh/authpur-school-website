@@ -103,6 +103,19 @@ export function phoneEntries(phone: string): { display: string; dial: string }[]
   const digitsOf = (value: string) => value.replace(/[^\d+]/g, "");
   const first = digitsOf(parts[0] ?? "");
 
+  // Only a landline has an area code to lend. Strip a leading + country code or
+  // a trunk 0 and look at the ten national digits: an Indian mobile starts 6 to
+  // 9, so anything else is a landline whose leading digits are its area code.
+  const national = first.startsWith("+")
+    ? first.slice(1).startsWith("91")
+      ? first.slice(3)
+      : first.slice(1)
+    : first.startsWith("0")
+      ? first.slice(1)
+      : first;
+  const firstCarriesCode =
+    (first.startsWith("0") || first.startsWith("+")) && national.length === 10 && !/^[6-9]/.test(national);
+
   return parts.map((part, index) => {
     const digits = digitsOf(part);
     const missing = first.length - digits.length;
@@ -110,7 +123,7 @@ export function phoneEntries(phone: string): { display: string; dial: string }[]
     // Ten digits is already a complete number and must be left alone.
     const bare = !digits.startsWith("+") && !digits.startsWith("0");
     const localLength = digits.length >= 6 && digits.length <= 8;
-    const shareCode = index > 0 && missing > 0 && localLength && bare;
+    const shareCode = index > 0 && missing > 0 && localLength && bare && firstCarriesCode;
     return { display: part, dial: shareCode ? first.slice(0, missing) + digits : digits };
   });
 }

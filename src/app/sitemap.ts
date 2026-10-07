@@ -24,7 +24,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     ...pages.map((p) => ({ url: `${siteUrl}${p.path}`, changeFrequency: p.changeFrequency, priority: p.priority })),
-    ...people.map((p) => ({ url: `${siteUrl}/leadership/${p.slug}`, changeFrequency: "yearly" as const, priority: 0.5 })),
+    // A person whose page has nothing written on it yet is left out: there is
+    // no point sending a search engine to a heading and an empty card.
+    ...people
+      .filter((p) => p.name.trim() || p.message.trim())
+      .map((p) => ({ url: `${siteUrl}/leadership/${p.slug}`, changeFrequency: "yearly" as const, priority: 0.5 })),
     ...notices.map((n) => ({ url: `${siteUrl}${noticePath(n)}`, lastModified: n.date, priority: 0.4 })),
     ...events
       .filter((e) => e.active)

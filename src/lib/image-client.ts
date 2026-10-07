@@ -61,8 +61,20 @@ function encode(canvas: HTMLCanvasElement, type: string, quality: number): Promi
   return new Promise((resolve) => canvas.toBlob(resolve, type, quality));
 }
 
+/** Browsers refuse, or silently blank, a canvas beyond roughly this area. */
+const MAX_CANVAS_PIXELS = 16_000_000;
+
 async function render(source: Source, targetWidth: number, type: string, quality: number) {
-  const scale = Math.min(1, targetWidth / source.width);
+  if (!source.width || !source.height) {
+    throw new ImagePrepareError("That image has no size this browser can read. Please save it as JPG or PNG.");
+  }
+
+  // A very tall scan stays within the width but can still exceed what a canvas
+  // will draw, which on some browsers yields a blank picture rather than an
+  // error, so the whole area is brought under the limit as well.
+  const widthScale = Math.min(1, targetWidth / source.width);
+  const areaScale = Math.min(1, Math.sqrt(MAX_CANVAS_PIXELS / (source.width * source.height)));
+  const scale = Math.min(widthScale, areaScale);
   const width = Math.max(1, Math.round(source.width * scale));
   const height = Math.max(1, Math.round(source.height * scale));
 

@@ -29,10 +29,12 @@ export async function checkImage(file: File, label: string): Promise<CheckedImag
 }
 
 /** Unique, URL-safe storage keys for an upload and its thumbnail. */
-export function makeStorageKeys(kind: ImageKind, extension: string) {
+export function makeStorageKeys(kind: ImageKind, extension: string, thumbExtension = extension) {
   const id = `${Date.now().toString(36)}-${randomBytes(6).toString("hex")}`;
   const folder = kind === "banner" ? "banners" : kind === "portrait" ? "portraits" : "gallery";
-  return { key: `${folder}/${id}.${extension}`, thumbKey: `${folder}/${id}-thumb.${extension}` };
+  // Each file's key carries its own format: the thumbnail can fall back to a
+  // different one from the full image, and the name must not claim otherwise.
+  return { key: `${folder}/${id}.${extension}`, thumbKey: `${folder}/${id}-thumb.${thumbExtension}` };
 }
 
 export type { ImageKind };

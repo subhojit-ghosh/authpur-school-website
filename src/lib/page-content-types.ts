@@ -388,7 +388,10 @@ export function leaderSlug(value: string): string {
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
-    .slice(0, 40);
+    .slice(0, 40)
+    // Trimming again after the cut keeps this idempotent: the server re-runs it
+    // on what the browser sent and must arrive at the same string.
+    .replace(/-+$/g, "");
 }
 
 /**
@@ -408,7 +411,7 @@ export function leadersFromLegacy(old: Leadership | undefined): Leaders {
       slug,
       name: person.name,
       role: person.role,
-      pageTitle: `${person.name.split(" ").slice(-1)[0] ?? person.role}'s Message`,
+      pageTitle: `${person.role.split(",")[0].trim()}'s Message`,
       pageIntro: "",
       initials: person.initials,
       photoUrl: "",

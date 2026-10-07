@@ -68,7 +68,13 @@ function PhoneField({
   return (
     <div className="grid content-start gap-2">
       <Label htmlFor={`${id}-0`}>{label}</Label>
-      <input type="hidden" name={id} value={numbers.map((n) => n.trim()).filter(Boolean).join(" / ")} />
+      {/* A box holding only spaces or punctuation contributes nothing, so it is
+          left out rather than posted as an empty slot between two slashes. */}
+      <input
+        type="hidden"
+        name={id}
+        value={numbers.map((n) => n.trim()).filter((n) => /\d/.test(n)).join(" / ")}
+      />
 
       <div className="grid gap-2">
         {numbers.map((number, index) => (

@@ -2,6 +2,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { getIdentity, getNavigation } from "@/lib/page-content";
 import { getSchoolInfo } from "@/lib/settings";
+import { phoneEntries } from "@/lib/settings-types";
 import { MotionProvider } from "@/components/motion";
 import { siteUrl } from "@/lib/site-url";
 
@@ -23,7 +24,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
             url: siteUrl,
             logo: `${siteUrl}/crest.png`,
             image: `${siteUrl}/opengraph-image`,
-            telephone: info.phone,
+            telephone: phoneEntries(info.phone).map((n) => n.dial),
             email: info.email,
             address: {
               "@type": "PostalAddress",
