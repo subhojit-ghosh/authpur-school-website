@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 import { PhoneLinks } from "@/components/phone-links";
 import { RichText } from "@/components/rich-text";
 import { Crest } from "@/components/crest";
-import { defaultIdentity, type Identity } from "@/lib/page-content-types";
+import { crestLines, defaultIdentity, type Identity } from "@/lib/page-content-types";
 import { defaultSchoolInfo, type SchoolInfo } from "@/lib/settings-types";
 
 /** Icon names offered in the admin panel, mapped to the icons themselves. */
@@ -46,21 +46,18 @@ export function SiteFooter({
   info?: SchoolInfo;
   identity?: Identity;
 }) {
+  const crest = crestLines(identity);
   return (
     <footer className="bg-brand text-brand-foreground print:hidden">
       <div className="school-stripe h-1.5" />
-      <div className="container-edge grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-4 lg:py-20">
+      <div className="container-edge grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1.3fr] lg:py-20">
         {/* Identity */}
         <div className="lg:col-span-1">
           <div className="flex items-center gap-3">
             <Crest className="h-12 w-12" />
             <div className="leading-tight">
-              <p className="font-heading text-lg font-semibold">{identity.shortName}</p>
-              {identity.footerCrestLine ? (
-                <p className="text-sm text-brand-foreground/65">
-                  {identity.footerCrestLine}
-                </p>
-              ) : null}
+              <p className="font-heading text-lg font-semibold">{crest.name}</p>
+              {crest.line ? <p className="whitespace-nowrap text-[13px] text-brand-foreground/65">{crest.line}</p> : null}
             </div>
           </div>
           <RichText

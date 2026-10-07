@@ -68,8 +68,9 @@
   --radius: 0.5rem;
 
   /*
-   * White paper and a deep ink navy, with four school colours — vermilion,
-   * marigold, leaf and sky. The four colour-code the quick links and the
+   * White paper, with the navy, metallic gold and cream of the school's crest
+   * (public/crest.png), and four school colours — vermilion, gold, leaf and
+   * sky. The four colour-code the quick links and the
    * school stages, and together they make the stripe that runs under the
    * header and over the footer.
    */
@@ -81,17 +82,17 @@
   --popover: #ffffff;
   --popover-foreground: #1c2a3d;
 
-  --primary: #0b2545;
+  --primary: #14304d;
   --primary-foreground: #ffffff;
 
   --secondary: #f1f4f8;
-  --secondary-foreground: #0b2545;
+  --secondary-foreground: #14304d;
 
   --muted: #f1f4f8;
   --muted-foreground: #5a6778;
 
-  --accent: #fdf3dc;
-  --accent-foreground: #0b2545;
+  --accent: #fdf5d6;
+  --accent-foreground: #14304d;
 
   --destructive: oklch(0.577 0.245 27.325);
 
@@ -100,31 +101,32 @@
   --ring: #1d6fb8;
 
   /* Brand palette */
-  --brand: #0b2545;
+  --brand: #14304d;
   --brand-foreground: #ffffff;
-  --brand-muted: #13335a;
-  --gold: #f2a516;
-  --gold-foreground: #2b1d00;
-  --gold-soft: #fdf3dc;
-  /* Marigold is too light for text on white; this darker amber is for words. */
-  --gold-ink: #95600a;
+  --brand-muted: #1f3d5e;
+  --gold: #e3b04a;
+  /* Navy on gold, as the lettering sits on the crest's ribbon. */
+  --gold-foreground: #14304d;
+  --gold-soft: #fdf5d6;
+  /* The crest's gold is too light for text on white; this darker gold is for words. */
+  --gold-ink: #86621a;
   --vermilion: #d23a2e;
   --leaf: #1f7a4c;
   --sky: #1d6fb8;
   --mist: #f1f4f8;
 
-  --chart-1: #f2a516;
-  --chart-2: #0b2545;
+  --chart-1: #e3b04a;
+  --chart-2: #14304d;
   --chart-3: #1d6fb8;
   --chart-4: #d23a2e;
   --chart-5: #1f7a4c;
 
   --sidebar: #f8fafc;
   --sidebar-foreground: #1c2a3d;
-  --sidebar-primary: #0b2545;
+  --sidebar-primary: #14304d;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #fdf3dc;
-  --sidebar-accent-foreground: #0b2545;
+  --sidebar-accent: #fdf5d6;
+  --sidebar-accent-foreground: #14304d;
   --sidebar-border: #dfe4eb;
   --sidebar-ring: #1d6fb8;
 }
@@ -136,7 +138,7 @@
   --card-foreground: oklch(0.96 0.008 85);
   --popover: oklch(0.24 0.035 264);
   --popover-foreground: oklch(0.96 0.008 85);
-  --primary: oklch(0.78 0.126 79);
+  --primary: oklch(0.78 0.11 84);
   --primary-foreground: oklch(0.24 0.05 264);
   --secondary: oklch(0.3 0.04 264);
   --secondary-foreground: oklch(0.96 0.008 85);
@@ -147,26 +149,26 @@
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 12%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.78 0.126 79);
-  --brand: oklch(0.3 0.06 264);
+  --ring: oklch(0.78 0.11 84);
+  --brand: oklch(0.3 0.05 258);
   --brand-foreground: oklch(0.96 0.008 85);
-  --brand-muted: oklch(0.26 0.05 264);
-  --gold: oklch(0.8 0.13 79);
+  --brand-muted: oklch(0.26 0.042 258);
+  --gold: oklch(0.8 0.115 84);
   --gold-foreground: oklch(0.24 0.05 264);
-  --gold-soft: oklch(0.4 0.07 79);
-  --gold-ink: oklch(0.8 0.13 79);
+  --gold-soft: oklch(0.4 0.06 84);
+  --gold-ink: oklch(0.8 0.115 84);
   --vermilion: #e5584c;
   --leaf: #3a9a68;
   --sky: #4a92d4;
   --mist: oklch(0.24 0.035 264);
   --sidebar: oklch(0.24 0.035 264);
   --sidebar-foreground: oklch(0.96 0.008 85);
-  --sidebar-primary: oklch(0.78 0.126 79);
+  --sidebar-primary: oklch(0.78 0.11 84);
   --sidebar-primary-foreground: oklch(0.24 0.05 264);
   --sidebar-accent: oklch(0.32 0.05 264);
   --sidebar-accent-foreground: oklch(0.96 0.008 85);
   --sidebar-border: oklch(1 0 0 / 12%);
-  --sidebar-ring: oklch(0.78 0.126 79);
+  --sidebar-ring: oklch(0.78 0.11 84);
 }
 
 @layer base {
@@ -234,7 +236,7 @@
   .page-heading {
     @apply text-balance font-heading text-2xl font-semibold leading-tight text-brand sm:text-3xl;
   }
-  /* A plain link that reads as a link: underlined in marigold. */
+  /* A plain link that reads as a link: underlined in gold. */
   .text-link {
     @apply font-semibold text-brand underline decoration-gold decoration-2 underline-offset-4 transition-colors hover:decoration-brand;
   }
@@ -247,6 +249,24 @@
       var(--leaf) 50% 75%,
       var(--sky) 75% 100%
     );
+  }
+  /*
+   * The main call-to-action button: the crest's metallic gold, light at the
+   * top and deeper at the foot, with navy lettering as on the crest's ribbon.
+   * Use alongside bg-gold so the plain gold shows if gradients are off.
+   */
+  .btn-gold {
+    background-image: linear-gradient(180deg, #f6d77e 0%, var(--gold) 55%, #c9952f 100%);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.55),
+      0 1px 2px rgb(20 48 77 / 0.25);
+    transition: filter 150ms, box-shadow 150ms;
+  }
+  .btn-gold:hover {
+    filter: brightness(1.06);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.6),
+      0 3px 8px rgb(20 48 77 / 0.25);
   }
   .text-gradient-gold {
     background: linear-gradient(100deg, var(--gold) 0%, oklch(0.86 0.11 88) 55%, var(--gold) 100%);

@@ -10,6 +10,7 @@
     "lint:fix": "oxlint --type-aware --fix",
     "typecheck": "tsc --noEmit",
     "verify": "bun run typecheck && bun run lint",
+    "build:logo": "bun scripts/build-logo.mjs",
     "db:generate": "bunx drizzle-kit generate",
     "db:migrate": "bun scripts/migrate.mjs",
     "db:seed": "bun scripts/seed-admin.mjs",

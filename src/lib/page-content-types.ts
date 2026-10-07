@@ -125,6 +125,10 @@ export type SocialLink = { icon: string; label: string; href: string };
 export type Identity = {
   name: string;
   shortName: string;
+  /** The name as set beside the crest in the header and footer: large on top. */
+  crestName: string;
+  /** The smaller line under it. {year} becomes the established year. */
+  crestLine: string;
   established: string;
   tagline: string;
   motto: string;
@@ -133,8 +137,6 @@ export type Identity = {
   affiliationLine: string;
   trustLine: string;
   footerCopyrightNote: string;
-  /** The small line under the school name beside the crest in the footer. */
-  footerCrestLine: string;
   /** The three gold column headings in the footer. */
   footerExploreHeading: string;
   footerNavigateHeading: string;
@@ -150,6 +152,8 @@ export type Identity = {
 export const defaultIdentity: Identity = {
   name: school.name,
   shortName: school.shortName,
+  crestName: "Authpur National Model",
+  crestLine: "Higher Secondary School · Est. {year}",
   established: String(school.established),
   tagline: school.tagline,
   motto: school.motto,
@@ -158,7 +162,6 @@ export const defaultIdentity: Identity = {
   affiliationLine: "Affiliated to CISCE (ICSE & ISC), code WB173",
   trustLine: "40+ years of trust",
   footerCopyrightNote: "Affiliated to the Council for the Indian School Certificate Examinations (CISCE), New Delhi. Affiliation code WB173.",
-  footerCrestLine: "Higher Secondary School",
   footerExploreHeading: "Explore",
   footerNavigateHeading: "Navigate",
   footerContactHeading: "Reach Us",
@@ -537,6 +540,14 @@ export const defaultLabs: LabsContent = {
 };
 
 // ----------------------------------------------------------------- helpers
+
+/** The two lines set beside the crest, with the fallbacks filled in. */
+export function crestLines(identity: Identity) {
+  return {
+    name: identity.crestName.trim() || identity.name,
+    line: identity.crestLine.replaceAll("{year}", identity.established).trim(),
+  };
+}
 
 /** Replaces {year} and {shortName} placeholders so copy can mention them. */
 export function fillPlaceholders(text: string, vars: { year: string; shortName: string; name: string }) {

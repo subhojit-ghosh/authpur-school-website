@@ -59,6 +59,8 @@ export async function saveIdentity(_prev: ContentState, formData: FormData): Pro
   const value: Identity = {
     name: text(formData, "name", 160),
     shortName: text(formData, "shortName", 80),
+    crestName: text(formData, "crestName", 80),
+    crestLine: text(formData, "crestLine", 80),
     established: text(formData, "established", 8),
     tagline: text(formData, "tagline", 160),
     motto: text(formData, "motto", 120),
@@ -67,7 +69,6 @@ export async function saveIdentity(_prev: ContentState, formData: FormData): Pro
     affiliationLine: text(formData, "affiliationLine", 120),
     trustLine: text(formData, "trustLine", 120),
     footerCopyrightNote: text(formData, "footerCopyrightNote", 200),
-    footerCrestLine: text(formData, "footerCrestLine", 80),
     footerExploreHeading: text(formData, "footerExploreHeading", 40),
     footerNavigateHeading: text(formData, "footerNavigateHeading", 40),
     footerContactHeading: text(formData, "footerContactHeading", 40),

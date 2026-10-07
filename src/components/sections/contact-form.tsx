@@ -19,7 +19,7 @@ function SubmitButton() {
       type="submit"
       size="lg"
       disabled={pending}
-      className="mt-1 h-12 rounded-md bg-gold text-base font-semibold text-gold-foreground hover:bg-gold/90"
+      className="mt-1 h-12 rounded-md bg-gold text-base font-semibold text-gold-foreground btn-gold"
     >
       <Send className="size-4" />
       {pending ? "Sending…" : "Send Enquiry"}

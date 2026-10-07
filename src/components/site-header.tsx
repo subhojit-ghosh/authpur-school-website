@@ -13,7 +13,7 @@ import {
   SheetTrigger,
   SheetClose,
 } from "@/components/ui/sheet";
-import { defaultIdentity, defaultNavigation, type Identity, type Navigation } from "@/lib/page-content-types";
+import { crestLines, defaultIdentity, defaultNavigation, type Identity, type Navigation } from "@/lib/page-content-types";
 import { PhoneLinks } from "@/components/phone-links";
 import { defaultSchoolInfo, telHref, type SchoolInfo } from "@/lib/settings-types";
 import { cn } from "@/lib/utils";
@@ -27,6 +27,7 @@ export function SiteHeader({
   identity?: Identity;
   nav?: Navigation;
 }) {
+  const crest = crestLines(identity);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -78,14 +79,14 @@ export function SiteHeader({
             and the buttons were pushed off the screen.
           */}
           <Link href="/" className="flex min-w-0 items-center gap-2.5 sm:gap-3">
-            <Crest className="h-11 w-11 shrink-0 sm:h-14 sm:w-14" />
+            <Crest className="h-11 w-11 shrink-0 sm:h-14 sm:w-14" preload />
             <span className="flex min-w-0 flex-col leading-none">
               <span className="truncate font-heading text-[15px] font-semibold tracking-tight text-brand sm:text-lg">
-                {identity.shortName}
+                {crest.name}
               </span>
-              <span className="mt-1.5 truncate text-[11px] text-muted-foreground sm:text-[13px]">
-                Higher Secondary School, since {identity.established}
-              </span>
+              {crest.line ? (
+                <span className="mt-1.5 truncate text-[11px] text-muted-foreground sm:text-[13px]">{crest.line}</span>
+              ) : null}
             </span>
           </Link>
 
@@ -133,7 +134,7 @@ export function SiteHeader({
           <div className="flex items-center gap-2">
             <Button
               asChild
-              className="hidden h-11 rounded-md bg-gold px-5 text-[15px] font-semibold text-gold-foreground hover:bg-gold/90 sm:inline-flex lg:hidden xl:inline-flex"
+              className="hidden h-11 rounded-md bg-gold px-5 text-[15px] font-semibold text-gold-foreground btn-gold sm:inline-flex lg:hidden xl:inline-flex"
             >
               <Link href={nav.applyHref}>
                 <GraduationCap className="size-4" />
@@ -152,7 +153,7 @@ export function SiteHeader({
                 <SheetHeader>
                   <SheetTitle className="flex items-center gap-2">
                     <Crest className="h-8 w-8" />
-                    <span className="font-heading text-base text-brand">{identity.shortName}</span>
+                    <span className="font-heading text-base text-brand">{crest.name}</span>
                   </SheetTitle>
                 </SheetHeader>
                 <div className="flex flex-col gap-1 px-4 pb-6">
@@ -187,7 +188,7 @@ export function SiteHeader({
                   <SheetClose asChild>
                     <Button
                       asChild
-                      className="mt-4 w-full bg-gold font-semibold text-gold-foreground hover:bg-gold/90"
+                      className="mt-4 w-full bg-gold font-semibold text-gold-foreground btn-gold"
                     >
                       <Link href={nav.applyHref}>
                         <GraduationCap className="size-4" />

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Outfit, Source_Sans_3 } from "next/font/google";
 import "./globals.css";
 import { siteUrl } from "@/lib/site-url";
@@ -51,6 +51,9 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image", title: SCHOOL_NAME, description: DESCRIPTION },
   formatDetection: { telephone: true, email: true, address: true },
 };
+
+// Tints the browser bar on phones to the site's navy.
+export const viewport: Viewport = { themeColor: "#14304d" };
 
 export default function RootLayout({
   children,

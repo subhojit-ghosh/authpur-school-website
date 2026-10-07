@@ -40,10 +40,30 @@ export default async function IdentityContentPage() {
       />
 
       <ContentForm action={saveIdentity}>
-        <Section title="Identity" description="Used in the header, the footer and the browser tab.">
+        <Section
+          title="Name beside the crest"
+          description="How the name is set next to the crest in the header and footer: the main part large, and a smaller line under it."
+        >
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field
+              name="crestName"
+              label="Name (large)"
+              defaultValue={id.crestName}
+              hint="For example “Authpur National Model”. Leave empty to use the full school name."
+            />
+            <Field
+              name="crestLine"
+              label="Line under the name (small)"
+              defaultValue={id.crestLine}
+              hint="Write {year} for the established year. Leave empty to hide it."
+            />
+          </div>
+        </Section>
+
+        <Section title="Identity" description="Used for search engines, link previews, the browser tab and the copyright line.">
           <div className="grid gap-4 sm:grid-cols-2">
             <Field name="name" label="Full school name" defaultValue={id.name} />
-            <Field name="shortName" label="Short name" defaultValue={id.shortName} hint="Shown next to the crest." />
+            <Field name="shortName" label="Short name" defaultValue={id.shortName} hint="A short form, such as in the mobile menu." />
             <Field name="established" label="Established year" defaultValue={id.established} inputMode="numeric" maxLength={4} />
             <Field name="tagline" label="Tagline" defaultValue={id.tagline} />
             <Field name="motto" label="Motto" defaultValue={id.motto} />
@@ -60,12 +80,6 @@ export default async function IdentityContentPage() {
 
         <Section title="Footer">
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field
-              name="footerCrestLine"
-              label="Line under the name beside the crest"
-              defaultValue={id.footerCrestLine}
-              hint="Leave empty to hide it."
-            />
             <Field
               name="footerRightsNote"
               label="Wording after the year"

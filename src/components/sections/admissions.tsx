@@ -46,7 +46,7 @@ export async function Admissions({ photo }: { photo?: HeroImage }) {
         <Reveal className="mt-12 flex flex-wrap gap-3">
           <Button
             size="lg"
-            className="h-12 rounded-md bg-gold px-7 text-base font-semibold text-gold-foreground hover:bg-gold/90 [&_svg:not([class*='size-'])]:size-[18px]"
+            className="h-12 rounded-md bg-gold px-7 text-base font-semibold text-gold-foreground btn-gold [&_svg:not([class*='size-'])]:size-[18px]"
             asChild
           >
             <Link href="/admission-enquiry">
