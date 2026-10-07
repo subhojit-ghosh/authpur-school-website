@@ -180,7 +180,16 @@ export function ExamPatternForm({ initial }: { initial: ExamPattern }) {
   const json = JSON.stringify(groups.map((g) => ({ ...g.value, rows: g.value.rows.map((r) => r.value) })));
 
   return (
-    <form action={action} className="grid grid-cols-[minmax(0,1fr)] gap-6">
+    <form
+      action={action}
+      /*
+        Tabbing to a field the browser considers already on screen scrolls
+        nothing, and the save bar would then be sitting on top of it. Giving
+        every field a margin the height of the bar plus the top bar makes the
+        browser bring it clear instead.
+      */
+      className="grid grid-cols-[minmax(0,1fr)] gap-6 [&_input]:scroll-mt-44 [&_textarea]:scroll-mt-44"
+    >
       <input type="hidden" name="groups" value={json} />
 
       {/*
@@ -394,7 +403,15 @@ export function ExamPatternForm({ initial }: { initial: ExamPattern }) {
                         variant="ghost"
                         className="text-destructive hover:bg-destructive/10 hover:text-destructive"
                         aria-label="Remove examination"
-                        onClick={() => setGroup(current.key, { rows: current.value.rows.filter((x) => x.key !== r.key) })}
+                        disabled={current.value.rows.length <= 1}
+                        onClick={() => {
+                          // The trash sits beside the fold triangle, and a
+                          // folded row shows none of what is about to go, so
+                          // it asks first the way removing a group does.
+                          const what = r.value.name || `examination ${i + 1}`;
+                          if (!window.confirm(`Remove “${what}”?`)) return;
+                          setGroup(current.key, { rows: current.value.rows.filter((x) => x.key !== r.key) });
+                        }}
                       >
                         <Trash2 className="size-4" />
                       </Button>

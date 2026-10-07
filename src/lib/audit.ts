@@ -97,15 +97,35 @@ export function diff<T extends Record<string, unknown>>(before: T, after: T) {
  */
 export function flatDiff(before: unknown, after: unknown, limit = 25) {
   const changed: Record<string, { from: unknown; to: unknown }> = {};
+  let truncated = false;
+
+  const text = (v: unknown) => {
+    try {
+      return JSON.stringify(v);
+    } catch {
+      // A value that cannot be described — a cycle, a BigInt — is treated as
+      // different from everything, which is the safe answer here. This must
+      // never throw: the diff is built as an argument to recordAudit, so a
+      // throw would escape its guard and fail the save that has already run.
+      return undefined;
+    }
+  };
 
   const walk = (a: unknown, b: unknown, path: string) => {
-    if (Object.keys(changed).length >= limit) return;
-    if (JSON.stringify(a) === JSON.stringify(b)) return;
+    if (Object.keys(changed).length >= limit) {
+      truncated = true;
+      return;
+    }
 
-    // When a row is added or removed one side is missing. Treating the missing
-    // side as an empty array or object lets the walk continue into the other,
-    // so the log names the fields that appeared rather than printing raw data.
     const missing = (v: unknown) => v === undefined || v === null;
+    // Nothing to report when both sides are empty: a field that went from
+    // absent to blank would otherwise be logged as "(empty) → (empty)".
+    if ((missing(a) || a === "") && (missing(b) || b === "")) return;
+
+    const sa = text(a);
+    const sb = text(b);
+    if (sa !== undefined && sa === sb) return;
+
     const isArray = (v: unknown) => Array.isArray(v);
     const isPlainObject = (v: unknown) => v !== null && typeof v === "object" && !Array.isArray(v);
 
@@ -117,8 +137,33 @@ export function flatDiff(before: unknown, after: unknown, limit = 25) {
     if (bothArrays) {
       const arrA = (isArray(a) ? a : []) as unknown[];
       const arrB = (isArray(b) ? b : []) as unknown[];
-      for (let i = 0; i < Math.max(arrA.length, arrB.length); i++) {
-        walk(arrA[i], arrB[i], `${path}[${i + 1}]`);
+
+      // Rows are matched by their contents, not by their position. Pairing by
+      // position alone turns moving one row up into a change to every field of
+      // every row below it, which both buries the real edit and uses up the
+      // limit before the walk reaches it.
+      const keysB = arrB.map(text);
+      const takenB = new Set<number>();
+      const restA: number[] = [];
+      for (let i = 0; i < arrA.length; i++) {
+        const key = text(arrA[i]);
+        const j = key === undefined ? -1 : keysB.findIndex((k, idx) => !takenB.has(idx) && k === key);
+        if (j >= 0) takenB.add(j);
+        else restA.push(i);
+      }
+      const restB = arrB.map((_, i) => i).filter((i) => !takenB.has(i));
+
+      if (!restA.length && !restB.length) {
+        // Every row still exists; only the order moved.
+        if (arrA.length) changed[path || "value"] = { from: "the previous order", to: "a new order" };
+        return;
+      }
+
+      for (let i = 0; i < Math.max(restA.length, restB.length); i++) {
+        const ai = restA[i];
+        const bi = restB[i];
+        const position = (bi ?? ai ?? 0) + 1;
+        walk(ai === undefined ? undefined : arrA[ai], bi === undefined ? undefined : arrB[bi], `${path}[${position}]`);
       }
       return;
     }
@@ -135,8 +180,17 @@ export function flatDiff(before: unknown, after: unknown, limit = 25) {
     changed[path || "value"] = { from: a, to: b };
   };
 
-  walk(before, after, "");
-  return Object.keys(changed).length ? changed : undefined;
+  try {
+    walk(before, after, "");
+  } catch (err) {
+    console.error("[audit] could not describe the change", err);
+    return undefined;
+  }
+
+  if (!Object.keys(changed).length) return undefined;
+  // Say so rather than letting the list end as though it were complete.
+  if (truncated) changed["and more"] = { from: `the first ${limit} changes`, to: "more were not listed" };
+  return changed;
 }
 
 export type AuditFilter = { q?: string; section?: string; person?: string; limit?: number; offset?: number };

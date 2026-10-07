@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, EyeOff } from "lucide-react";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { Button } from "@/components/ui/button";
 import { getNotice } from "@/lib/content";
@@ -23,12 +23,24 @@ export default async function EditNoticePage({ params }: { params: Promise<{ id:
         title="Edit notice"
         description="Changes are published to the website when you save."
         actions={
-          <Button asChild variant="outline" className="h-10">
-            <Link href={noticePath(notice)} target="_blank">
-              <ExternalLink className="size-4" />
-              View this notice
-            </Link>
-          </Button>
+          /*
+            A hidden notice is not on the website, so there is nothing to open —
+            the public page answers "not found". The button is replaced by the
+            reason rather than left to lead nowhere.
+          */
+          notice.active ? (
+            <Button asChild variant="outline" className="h-10">
+              <Link href={noticePath(notice)} target="_blank">
+                <ExternalLink className="size-4" />
+                View this notice
+              </Link>
+            </Button>
+          ) : (
+            <span className="inline-flex h-10 items-center gap-2 rounded-lg border border-dashed px-3 text-sm text-muted-foreground">
+              <EyeOff className="size-4" />
+              Hidden from the website
+            </span>
+          )
         }
       />
       <div className="max-w-2xl rounded-2xl border bg-card p-6">
