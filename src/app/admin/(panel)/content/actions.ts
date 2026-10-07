@@ -355,10 +355,12 @@ export async function saveLeaders(_prev: ContentState, formData: FormData): Prom
 
   for (const entry of parsed) {
     const source = (entry ?? {}) as Record<string, unknown>;
+    // Only the role is required. A school fills these pages in over several
+    // sittings, often uploading a photograph first, and refusing the save for a
+    // missing name or message would throw that work away.
     const role = String(source.role ?? "").trim().slice(0, 60);
     const name = String(source.name ?? "").trim().slice(0, 120);
     if (!role) return { error: "Every person needs a role, such as Founder." };
-    if (!name) return { error: `“${role}” needs a name.` };
 
     const slug = leaderSlug(String(source.slug ?? "") || role);
     if (!slug) return { error: `“${role}” needs a web address, such as founder.` };
@@ -366,7 +368,6 @@ export async function saveLeaders(_prev: ContentState, formData: FormData): Prom
     seen.add(slug);
 
     const message = sanitizeRichText(String(formData.get(`message-${slug}`) ?? ""));
-    if (isEmptyRichText(message)) return { error: `“${name}” needs a message.` };
 
     people.push({
       slug,

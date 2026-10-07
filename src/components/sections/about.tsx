@@ -19,6 +19,8 @@ export async function About({ photo }: { photo?: HeroImage }) {
   const [home, id] = await Promise.all([getHomeContent(), getIdentity()]);
   const about = home.about;
   const vars = { year: id.established, shortName: id.shortName, name: id.name };
+  // Below lg the photograph sits under the text rather than beside it, so the
+  // reading-width cap would leave a wide empty strip; it applies from lg up.
   const paragraphs = fillPlaceholders(about.paragraphs, vars);
 
   return (
@@ -29,11 +31,11 @@ export async function About({ photo }: { photo?: HeroImage }) {
           <Reveal delay={0.1}>
           <RichText
             html={paragraphs}
-            className="mt-6 max-w-[62ch] text-lg text-foreground/85 [&_p]:my-4 [&_p]:text-pretty [&_p]:leading-relaxed"
+            className="mt-6 lg:max-w-[62ch] text-lg text-foreground/85 [&_p]:my-4 [&_p]:text-pretty [&_p]:leading-relaxed"
           />
 
           {about.quote ? (
-            <figure className="mt-10 max-w-[60ch] border-l-4 border-gold pl-6">
+            <figure className="mt-10 border-l-4 border-gold pl-6 lg:max-w-[60ch]">
               <blockquote className="text-pretty font-heading text-xl font-medium leading-snug text-brand sm:text-[1.4rem]">
                 “{about.quote}”
               </blockquote>

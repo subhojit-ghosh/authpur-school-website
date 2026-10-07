@@ -50,10 +50,10 @@ export function LeadershipMessage({ person, motto }: { person: Person; motto?: s
         <Reveal className="lg:col-span-8" delay={0.1}>
           <RichText
             html={person.message}
-            className="max-w-[66ch] text-lg leading-relaxed text-foreground/85 [&>p:first-child]:mb-8 [&>p:first-child]:text-pretty [&>p:first-child]:font-heading [&>p:first-child]:text-2xl [&>p:first-child]:font-medium [&>p:first-child]:leading-snug [&>p:first-child]:text-brand sm:[&>p:first-child]:text-[1.7rem] [&_p]:my-5 [&_p]:text-pretty"
+            className="text-lg leading-relaxed lg:max-w-[66ch] text-foreground/85 [&>p:first-child]:mb-8 [&>p:first-child]:text-pretty [&>p:first-child]:font-heading [&>p:first-child]:text-2xl [&>p:first-child]:font-medium [&>p:first-child]:leading-snug [&>p:first-child]:text-brand sm:[&>p:first-child]:text-[1.7rem] [&_p]:my-5 [&_p]:text-pretty"
           />
 
-          <div className="mt-12 max-w-[66ch] border-t pt-6">
+          <div className="mt-12 border-t pt-6 lg:max-w-[66ch]">
             <p className="font-heading text-xl font-semibold text-brand">{person.name}</p>
             <p className="text-[17px] text-muted-foreground">{person.role}</p>
             {motto ? <p className="mt-5 font-heading text-lg text-gold-ink">{motto}</p> : null}
