@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
-import { galleryCategories } from "@/lib/site";
+import { galleryFilters } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 export type GalleryGridPhoto = { id: number; url: string; thumbUrl: string; caption: string; category: string };
@@ -15,6 +15,7 @@ const categoryColours: Record<string, string> = {
   All: "bg-brand text-white border-brand",
   Campus: "bg-leaf text-white border-leaf",
   Academics: "bg-sky text-white border-sky",
+  Labs: "bg-violet text-white border-violet",
   Sports: "bg-vermilion text-white border-vermilion",
   Events: "bg-gold text-gold-foreground border-gold",
 };
@@ -22,7 +23,7 @@ const categoryColours: Record<string, string> = {
 function Filters({ active, onChange }: { active: string; onChange: (c: string) => void }) {
   return (
     <div role="group" aria-label="Show photos from" className="flex flex-wrap gap-2">
-      {galleryCategories.map((cat) => (
+      {galleryFilters.map((cat) => (
         <button
           key={cat}
           onClick={() => onChange(cat)}

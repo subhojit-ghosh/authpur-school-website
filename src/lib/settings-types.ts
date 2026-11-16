@@ -6,6 +6,7 @@ import {
   eligibility,
   feeNote,
   feeStructure,
+  galleryCategories,
   officeHours,
   school,
   sectionTimings,
@@ -68,7 +69,9 @@ export const defaultAdmissions: AdmissionsContent = {
   documents: admissionDocuments.map((item) => ({ item })),
 };
 
-export const GALLERY_CATEGORIES = ["Campus", "Academics", "Sports", "Events"] as const;
+// One list, shared with the public gallery: a category added in only one of
+// two places would be offered to staff and then filtered out for visitors.
+export const GALLERY_CATEGORIES = galleryCategories;
 export type GalleryCategory = (typeof GALLERY_CATEGORIES)[number];
 export function isGalleryCategory(v: string): v is GalleryCategory {
   return (GALLERY_CATEGORIES as readonly string[]).includes(v);

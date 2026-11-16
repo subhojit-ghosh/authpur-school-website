@@ -116,7 +116,7 @@ export const galleryPhotos = pgTable("gallery_photos", {
   storageKey: text("storage_key"),
   thumbKey: text("thumb_key"),
   caption: text("caption").notNull().default(""),
-  /** One of: Campus, Academics, Sports, Events. */
+  /** One of the categories in lib/site.ts: Campus, Academics, Labs, Sports, Events. */
   category: text("category").notNull(),
   width: integer("width"),
   height: integer("height"),
