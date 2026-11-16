@@ -6,12 +6,11 @@ import { SavedNote, useJustSaved } from "@/components/admin/pending";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { NativeSelect } from "@/components/ui/native-select";
-import type { GalleryCategory } from "@/lib/settings-types";
 import { deleteGalleryPhoto, updateGalleryPhoto, type GalleryActionResult } from "./actions";
 
 type Photo = { id: number; url: string; thumbUrl: string; caption: string; category: string };
 
-export function GalleryPhotoCard({ photo, categories }: { photo: Photo; categories: readonly GalleryCategory[] }) {
+export function GalleryPhotoCard({ photo, categories }: { photo: Photo; categories: readonly string[] }) {
   // Controlled fields: an uncontrolled <select> snaps back to its first-render value
   // when React resets the form after the save, even though the save went through.
   const [caption, setCaption] = useState(photo.caption);

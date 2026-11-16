@@ -8,8 +8,10 @@ import {
   defaultAdmissions,
   defaultSchoolInfo,
   defaultTimings,
+  defaultGalleryCategories,
   SETTING_KEYS,
   type AdmissionsContent,
+  type GalleryCategories,
   type SchoolInfo,
   type Timings,
 } from "@/lib/settings-types";
@@ -54,6 +56,18 @@ export const getTimings = cache(() => getSetting<Timings>(SETTING_KEYS.timings, 
 
 /** The examination pattern for every group of classes. */
 export const getExamPattern = cache(() => getSetting<ExamPattern>(SETTING_KEYS.examPattern, defaultExamPattern));
+
+/**
+ * The gallery's sections, as the school has arranged them.
+ *
+ * An empty saved list would leave visitors no way to filter and the office no
+ * category to upload into, so it falls back to the list the site shipped with.
+ */
+export const getGalleryCategories = cache(async (): Promise<string[]> => {
+  const saved = await getSettingOrNull<GalleryCategories>(SETTING_KEYS.galleryCategories);
+  const items = (saved?.items ?? []).filter((item) => typeof item === "string" && item.trim());
+  return items.length ? items : [...defaultGalleryCategories.items];
+});
 
 export const getAdmissionsContent = cache(() =>
   getSetting<AdmissionsContent>(SETTING_KEYS.admissions, defaultAdmissions),

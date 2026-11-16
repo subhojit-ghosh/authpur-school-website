@@ -6,15 +6,17 @@ import { ImageUploader } from "@/components/admin/image-uploader";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { Button } from "@/components/ui/button";
 import { countGalleryPhotos, getGalleryPhotos } from "@/lib/media";
-import { GALLERY_CATEGORIES, isGalleryCategory } from "@/lib/settings-types";
+import { getGalleryCategories } from "@/lib/settings";
 import { cn } from "@/lib/utils";
+import { CategoriesEditor } from "./categories-editor";
 import { GalleryPhotoCard } from "./gallery-photo-card";
 
 export const metadata: Metadata = { title: "Photo Gallery" };
 
 export default async function GalleryAdminPage({ searchParams }: { searchParams: Promise<{ category?: string }> }) {
   const { category = "" } = await searchParams;
-  const active = isGalleryCategory(category) ? category : undefined;
+  const categories = await getGalleryCategories();
+  const active = categories.includes(category) ? category : undefined;
   const [list, total] = await Promise.all([getGalleryPhotos(active), countGalleryPhotos()]);
 
   return (
@@ -35,19 +37,21 @@ export default async function GalleryAdminPage({ searchParams }: { searchParams:
 
       <ImageUploader
         kind="gallery"
-        categories={GALLERY_CATEGORIES}
+        categories={categories}
         defaultCategory={active}
         hint="JPG, PNG or WebP · up to 15 MB each · you can select several at once"
       />
 
+      <CategoriesEditor initial={categories} />
+
       {/* Category filter */}
       <nav aria-label="Filter by category" className="flex flex-wrap gap-2">
-        {["All", ...GALLERY_CATEGORIES].map((c) => {
+        {["All", ...categories].map((c) => {
           const isActive = c === "All" ? !active : active === c;
           return (
             <Link
               key={c}
-              href={c === "All" ? "/admin/gallery" : `/admin/gallery?category=${c}`}
+              href={c === "All" ? "/admin/gallery" : `/admin/gallery?category=${encodeURIComponent(c)}`}
               className={cn(
                 "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
                 isActive ? "bg-brand text-brand-foreground" : "border bg-card text-foreground/70 hover:bg-accent hover:text-brand",
@@ -68,7 +72,7 @@ export default async function GalleryAdminPage({ searchParams }: { searchParams:
       ) : (
         <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {list.map((p) => (
-            <GalleryPhotoCard key={p.id} photo={p} categories={GALLERY_CATEGORIES} />
+            <GalleryPhotoCard key={p.id} photo={p} categories={categories} />
           ))}
         </ul>
       )}

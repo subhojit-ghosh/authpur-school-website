@@ -30,6 +30,12 @@ export async function getGalleryPhoto(id: number) {
   return row;
 }
 
+/** How many photographs are filed under one section. */
+export async function countGalleryPhotosIn(category: string) {
+  const [row] = await db.select({ n: count() }).from(galleryPhotos).where(eq(galleryPhotos.category, category));
+  return row?.n ?? 0;
+}
+
 export async function countGalleryPhotos() {
   const [row] = await db.select({ n: count() }).from(galleryPhotos);
   return row?.n ?? 0;

@@ -325,11 +325,11 @@ export const labs = [
 /*  Gallery                                                             */
 /* ------------------------------------------------------------------ */
 
-/** The sections a photograph can be filed under, in the order they are shown. */
+/**
+ * The sections a photograph starts out able to be filed under. The school
+ * rearranges this list in the panel; see getGalleryCategories.
+ */
 export const galleryCategories = ["Campus", "Academics", "Labs", "Sports", "Events"] as const;
-
-/** The same list with the "everything" button in front, for the filter row. */
-export const galleryFilters = ["All", ...galleryCategories] as const;
 
 /* ------------------------------------------------------------------ */
 /*  Admissions                                                          */

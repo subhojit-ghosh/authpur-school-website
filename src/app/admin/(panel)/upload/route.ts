@@ -5,7 +5,7 @@ import { getSession } from "@/lib/auth";
 import { recordAudit } from "@/lib/audit";
 import { checkImage, ImageError, makeStorageKeys, type ImageKind } from "@/lib/images";
 import { revalidateGallery, revalidateHome } from "@/lib/revalidate";
-import { isGalleryCategory } from "@/lib/settings-types";
+import { getGalleryCategories } from "@/lib/settings";
 import { storage } from "@/lib/storage";
 
 export const dynamic = "force-dynamic";
@@ -60,7 +60,9 @@ async function handleUpload(request: Request) {
   }
 
   const category = String(form.get("category") ?? "");
-  if (kind === "gallery" && !isGalleryCategory(category)) return json({ error: "Please choose a category." }, 400);
+  if (kind === "gallery" && !(await getGalleryCategories()).includes(category)) {
+    return json({ error: "Please choose a category." }, 400);
+  }
 
   const text = (
     String(form.get("alt") ?? "").trim() || file.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ")

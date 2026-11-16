@@ -3,34 +3,57 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
-import { galleryFilters } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 export type GalleryGridPhoto = { id: number; url: string; thumbUrl: string; caption: string; category: string };
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-/** Each category button takes a school colour when chosen. */
-const categoryColours: Record<string, string> = {
-  All: "bg-brand text-white border-brand",
-  Campus: "bg-leaf text-white border-leaf",
-  Academics: "bg-sky text-white border-sky",
-  Labs: "bg-violet text-white border-violet",
-  Sports: "bg-vermilion text-white border-vermilion",
-  Events: "bg-gold text-gold-foreground border-gold",
-};
+/**
+ * A chosen category button takes a school colour.
+ *
+ * The school names its own sections, so a colour cannot be looked up by name.
+ * Each takes the colour at its place in the list instead, which gives the
+ * sections the site ships with exactly the colours they have always had, and a
+ * section added later a colour of its own without anyone choosing one. Past the
+ * end of the palette the colours begin again.
+ */
+const CATEGORY_COLOURS = [
+  "bg-leaf text-white border-leaf",
+  "bg-sky text-white border-sky",
+  "bg-violet text-white border-violet",
+  "bg-vermilion text-white border-vermilion",
+  "bg-gold text-gold-foreground border-gold",
+  "bg-teal text-white border-teal",
+] as const;
 
-function Filters({ active, onChange }: { active: string; onChange: (c: string) => void }) {
+const ALL_COLOUR = "bg-brand text-white border-brand";
+
+const colourFor = (index: number) => CATEGORY_COLOURS[index % CATEGORY_COLOURS.length];
+
+function Filters({
+  categories,
+  active,
+  onChange,
+}: {
+  categories: string[];
+  active: string;
+  onChange: (c: string) => void;
+}) {
   return (
     <div role="group" aria-label="Show photos from" className="flex flex-wrap gap-2">
-      {galleryFilters.map((cat) => (
+      {["All", ...categories].map((cat, index) => (
         <button
           key={cat}
           onClick={() => onChange(cat)}
           aria-pressed={active === cat}
           className={cn(
             "rounded-full border-2 px-5 py-2 text-[15px] font-semibold transition-colors",
-            active === cat ? categoryColours[cat] : "border-border bg-card text-brand hover:border-brand",
+            active === cat
+              ? index === 0
+                ? ALL_COLOUR
+                : colourFor(index - 1)
+              : "border-border bg-card text-brand hover:border-brand",
           )}
         >
           {cat}
@@ -150,7 +173,15 @@ function Viewer({
 }
 
 /** Photographs uploaded through the admin panel, filterable by category. */
-function PhotoGrid({ photos, filters = true }: { photos: GalleryGridPhoto[]; filters?: boolean }) {
+function PhotoGrid({
+  photos,
+  categories,
+  filters = true,
+}: {
+  photos: GalleryGridPhoto[];
+  categories: string[];
+  filters?: boolean;
+}) {
   const [active, setActive] = useState<string>("All");
   const [open, setOpen] = useState<number | null>(null);
   const opener = useRef<HTMLElement | null>(null);
@@ -167,7 +198,7 @@ function PhotoGrid({ photos, filters = true }: { photos: GalleryGridPhoto[]; fil
 
   return (
     <div className="container-edge">
-      {filters ? <Filters active={active} onChange={setActive} /> : null}
+      {filters ? <Filters categories={categories} active={active} onChange={setActive} /> : null}
 
       {shown.length ? (
         <motion.ul layout className={cn("grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3", filters && "mt-10")}>
@@ -226,11 +257,19 @@ function PhotoGrid({ photos, filters = true }: { photos: GalleryGridPhoto[]; fil
  * Before the first gallery photo is uploaded, the banner photographs stand in,
  * so the page shows the school rather than empty boxes.
  */
-export function GalleryGrid({ photos, fallback }: { photos: GalleryGridPhoto[]; fallback: GalleryGridPhoto[] }) {
-  if (photos.length) return <PhotoGrid photos={photos} />;
+export function GalleryGrid({
+  photos,
+  fallback,
+  categories,
+}: {
+  photos: GalleryGridPhoto[];
+  fallback: GalleryGridPhoto[];
+  categories: string[];
+}) {
+  if (photos.length) return <PhotoGrid photos={photos} categories={categories} />;
   return (
     <>
-      <PhotoGrid photos={fallback} filters={false} />
+      <PhotoGrid photos={fallback} categories={categories} filters={false} />
       <p className="container-edge mt-8 text-[17px] text-muted-foreground">
         More photographs from around the school are on their way.
       </p>

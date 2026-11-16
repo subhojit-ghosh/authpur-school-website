@@ -54,6 +54,7 @@
   --color-leaf: var(--leaf);
   --color-sky: var(--sky);
   --color-violet: var(--violet);
+  --color-teal: var(--teal);
   --color-mist: var(--mist);
 
   --radius-sm: calc(var(--radius) * 0.6);
@@ -115,6 +116,7 @@
   --leaf: #1f7a4c;
   --sky: #1d6fb8;
   --violet: #6d3f9c;
+  --teal: #0f766e;
   --mist: #f1f4f8;
 
   --chart-1: #e3b04a;
@@ -163,6 +165,7 @@
   --leaf: #3a9a68;
   --sky: #4a92d4;
   --violet: #a481d6;
+  --teal: #4cab9f;
   --mist: oklch(0.24 0.035 264);
   --sidebar: oklch(0.24 0.035 264);
   --sidebar-foreground: oklch(0.96 0.008 85);

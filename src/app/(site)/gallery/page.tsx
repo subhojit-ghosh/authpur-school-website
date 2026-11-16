@@ -3,6 +3,7 @@ import { PageBanner } from "@/components/page-banner";
 import { getPageBanners } from "@/lib/page-content";
 import { GalleryGrid } from "@/components/sections/gallery-grid";
 import { getBanners, getGalleryPhotos } from "@/lib/media";
+import { getGalleryCategories } from "@/lib/settings";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/gallery" },
@@ -15,7 +16,12 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default async function GalleryPage() {
-  const [rows, banners, bannerPhotos] = await Promise.all([getGalleryPhotos(), getPageBanners(), getBanners()]);
+  const [rows, banners, bannerPhotos, categories] = await Promise.all([
+    getGalleryPhotos(),
+    getPageBanners(),
+    getBanners(),
+    getGalleryCategories(),
+  ]);
   const photos = rows.map((p) => ({ id: p.id, url: p.url, thumbUrl: p.thumbUrl, caption: p.caption, category: p.category }));
   const fallback = bannerPhotos.map((b) => ({ id: b.id, url: b.url, thumbUrl: b.thumbUrl, caption: b.alt, category: "" }));
   const banner = banners.gallery;
@@ -23,7 +29,7 @@ export default async function GalleryPage() {
     <>
       <PageBanner eyebrow={banner.eyebrow} title={banner.title} subtitle={banner.subtitle} />
       <section className="py-16 lg:py-24">
-        <GalleryGrid photos={photos} fallback={fallback} />
+        <GalleryGrid photos={photos} fallback={fallback} categories={categories} />
       </section>
     </>
   );

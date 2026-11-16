@@ -43,6 +43,7 @@ export const SETTING_KEYS = {
   timings: "timings",
   admissions: "admissions",
   examPattern: "exam_pattern",
+  galleryCategories: "gallery_categories",
 } as const;
 
 /** Defaults come from the content the site shipped with, so nothing is blank before staff edit it. */
@@ -69,12 +70,30 @@ export const defaultAdmissions: AdmissionsContent = {
   documents: admissionDocuments.map((item) => ({ item })),
 };
 
-// One list, shared with the public gallery: a category added in only one of
-// two places would be offered to staff and then filtered out for visitors.
-export const GALLERY_CATEGORIES = galleryCategories;
-export type GalleryCategory = (typeof GALLERY_CATEGORIES)[number];
-export function isGalleryCategory(v: string): v is GalleryCategory {
-  return (GALLERY_CATEGORIES as readonly string[]).includes(v);
+/**
+ * The sections a photograph can be filed under.
+ *
+ * The school builds this list themselves in the panel; the list in site.ts is
+ * only what the site starts with. A section has no identity beyond its name —
+ * that name is what each photograph carries — so renaming one has to take its
+ * photographs with it, and a section still holding photographs cannot simply
+ * be dropped. Both are the save action's job.
+ */
+export type GalleryCategories = { items: string[] };
+
+export const defaultGalleryCategories: GalleryCategories = { items: [...galleryCategories] };
+
+export const MAX_GALLERY_CATEGORIES = 10;
+export const MAX_CATEGORY_NAME = 24;
+
+/** A typed name reduced to what may be stored: one line, single spaces. */
+export function cleanCategoryName(value: string) {
+  return value.replace(/\s+/g, " ").trim().slice(0, MAX_CATEGORY_NAME);
+}
+
+/** Two names are the same section if they differ only in case or spacing. */
+export function sameCategory(a: string, b: string) {
+  return cleanCategoryName(a).toLowerCase() === cleanCategoryName(b).toLowerCase();
 }
 
 /**
